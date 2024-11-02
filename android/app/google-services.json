@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "154574534264",
+    "project_id": "hire-harmony-8cec9",
+    "storage_bucket": "hire-harmony-8cec9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:154574534264:android:a8013ba59ffb1d21055f8d",
+        "android_client_info": {
+          "package_name": "com.example.hire_harmony"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCw9-raxYmhw7Y5WtPAYPgkzLvIxeJyNrc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
