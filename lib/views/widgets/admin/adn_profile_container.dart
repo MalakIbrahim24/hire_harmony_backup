@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 
 class AdnProfileContainer extends StatelessWidget {
@@ -38,11 +39,14 @@ class AdnProfileContainer extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(icon, size: 24, color: Colors.grey[700]),
+                Icon(icon, size: 24, color: AppColors().navy),
                 const SizedBox(width: 12),
                 Text(
                   title,
-                  style: const TextStyle(fontSize: 16, color: Colors.black87),
+                  style: GoogleFonts.montserratAlternates(
+                    fontSize: 16,
+                    color: AppColors().navy,
+                  ),
                 ),
                 if (badgeCount != null) ...[
                   const SizedBox(width: 8),

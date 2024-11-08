@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 
 class ControlCard extends StatelessWidget {
@@ -36,11 +37,10 @@ class ControlCard extends StatelessWidget {
             ),
             child: Text(
               cardName,
-              style: TextStyle(
-                color: AppColors().white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: GoogleFonts.montserratAlternates(
+                  fontSize: 18,
+                  color: AppColors().white,
+                  fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
           ),

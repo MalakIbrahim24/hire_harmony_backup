@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:hire_harmony/view_models/cubit/auth_cubit.dart';
-import 'package:hire_harmony/views/widgets/adn_profile_container.dart';
+import 'package:hire_harmony/views/widgets/admin/adn_profile_container.dart';
 import 'package:hire_harmony/views/widgets/main_button.dart';
 
 class AdnProfilePage extends StatefulWidget {
@@ -60,21 +61,18 @@ class _AdnProfilePageState extends State<AdnProfilePage> {
                         bottom: Radius.circular(180),
                       ),
                       image: const DecorationImage(
-                        image: NetworkImage(
-                          'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg',
-                        ),
+                        image: AssetImage('lib/assets/images/adminmalak.jpeg'),
                         fit: BoxFit.cover,
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
+                Text(
                   'Malak Awad',
-                  style: TextStyle(
+                  style: GoogleFonts.montserratAlternates(
                     fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: AppColors().navy,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -82,13 +80,16 @@ class _AdnProfilePageState extends State<AdnProfilePage> {
                   icon: Icons.person_outline,
                   title: 'Personal Information',
                   onTap: () {
-                    Navigator.pushNamed(context, AppRoutes.adnnprofileinfoPage);
+                    Navigator.pushNamed(
+                        context, AppRoutes.adnnpersonalinfoPage);
                   },
                 ),
                 AdnProfileContainer(
                   icon: Icons.settings_outlined,
                   title: 'Settings and Privacy',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutes.adnsettingsPage);
+                  },
                 ),
                 AdnProfileContainer(
                   icon: Icons.logout_outlined,

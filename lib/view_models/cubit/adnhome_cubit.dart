@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hire_harmony/services/firestore_services.dart';
 import 'package:hire_harmony/utils/route/api_paths.dart';
-import 'package:hire_harmony/views/widgets/adn_card.dart';
+import 'package:hire_harmony/views/widgets/admin/adn_card.dart';
 
 part 'adnhome_state.dart';
 

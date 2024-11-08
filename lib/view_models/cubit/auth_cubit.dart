@@ -108,12 +108,34 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> getCurrentUser() async {
+  // Future<void> getCurrentUser() async {
+  //   emit(AuthLoading());
+  //   try {
+  //     final user = await authServices.currentUser();
+  //     if (user != null) {
+  //       emit(AuthSuccess());
+  //     } else {
+  //       emit(AuthInitial());
+  //     }
+  //   } catch (e) {
+  //     emit(AuthFailure(e.toString()));
+  //   }
+  // }
+
+
+ Future<void> getCurrentUser() async {
     emit(AuthLoading());
     try {
       final user = await authServices.currentUser();
       if (user != null) {
-        emit(AuthSuccess());
+        String role = await _fireS.getUserRoleByUid(user.uid);
+        if (role == 'admin') {
+          emit(AuthSuccess());
+        } else if (role == 'customer') {
+          emit(AuthCusSuccess());
+        } else if (role == 'employee') {
+          emit(AuthEmpSuccess());
+        }
       } else {
         emit(AuthInitial());
       }
@@ -121,6 +143,7 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthFailure(e.toString()));
     }
   }
+  
 
   // Fetch the role of the user
 }

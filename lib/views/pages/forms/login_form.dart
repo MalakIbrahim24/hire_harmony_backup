@@ -169,11 +169,14 @@ class _LoginFormState extends State<LoginForm> {
                     current is AuthEmpSuccess,
                 listener: (context, state) async {
                   if (state is AuthSuccess) {
-                    Navigator.pushNamed(context, AppRoutes.adnnavPage);
+                    Navigator.pushReplacementNamed(
+                        context, AppRoutes.adnnavPage);
                   } else if (state is AuthCusSuccess) {
-                    Navigator.pushNamed(context, AppRoutes.cushomePage);
+                    Navigator.pushReplacementNamed(
+                        context, AppRoutes.cushomePage);
                   } else if (state is AuthEmpSuccess) {
-                    Navigator.pushNamed(context, AppRoutes.emphomePage);
+                    Navigator.pushReplacementNamed(
+                        context, AppRoutes.emphomePage);
                   } else if (state is AuthFailure) {
                     showDialog(
                       context: context,

@@ -153,7 +153,12 @@ class SigninForm extends StatelessWidget {
           Center(
             child: TextButton(
               onPressed: () {
-                Navigator.pushReplacementNamed(context, AppRoutes.loginPage);
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/log-in-page',
+                  (Route<dynamic> route) =>
+                      route.settings.name == '/welcome-page',
+                );
               },
               child: Text(
                 'Have an account? Log In!',

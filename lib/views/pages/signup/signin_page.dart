@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
-import 'package:hire_harmony/views/pages/forms/login_form.dart';
+import 'package:hire_harmony/views/pages/forms/signin_form.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class SigninPage extends StatelessWidget {
+  const SigninPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors().white,
-      body: SingleChildScrollView(  
+      body: SingleChildScrollView(
         child: SafeArea(
           child: Stack(
             children: [
@@ -17,15 +17,20 @@ class LoginPage extends StatelessWidget {
               Positioned(
                 top: 40, // Adjust the top position as needed
                 left: 10, // Adjust the left position as needed
-                child: IconButton(
-                  icon: Icon(
-                    Icons.arrow_back,
-                    size: 30,
-                    color: AppColors().navy,
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: AppColors().orange),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.arrow_back,
+                      size: 30,
+                      color: AppColors().white,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                   ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
                 ),
               ),
               // Main content inside a Padding widget
@@ -36,8 +41,9 @@ class LoginPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Top section with logo and title
+
                     SizedBox(height: 28),
-                    LoginForm(), // Login form
+                    SigninForm(), // Login form
                   ],
                 ),
               ),

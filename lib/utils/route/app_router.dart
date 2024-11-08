@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:hire_harmony/view_models/cubit/auth_cubit.dart';
-import 'package:hire_harmony/views/pages/adn_home_page.dart';
-import 'package:hire_harmony/views/pages/adn_navbar.dart';
-import 'package:hire_harmony/views/pages/adn_profile_info_page.dart';
-import 'package:hire_harmony/views/pages/cus_home_page.dart';
-import 'package:hire_harmony/views/pages/emp_home_page.dart';
-import 'package:hire_harmony/views/pages/login_page.dart';
-import 'package:hire_harmony/views/pages/signIn_page.dart';
+import 'package:hire_harmony/views/pages/admin/admin_settings_page.dart';
+import 'package:hire_harmony/views/pages/admin/adn_home_page.dart';
+import 'package:hire_harmony/views/pages/admin/adn_navbar.dart';
+import 'package:hire_harmony/views/pages/admin/adn_notifications_page.dart';
+import 'package:hire_harmony/views/pages/admin/adn_personal_info_page.dart';
+import 'package:hire_harmony/views/pages/customer/cus_home_page.dart';
+import 'package:hire_harmony/views/pages/employee/emp_home_page.dart';
+import 'package:hire_harmony/views/pages/login/login_page.dart';
+import 'package:hire_harmony/views/pages/signup/signIn_page.dart';
+import 'package:hire_harmony/views/pages/signup/sign_up_choice.dart';
 import 'package:hire_harmony/views/pages/welcome_page.dart';
 
 class AppRouter {
@@ -55,9 +58,24 @@ class AppRouter {
           builder: (_) => const AdnNavbar(),
           settings: settings,
         );
-      case AppRoutes.adnnprofileinfoPage:
+      case AppRoutes.adnnpersonalinfoPage:
         return MaterialPageRoute(
-          builder: (_) => const AdnProfileInfoPage(),
+          builder: (_) => const AdnPersonalInfoPage(),
+          settings: settings,
+        );
+      case AppRoutes.signupChoicePage:
+        return MaterialPageRoute(
+          builder: (_) => const SignUpChoice(),
+          settings: settings,
+        );
+      case AppRoutes.adnsettingsPage:
+        return MaterialPageRoute(
+          builder: (_) => const AdminSettingsPage(),
+          settings: settings,
+        );
+      case AppRoutes.adnnotificationsPage:
+        return MaterialPageRoute(
+          builder: (_) => const AdnNotificationsPage(),
           settings: settings,
         );
 

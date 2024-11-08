@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/view_models/cubit/adnhome_cubit.dart';
-import 'package:hire_harmony/views/pages/adn_home_page.dart';
-import 'package:hire_harmony/views/pages/adn_messages_page.dart';
-import 'package:hire_harmony/views/pages/adn_profile_page.dart';
+import 'package:hire_harmony/views/pages/admin/adn_home_page.dart';
+import 'package:hire_harmony/views/pages/admin/adn_messages_page.dart';
+import 'package:hire_harmony/views/pages/admin/adn_profile_page.dart';
 
 class AdnNavbar extends StatefulWidget {
   const AdnNavbar({super.key});

@@ -143,7 +143,8 @@ class _WelcomePageState extends State<WelcomePage> {
                       // Sign Up Button
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, AppRoutes.signinPage);
+                          Navigator.pushNamed(
+                              context, AppRoutes.signupChoicePage);
                         },
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
+import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:hire_harmony/view_models/cubit/adnhome_cubit.dart';
 
 class AdnHomePage extends StatefulWidget {
@@ -50,40 +52,38 @@ class _AdnHomePageState extends State<AdnHomePage> {
                           children: [
                             Text(
                               'Hi Malak',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge!
-                                  .copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors().navy,
-                                    fontSize: 28,
-                                  ),
+                              style: GoogleFonts.montserratAlternates(
+                                fontSize: 28,
+                                color: AppColors().navy,
+                              ),
                             ),
                             Text(
                               'Welcome to your Control Panel',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge!
-                                  .copyWith(
-                                    color: AppColors().grey2,
-                                    fontSize: 16,
-                                  ),
+                              style: GoogleFonts.montserratAlternates(
+                                fontSize: 16,
+                                color: AppColors().grey,
+                              ),
                             ),
                           ],
                         ),
-                        CircleAvatar(
-                          backgroundColor: AppColors().navy,
-                          child: Icon(Icons.notifications_active,
-                              color: AppColors().white),
+                        InkWell(
+                          child: CircleAvatar(
+                            backgroundColor: AppColors().navy,
+                            child: Icon(Icons.notifications_active,
+                                color: AppColors().white),
+                          ),
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, AppRoutes.adnnotificationsPage);
+                          },
                         ),
                       ],
                     ),
                     const SizedBox(height: 20),
                     Text(
                       'Manage Your App',
-                      style: TextStyle(
+                      style: GoogleFonts.montserratAlternates(
                         fontSize: 20,
-                        fontWeight: FontWeight.bold,
                         color: AppColors().navy,
                       ),
                     ),
