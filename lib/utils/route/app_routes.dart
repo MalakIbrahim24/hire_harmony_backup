@@ -10,5 +10,7 @@ class AppRoutes {
   static const String adnnavPage = '/adnnav-page';
   static const String adnnpersonalinfoPage = '/adnnpersonalinfo-page';
   static const String adnsettingsPage = '/adnsettings-page';
+  static const String adnactivityPage = '/adnactivity-page';
+
   static const String adnnotificationsPage = '/adnnotifications-page';
 }

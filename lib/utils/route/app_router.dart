@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:hire_harmony/view_models/cubit/auth_cubit.dart';
+import 'package:hire_harmony/views/pages/admin/admin_activity_page.dart';
 import 'package:hire_harmony/views/pages/admin/admin_settings_page.dart';
 import 'package:hire_harmony/views/pages/admin/adn_home_page.dart';
 import 'package:hire_harmony/views/pages/admin/adn_navbar.dart';
@@ -76,6 +78,12 @@ class AppRouter {
       case AppRoutes.adnnotificationsPage:
         return MaterialPageRoute(
           builder: (_) => const AdnNotificationsPage(),
+          settings: settings,
+        );
+      case AppRoutes.adnactivityPage:
+        return MaterialPageRoute(
+          builder: (_) =>
+              AdminActivityPage(uid: FirebaseAuth.instance.currentUser!.uid),
           settings: settings,
         );
 
