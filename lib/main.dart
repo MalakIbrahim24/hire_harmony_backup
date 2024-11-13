@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,11 +26,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthCubit>(
-          create: (context) {
-            final cubit = AuthCubit();
-            cubit.getCurrentUser();
-            return cubit;
-          },
+          create: (context) => AuthCubit()..getCurrentUser(),
         ),
         BlocProvider<AdnHomeCubit>(
           create: (context) => AdnHomeCubit(),
@@ -56,6 +54,7 @@ class MyApp extends StatelessWidget {
                 initRoute = AppRoutes.emphomePage;
               } else {
                 initRoute = AppRoutes.welcomePage;
+                 log(initRoute);
               }
               return MaterialApp(
                 title: 'Hire Harmony',

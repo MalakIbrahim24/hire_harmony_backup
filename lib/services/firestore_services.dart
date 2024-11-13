@@ -126,6 +126,7 @@ class FirestoreService {
     required String action,
   }) async {
     try {
+      debugPrint("Logging activity for user: $uid, Action: $action");
       await _firestore
           .collection('users')
           .doc(uid)
@@ -135,7 +136,7 @@ class FirestoreService {
         'timestamp': Timestamp.now(),
         'device': defaultTargetPlatform.toString(),
       });
-      debugPrint("Activity logged: $action for user: $uid");
+      debugPrint("Activity logged successfully");
     } catch (e) {
       debugPrint("Error logging activity: $e");
     }
@@ -149,7 +150,10 @@ class FirestoreService {
         .collection('activityLogs')
         .orderBy('timestamp', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+        .map((snapshot) {
+      // Convert each document to a Map and return as a list
+      return snapshot.docs.map((doc) => doc.data()).toList();
+    });
   }
 
   Future<bool> reauthenticateUser(String currentPassword) async {

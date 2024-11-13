@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
+import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:hire_harmony/views/widgets/main_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
@@ -69,11 +70,13 @@ class _PhoneFormState extends State<PhoneForm> {
             height: 200,
           ),
           const MainButton().copyWith(
-            color: AppColors().navy,
-            fontWeight: FontWeight.w500,
-            bgColor: AppColors().greylight.withOpacity(0.1),
-            text: 'Resend',
-          ),
+              color: AppColors().white,
+              fontWeight: FontWeight.w500,
+              bgColor: AppColors().orange,
+              text: 'Next',
+              onPressed: () {
+                Navigator.pushNamed(context, AppRoutes.verificationSuccessPage);
+              }),
         ],
       ),
     );

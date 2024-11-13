@@ -227,7 +227,9 @@ class _LoginFormState extends State<LoginForm> {
               const SizedBox(height: 80),
               Center(
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushNamed(context, AppRoutes.forgotPasswordPage);
+                  },
                   child: Text(
                     'Forgot password?',
                     style: GoogleFonts.montserratAlternates(
@@ -241,10 +243,10 @@ class _LoginFormState extends State<LoginForm> {
                 child: TextButton(
                   onPressed: () {
                     Navigator.pushReplacementNamed(
-                        context, AppRoutes.signinPage);
+                        context, AppRoutes.signupChoicePage);
                   },
                   child: Text(
-                    'Already have an account? Sign Up!',
+                    'Don\'t have an account? Sign Up!',
                     style: GoogleFonts.montserratAlternates(
                       fontSize: 18,
                       color: AppColors().navy,

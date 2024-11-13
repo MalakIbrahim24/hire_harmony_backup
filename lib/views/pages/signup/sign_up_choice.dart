@@ -50,7 +50,7 @@ class SignUpChoice extends StatelessWidget {
                   CircleAvatar(
                     radius: 50,
                     backgroundColor: AppColors().navy,
-                    child: Icon(Icons.business_center_outlined,
+                    child: Icon(Icons.handyman_outlined,
                         color: AppColors().white, size: 50),
                   ),
                   const SizedBox(height: 10),

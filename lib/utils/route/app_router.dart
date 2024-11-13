@@ -11,7 +11,9 @@ import 'package:hire_harmony/views/pages/admin/adn_notifications_page.dart';
 import 'package:hire_harmony/views/pages/admin/adn_personal_info_page.dart';
 import 'package:hire_harmony/views/pages/customer/cus_home_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_home_page.dart';
+import 'package:hire_harmony/views/pages/forgot_password_page.dart';
 import 'package:hire_harmony/views/pages/login/login_page.dart';
+import 'package:hire_harmony/views/pages/signup/phone_page.dart';
 import 'package:hire_harmony/views/pages/signup/signIn_page.dart';
 import 'package:hire_harmony/views/pages/signup/sign_up_choice.dart';
 import 'package:hire_harmony/views/pages/welcome_page.dart';
@@ -84,6 +86,21 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) =>
               AdminActivityPage(uid: FirebaseAuth.instance.currentUser!.uid),
+          settings: settings,
+        );
+      case AppRoutes.forgotPasswordPage:
+        return MaterialPageRoute(
+          builder: (_) => const ForgotPasswordPage(),
+          settings: settings,
+        );
+      case AppRoutes.phonePage:
+        return MaterialPageRoute(
+          builder: (_) => const PhonePage(),
+          settings: settings,
+        );
+      case AppRoutes.verificationSuccessPage:
+        return MaterialPageRoute(
+          builder: (_) => const PhonePage(),
           settings: settings,
         );
 

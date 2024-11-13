@@ -11,6 +11,7 @@ abstract class AuthServices {
 
   Future<void> signOut();
   Future<User?> currentUser();
+  Future<bool> isSignIn();
 }
 
 class AuthServicesImpl implements AuthServices {
@@ -18,6 +19,12 @@ class AuthServicesImpl implements AuthServices {
 
   final firebaseAuth = FirebaseAuth.instance;
   final firestoreService = FirestoreService.instance;
+
+  @override
+  Future<bool> isSignIn() async {
+    return firebaseAuth.currentUser != null;
+  }
+
   @override
   Future<bool> signInWithEmailAndPassword(String email, String password) async {
     final userCredential = await firebaseAuth.signInWithEmailAndPassword(

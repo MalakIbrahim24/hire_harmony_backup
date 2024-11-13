@@ -44,8 +44,8 @@ class _AdminActivityPageState extends State<AdminActivityPage> {
             itemCount: logs.length,
             itemBuilder: (context, index) {
               final log = logs[index];
-              final action = log['action'];
-              final device = log['device'];
+              final action = log['action'] ?? 'No Action';
+              final device = log['device'] ?? 'Unknown Device';
               final timestamp = (log['timestamp'] as Timestamp).toDate();
               final formattedTime =
                   DateFormat('yyyy-MM-dd HH:mm').format(timestamp);
@@ -53,7 +53,7 @@ class _AdminActivityPageState extends State<AdminActivityPage> {
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: ListTile(
-                  title: Text(action ?? "No Action"),
+                  title: Text(action),
                   subtitle: Text('Device: $device\nTime: $formattedTime'),
                 ),
               );

@@ -52,7 +52,7 @@ class _WelcomePageState extends State<WelcomePage> {
                     duration: const Duration(seconds: 2),
                     child: const Center(
                       child: Icon(
-                        Icons.h_mobiledata,
+                        Icons.handyman_outlined,
                         color: Colors.white,
                         size: 100,
                       ),
