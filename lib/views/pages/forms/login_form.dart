@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -240,17 +241,29 @@ class _LoginFormState extends State<LoginForm> {
                 ),
               ),
               Center(
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(
-                        context, AppRoutes.signupChoicePage);
-                  },
-                  child: Text(
-                    'Don\'t have an account? Sign Up!',
+                child: RichText(
+                  text: TextSpan(
+                    text: 'Don\'t Have an account? ',
                     style: GoogleFonts.montserratAlternates(
                       fontSize: 18,
                       color: AppColors().navy,
                     ),
+                    children: [
+                      TextSpan(
+                        text: 'Sign Up!',
+                        style: GoogleFonts.montserratAlternates(
+                          fontSize: 18,
+                          color: AppColors().orange,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.pushReplacementNamed(
+                                context, AppRoutes.signupChoicePage);
+                            // Handle the "Log In" click event here
+                            print('Log In clicked!');
+                          },
+                      ),
+                    ],
                   ),
                 ),
               ),

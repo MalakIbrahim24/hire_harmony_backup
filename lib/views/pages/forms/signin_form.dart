@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
@@ -15,17 +16,6 @@ class SigninForm extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Sign Up',
-                style: GoogleFonts.montserratAlternates(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  color: AppColors().navy,
-                ),
-              ),
-            ),
             const SizedBox(height: 30),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -162,11 +152,37 @@ class SigninForm extends StatelessWidget {
                         route.settings.name == '/welcome-page',
                   );
                 },
-                child: Text(
-                  'Have an account? Log In!',
-                  style: GoogleFonts.montserratAlternates(
-                    fontSize: 18,
-                    color: AppColors().navy,
+                child: RichText(
+                  text: TextSpan(
+                    text: 'Have an account? ',
+                    style: GoogleFonts.montserratAlternates(
+                      fontSize: 18,
+                      color: AppColors().navy,
+                    ),
+                    
+                    children: [
+                      TextSpan(
+                        text: 'Log In!',
+                        style: GoogleFonts.montserratAlternates(
+                          fontSize: 18,
+                          color: AppColors().orange,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              AppRoutes.loginPage, // The route to navigate to
+                              (route) =>
+                                  route.settings.name ==
+                                  AppRoutes
+                                      .welcomePage, // Condition to stop removing when the welcome page is found
+                            );
+
+                            // Handle the "Log In" click event here
+                            print('Log In clicked!');
+                          },
+                      ),
+                    ],
                   ),
                 ),
               ),

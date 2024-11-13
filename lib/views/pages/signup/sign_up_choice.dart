@@ -32,8 +32,9 @@ class SignUpChoice extends StatelessWidget {
           textAlign: TextAlign.left,
           'Register a new account',
           style: GoogleFonts.montserratAlternates(
-            fontSize: 15,
-            color: AppColors().grey,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: AppColors().navy,
           ),
         ),
       ),

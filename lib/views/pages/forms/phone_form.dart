@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hire_harmony/services/auth_services.dart';
+import 'package:hire_harmony/services/firestore_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:hire_harmony/views/widgets/main_button.dart';
@@ -13,6 +15,9 @@ class PhoneForm extends StatefulWidget {
 }
 
 class _PhoneFormState extends State<PhoneForm> {
+  final FirestoreService _fireS = FirestoreService.instance;
+  final AuthServices authServices = AuthServicesImpl();
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -74,8 +79,28 @@ class _PhoneFormState extends State<PhoneForm> {
               fontWeight: FontWeight.w500,
               bgColor: AppColors().orange,
               text: 'Next',
-              onPressed: () {
-                Navigator.pushNamed(context, AppRoutes.verificationSuccessPage);
+              onPressed: () async {
+                final user = await authServices.currentUser();
+
+                if (user != null) {
+                  String role = await _fireS.getUserRoleByUid(user.uid);
+                  if (role == 'customer') {
+                    Navigator.pushNamed(
+                        // ignore: use_build_context_synchronously
+                        context,
+                        AppRoutes.cusVerificationSuccessPage);
+                  } else if (role == 'employee') {
+                    Navigator.pushNamed(
+                        // ignore: use_build_context_synchronously
+                        context,
+                        AppRoutes.empVerificationSuccessPage);
+                  }
+                } else {
+                  // ignore: use_build_context_synchronously
+                  Navigator.pushNamed(
+                      // ignore: use_build_context_synchronously
+                      context, AppRoutes.cusVerificationSuccessPage);
+                }
               }),
         ],
       ),

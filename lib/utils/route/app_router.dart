@@ -9,6 +9,7 @@ import 'package:hire_harmony/views/pages/admin/adn_home_page.dart';
 import 'package:hire_harmony/views/pages/admin/adn_navbar.dart';
 import 'package:hire_harmony/views/pages/admin/adn_notifications_page.dart';
 import 'package:hire_harmony/views/pages/admin/adn_personal_info_page.dart';
+import 'package:hire_harmony/views/pages/cus_verification_success_page.dart';
 import 'package:hire_harmony/views/pages/customer/cus_home_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_home_page.dart';
 import 'package:hire_harmony/views/pages/forgot_password_page.dart';
@@ -98,9 +99,13 @@ class AppRouter {
           builder: (_) => const PhonePage(),
           settings: settings,
         );
-      case AppRoutes.verificationSuccessPage:
+      case AppRoutes.cusVerificationSuccessPage:
         return MaterialPageRoute(
-          builder: (_) => const PhonePage(),
+          builder: (_) => const CusVerificationSuccessPage(
+            notificationTitle: 'Phone verification success',
+            notificationMessage:
+                'You have successfully verified that you are using a valid phone number',
+          ),
           settings: settings,
         );
 

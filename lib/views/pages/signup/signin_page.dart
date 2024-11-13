@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/pages/forms/signin_form.dart';
 
@@ -17,22 +18,41 @@ class SigninPage extends StatelessWidget {
               Positioned(
                 top: 40, // Adjust the top position as needed
                 left: 10, // Adjust the left position as needed
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      color: AppColors().orange),
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.arrow_back,
-                      size: 30,
-                      color: AppColors().white,
+                child: Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          color: AppColors().orange),
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.arrow_back,
+                          size: 30,
+                          color: AppColors().white,
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
                     ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Sign Up',
+                        style: GoogleFonts.montserratAlternates(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
+                          color: AppColors().navy,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
+
               // Main content inside a Padding widget
               const Padding(
                 padding: EdgeInsets.only(

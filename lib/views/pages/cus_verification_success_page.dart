@@ -1,59 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hire_harmony/utils/route/app_routes.dart';
+import 'package:hire_harmony/views/widgets/main_button.dart';
 
-class VerificationSuccessPage extends StatefulWidget {
+class CusVerificationSuccessPage extends StatefulWidget {
   final String notificationTitle;
   final String notificationMessage;
 
-  const VerificationSuccessPage({
+  const CusVerificationSuccessPage({
     super.key,
     required this.notificationTitle,
     required this.notificationMessage,
   });
 
   @override
-  State<VerificationSuccessPage> createState() =>
+  State<CusVerificationSuccessPage> createState() =>
       _VerificationSuccessPageState();
 }
 
-class _VerificationSuccessPageState extends State<VerificationSuccessPage> {
+class _VerificationSuccessPageState extends State<CusVerificationSuccessPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       backgroundColor: AppColors().white,
-      appBar: AppBar(
-        backgroundColor: AppColors().white,
-        elevation: 0,
-        title: Text(
-          'Verify',
-          style: GoogleFonts.montserratAlternates(
-            fontSize: 22,
-            color: AppColors().navy,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.close, color: Colors.black),
-            onPressed: () {
-              // Add close action
-            },
-          ),
-        ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(25.0),
-          child: Divider(
-            thickness: 1,
-            color: AppColors().grey,
-          ),
-        ),
-      ),
       body: Column(
         children: [
+          /*
+          PreferredSize(
+            preferredSize: const Size.fromHeight(25.0),
+            child: Divider(
+              thickness: 1,
+              color: AppColors().grey,
+            ),
+          ),
+          */
+          const SizedBox(
+            height: 170,
+          ),
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(30.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -61,39 +48,27 @@ class _VerificationSuccessPageState extends State<VerificationSuccessPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.home_outlined,
-                        color: AppColors().orange, size: 35),
+                        color: AppColors().orange, size: 50),
                     const SizedBox(width: 8),
                     Text(
                       'Hire Harmony',
                       style: GoogleFonts.montserratAlternates(
-                        fontSize: 22,
+                        fontSize: 34,
                         fontWeight: FontWeight.bold,
                         color: AppColors().navy,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 32),
-                TextButton.icon(
-                  onPressed: () {
-                    // Navigation logic
-                  },
-                  icon: Icon(Icons.arrow_back, color: AppColors().grey),
-                  label: Text(
-                    'Back to login',
-                    style: GoogleFonts.montserratAlternates(
-                      fontSize: 13,
-                      color: AppColors().grey2,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 50),
                 Icon(Icons.check_circle, color: AppColors().orange, size: 70),
                 const SizedBox(height: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SizedBox(
+                      height: 20,
+                    ),
                     Text(
                       widget.notificationTitle, // Access widget properties
                       style: GoogleFonts.montserratAlternates(
@@ -114,13 +89,27 @@ class _VerificationSuccessPageState extends State<VerificationSuccessPage> {
                     ),
                   ],
                 ),
+                const SizedBox(
+                  height: 150,
+                ),
+                MainButton(
+                  onPressed: () {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      AppRoutes.loginPage,
+                      (Route<dynamic> route) =>
+                          route.settings.name == AppRoutes.welcomePage,
+                    );
+                  },
+                  text: 'Proceed to Login page',
+                ),
               ],
             ),
           ),
           const Spacer(),
           DecoratedBox(
             decoration: BoxDecoration(
-              color: AppColors().grey,
+              color: AppColors().orange.withOpacity(0.3),
             ),
             child: SizedBox(
               width: double.infinity,
@@ -128,7 +117,7 @@ class _VerificationSuccessPageState extends State<VerificationSuccessPage> {
               child: Center(
                 child: Text(
                   '© 2024, Hire All rights reserved',
-                  style: TextStyle(color: AppColors().grey2),
+                  style: TextStyle(color: AppColors().navy),
                   textAlign: TextAlign.center,
                 ),
               ),
