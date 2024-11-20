@@ -4,10 +4,15 @@ class AppRoutes {
 
   static const String signupChoicePage = '/sign-up-choice-page';
   static const String signinPage = '/sign-in-page';
+  static const String empSigninForm = '/emp-sign-in-from';
+  static const String empphonePage = '/emp-phone-page';
+  static const String empsignupPage = '/emp-signup-page';
+
   static const String phonePage = '/phone-page';
   static const String cusVerificationSuccessPage =
       '/cusVerificationSuccess-page';
-  static const String empVerificationSuccessPage = 'empVerificationSuccess-Page';
+  static const String empVerificationSuccessPage =
+      'empVerificationSuccess-Page';
 
   static const String welcomePage = '/welcome-page';
   static const String cushomePage = '/cushome-page';

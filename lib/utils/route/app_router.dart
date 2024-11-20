@@ -11,9 +11,13 @@ import 'package:hire_harmony/views/pages/admin/adn_notifications_page.dart';
 import 'package:hire_harmony/views/pages/admin/adn_personal_info_page.dart';
 import 'package:hire_harmony/views/pages/cus_verification_success_page.dart';
 import 'package:hire_harmony/views/pages/customer/cus_home_page.dart';
+import 'package:hire_harmony/views/pages/emp_verification_success_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_home_page.dart';
 import 'package:hire_harmony/views/pages/forgot_password_page.dart';
+import 'package:hire_harmony/views/pages/forms/emp_signin_form.dart';
 import 'package:hire_harmony/views/pages/login/login_page.dart';
+import 'package:hire_harmony/views/pages/signup/emp_phone_page.dart';
+import 'package:hire_harmony/views/pages/signup/emp_sign_up_page.dart';
 import 'package:hire_harmony/views/pages/signup/phone_page.dart';
 import 'package:hire_harmony/views/pages/signup/signIn_page.dart';
 import 'package:hire_harmony/views/pages/signup/sign_up_choice.dart';
@@ -43,6 +47,11 @@ class AppRouter {
           builder: (_) => const SigninPage(),
           settings: settings,
         );
+      case AppRoutes.empSigninForm:
+        return MaterialPageRoute(
+          builder: (_) => const EmpSigninForm(),
+          settings: settings,
+        );
       case AppRoutes.cushomePage:
         return MaterialPageRoute(
           builder: (_) => const CusHomePage(),
@@ -51,6 +60,24 @@ class AppRouter {
       case AppRoutes.emphomePage:
         return MaterialPageRoute(
           builder: (_) => const EmpHomePage(),
+          settings: settings,
+        );
+      case AppRoutes.empphonePage:
+        return MaterialPageRoute(
+          builder: (_) => const EmpPhonePage(),
+          settings: settings,
+        );
+      case AppRoutes.empVerificationSuccessPage:
+        return MaterialPageRoute(
+          builder: (_) => const EmpVerificationSuccessPage(
+              notificationTitle: 'Success!',
+              notificationMessage:
+                  'User verified successfully,\nShare your skills and experience with everyone!'),
+          settings: settings,
+        );
+      case AppRoutes.empsignupPage:
+        return MaterialPageRoute(
+          builder: (_) => const EmpSignUpPage(),
           settings: settings,
         );
       case AppRoutes.adnhomePage:
@@ -104,7 +131,7 @@ class AppRouter {
           builder: (_) => const CusVerificationSuccessPage(
             notificationTitle: 'Phone verification success',
             notificationMessage:
-                'You have successfully verified that you are using a valid phone number',
+                'You have successfully verified that you are using a valid phone number,\nEnjoy our services!',
           ),
           settings: settings,
         );

@@ -49,31 +49,31 @@ class _AdnNavbarState extends State<AdnNavbar> {
                 backgroundColor:
                     AppColors().transparent, // Transparent when not selected
                 selectedForegroundColor:
-                    AppColors().orange, // Set to teal when selected
+                    AppColors().navy, // Set to teal when selected
                 unselectedForegroundColor:
-                    AppColors().navy, // White when not selected
+                    AppColors().white, // White when not selected
                 extras: {"label": "Messages"},
               ),
               FluidNavBarIcon(
                 icon: Icons.home_repair_service_outlined,
                 backgroundColor: Colors.transparent,
-                selectedForegroundColor: AppColors().orange,
-                unselectedForegroundColor: AppColors().navy,
+                selectedForegroundColor: AppColors().navy,
+                unselectedForegroundColor: AppColors().white,
                 extras: {"label": "Home"},
               ),
               FluidNavBarIcon(
                 icon: Icons.person_2_outlined,
                 backgroundColor: Colors.transparent,
-                selectedForegroundColor: AppColors().orange,
-                unselectedForegroundColor: AppColors().navy,
+                selectedForegroundColor: AppColors().navy,
+                unselectedForegroundColor: AppColors().white,
                 extras: {"label": "Profile"},
               ),
             ],
             onChange: _handleNavigationChange,
             style: FluidNavBarStyle(
               barBackgroundColor: AppColors()
-                  .orange2
-                  .withOpacity(0.4), // Main background color of the bar
+                  .orange
+                  .withOpacity(0.7), // Main background color of the bar
               iconBackgroundColor:
                   AppColors().orange2, // Set selected icon background to teal
             ),

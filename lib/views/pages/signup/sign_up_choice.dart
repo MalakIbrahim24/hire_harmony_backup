@@ -49,16 +49,16 @@ class SignUpChoice extends StatelessWidget {
                 children: [
                   // Placeholder for the logo
                   CircleAvatar(
-                    radius: 50,
+                    radius: 65,
                     backgroundColor: AppColors().navy,
                     child: Icon(Icons.handyman_outlined,
-                        color: AppColors().white, size: 50),
+                        color: AppColors().white, size: 70),
                   ),
                   const SizedBox(height: 10),
                   Text(
                     'Hire Harmony',
                     style: GoogleFonts.montserratAlternates(
-                      fontSize: 20,
+                      fontSize: 24,
                       color: AppColors().navy,
                       fontWeight: FontWeight.bold,
                     ),
@@ -66,7 +66,7 @@ class SignUpChoice extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -75,7 +75,7 @@ class SignUpChoice extends StatelessWidget {
                   'Please choose your role',
                   textAlign: TextAlign.left,
                   style: GoogleFonts.montserratAlternates(
-                    fontSize: 15,
+                    fontSize: 16,
                     color: AppColors().navy,
                     fontWeight: FontWeight.bold,
                   ),
@@ -93,7 +93,7 @@ class SignUpChoice extends StatelessWidget {
                 const SizedBox(height: 15),
                 SignUpWidget(
                   onPressed: () {
-                    Navigator.pushNamed(context, AppRoutes.signinPage);
+                    Navigator.pushNamed(context, AppRoutes.empsignupPage);
                   },
                   userType: 'EMPLOYEE',
                   description:

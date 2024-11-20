@@ -3,6 +3,7 @@ import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:hire_harmony/views/widgets/main_button.dart';
+//import 'package:hire_harmony/views/widgets/main_button.dart';
 
 class EmpVerificationSuccessPage extends StatefulWidget {
   final String notificationTitle;
@@ -37,7 +38,7 @@ class _VerificationSuccessPageState extends State<EmpVerificationSuccessPage> {
           ),
           */
           const SizedBox(
-            height: 100,
+            height: 170,
           ),
           Padding(
             padding: const EdgeInsets.all(30.0),
@@ -48,41 +49,17 @@ class _VerificationSuccessPageState extends State<EmpVerificationSuccessPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.home_outlined,
-                        color: AppColors().orange, size: 40),
+                        color: AppColors().orange, size: 50),
                     const SizedBox(width: 8),
                     Text(
                       'Hire Harmony',
                       style: GoogleFonts.montserratAlternates(
-                        fontSize: 26,
+                        fontSize: 34,
                         fontWeight: FontWeight.bold,
                         color: AppColors().navy,
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(height: 32),
-                TextButton.icon(
-                  onPressed: () {
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      AppRoutes.loginPage, // The route to navigate to
-                      (route) =>
-                          route.settings.name ==
-                          AppRoutes
-                              .welcomePage, // Condition to stop removing when the welcome page is found
-                    );
-
-                    // Navigation logic
-                  },
-                  icon: Icon(Icons.arrow_back, color: AppColors().grey),
-                  label: Text(
-                    'Back to login',
-                    style: GoogleFonts.montserratAlternates(
-                      fontSize: 13,
-                      color: AppColors().grey2,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                 ),
                 const SizedBox(height: 50),
                 Icon(Icons.check_circle, color: AppColors().orange, size: 70),
@@ -90,6 +67,9 @@ class _VerificationSuccessPageState extends State<EmpVerificationSuccessPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SizedBox(
+                      height: 20,
+                    ),
                     Text(
                       widget.notificationTitle, // Access widget properties
                       style: GoogleFonts.montserratAlternates(
@@ -111,7 +91,7 @@ class _VerificationSuccessPageState extends State<EmpVerificationSuccessPage> {
                   ],
                 ),
                 const SizedBox(
-                  height: 100,
+                  height: 150,
                 ),
                 MainButton(
                   onPressed: () {
@@ -122,7 +102,7 @@ class _VerificationSuccessPageState extends State<EmpVerificationSuccessPage> {
                           route.settings.name == AppRoutes.welcomePage,
                     );
                   },
-                  text: 'Back to Login page',
+                  text: 'Proceed to Login page',
                 ),
               ],
             ),

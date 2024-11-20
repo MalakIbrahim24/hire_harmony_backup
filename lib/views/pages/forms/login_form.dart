@@ -2,6 +2,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hire_harmony/services/auth_services.dart';
+import 'package:hire_harmony/services/firestore_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:hire_harmony/view_models/cubit/auth_cubit.dart';
@@ -19,6 +21,7 @@ class _LoginFormState extends State<LoginForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _roleController = TextEditingController();
+  final AuthServices authServices = AuthServicesImpl();
 
   bool _isVisible = false;
   bool isLogin = true;
@@ -170,8 +173,18 @@ class _LoginFormState extends State<LoginForm> {
                     current is AuthEmpSuccess,
                 listener: (context, state) async {
                   if (state is AuthSuccess) {
+                    final user = await authServices.currentUser();
+
+                    FirestoreService.instance.logActivity(
+                      uid: user!.uid,
+                      action: "Admin logged in",
+                      device: "Test Device",
+                    );
+
                     Navigator.pushReplacementNamed(
-                        context, AppRoutes.adnnavPage);
+                        // ignore: use_build_context_synchronously
+                        context,
+                        AppRoutes.adnnavPage);
                   } else if (state is AuthCusSuccess) {
                     Navigator.pushReplacementNamed(
                         context, AppRoutes.cushomePage);

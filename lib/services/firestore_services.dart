@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -120,13 +122,12 @@ class FirestoreService {
     return result;
   }
 
-  // Method to log activity
   Future<void> logActivity({
     required String uid,
     required String action,
+    required String device,
   }) async {
     try {
-      debugPrint("Logging activity for user: $uid, Action: $action");
       await _firestore
           .collection('users')
           .doc(uid)
@@ -134,11 +135,10 @@ class FirestoreService {
           .add({
         'action': action,
         'timestamp': Timestamp.now(),
-        'device': defaultTargetPlatform.toString(),
+        'device': device,
       });
-      debugPrint("Activity logged successfully");
     } catch (e) {
-      debugPrint("Error logging activity: $e");
+      print("Error logging activity: $e");
     }
   }
 
@@ -150,10 +150,20 @@ class FirestoreService {
         .collection('activityLogs')
         .orderBy('timestamp', descending: true)
         .snapshots()
-        .map((snapshot) {
-      // Convert each document to a Map and return as a list
-      return snapshot.docs.map((doc) => doc.data()).toList();
-    });
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+  }
+
+  Future<String> getDeviceInfo() async {
+    final deviceInfo = DeviceInfoPlugin();
+    if (Platform.isAndroid) {
+      final androidInfo = await deviceInfo.androidInfo;
+      return 'Android - ${androidInfo.model}';
+    } else if (Platform.isIOS) {
+      final iosInfo = await deviceInfo.iosInfo;
+      return 'iOS - ${iosInfo.utsname.machine}';
+    } else {
+      return 'Unknown Device';
+    }
   }
 
   Future<bool> reauthenticateUser(String currentPassword) async {

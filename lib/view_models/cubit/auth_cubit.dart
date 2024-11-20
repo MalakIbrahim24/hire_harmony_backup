@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:hire_harmony/services/auth_services.dart';
@@ -124,29 +123,29 @@ class AuthCubit extends Cubit<AuthState> {
   //   }
   // }
 
-  Future<void> getCurrentUser() async {
-    emit(AuthLoading());
-    try {
-      final user = await authServices.currentUser();
-      final signIn = await authServices.isSignIn();
-      log('$user');
-      if (signIn) {
-        String role = await _fireS.getUserRoleByUid(user!.uid);
-        log(role);
-        if (role == 'admin') {
-          emit(AuthSuccess());
-        } else if (role == 'customer') {
-          emit(AuthCusSuccess());
-        } else if (role == 'employee') {
-          emit(AuthEmpSuccess());
-        }
-      } else {
-        emit(AuthInitial());
-      }
-    } catch (e) {
-      emit(AuthFailure(e.toString()));
-    }
-  }
+  // Future<void> getCurrentUser() async {
+  //   emit(AuthLoading());
+  //   try {
+  //     final user = await authServices.currentUser();
+  //     final signIn = await authServices.isSignIn();
+  //     log('$user');
+  //     if (signIn) {
+  //       String role = await _fireS.getUserRoleByUid(user!.uid);
+  //       log(role);
+  //       if (role == 'admin') {
+  //         emit(AuthSuccess());
+  //       } else if (role == 'customer') {
+  //         emit(AuthCusSuccess());
+  //       } else if (role == 'employee') {
+  //         emit(AuthEmpSuccess());
+  //       }
+  //     } else {
+  //       emit(AuthInitial());
+  //     }
+  //   } catch (e) {
+  //     emit(AuthFailure(e.toString()));
+  //   }
+  // }
 
   // Fetch the role of the user
 }

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hire_harmony/utils/route/app_router.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
-import 'package:hire_harmony/view_models/cubit/adnhome_cubit.dart';
 import 'package:hire_harmony/view_models/cubit/auth_cubit.dart';
 
 import 'firebase_options.dart';
@@ -25,11 +24,12 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthCubit>(
-          create: (context) => AuthCubit()..getCurrentUser(),
+          create: (context) => AuthCubit(),
+          //create: (context) => AuthCubit()..getCurrentUser(),
         ),
-        BlocProvider<AdnHomeCubit>(
-          create: (context) => AdnHomeCubit(),
-        ),
+        // BlocProvider<AdnHomeCubit>(
+        //   create: (context) => AdnHomeCubit(),
+        // ),
       ],
       child: Builder(
         builder: (context) {
@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
                 log(initRoute);
               }
               return MaterialApp(
-                title: 'Hire Harmony',
+                 title: 'Hire Harmony',
                 initialRoute: initRoute,
                 onGenerateRoute: AppRouter.onGenerateRoute,
               );

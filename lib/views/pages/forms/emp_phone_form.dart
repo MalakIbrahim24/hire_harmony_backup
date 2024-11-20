@@ -6,14 +6,14 @@ import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:hire_harmony/views/widgets/main_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
-class PhoneForm extends StatefulWidget {
-  const PhoneForm({super.key});
+class EmpPhoneForm extends StatefulWidget {
+  const EmpPhoneForm({super.key});
 
   @override
-  State<PhoneForm> createState() => _PhoneFormState();
+  State<EmpPhoneForm> createState() => _PhoneFormState();
 }
 
-class _PhoneFormState extends State<PhoneForm> {
+class _PhoneFormState extends State<EmpPhoneForm> {
   final AuthServices authServices = AuthServicesImpl();
 
   @override
@@ -81,7 +81,7 @@ class _PhoneFormState extends State<PhoneForm> {
                 Navigator.pushNamed(
                     // ignore: use_build_context_synchronously
                     context,
-                    AppRoutes.cusVerificationSuccessPage);
+                    AppRoutes.empVerificationSuccessPage);
               }),
         ],
       ),

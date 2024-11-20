@@ -31,9 +31,9 @@ class ControlCard extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors().orange2.withOpacity(0.4),
+              color: AppColors().orange.withOpacity(0.3),
               borderRadius:
-                  const BorderRadius.vertical(bottom: Radius.circular(20)),
+                  const BorderRadius.vertical(bottom: Radius.circular(15)),
             ),
             child: Text(
               cardName,
