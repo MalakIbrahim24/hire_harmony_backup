@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
+import 'package:hire_harmony/utils/route/app_routes.dart';
 
-class EmpSignUp extends StatelessWidget {
+class EmpIdVerificationPage extends StatelessWidget {
   final String stepText;
   final bool isLastStep;
   final bool isDisplay;
+  final bool isDone;
 
-  const EmpSignUp(
+  const EmpIdVerificationPage(
       {super.key,
       required this.stepText,
       this.isLastStep = false,
-      this.isDisplay = false});
+      this.isDisplay = false,
+      this.isDone = false});
 
   @override
   Widget build(BuildContext context) {
@@ -18,16 +22,19 @@ class EmpSignUp extends StatelessWidget {
       backgroundColor: AppColors().white,
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors().orange),
+          icon: Icon(Icons.arrow_back, color: AppColors().navy),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         title: Text(
           "Verify Your Identity",
-          style: TextStyle(color: AppColors().black),
+          style: GoogleFonts.montserratAlternates(
+              fontSize: 20,
+              color: AppColors().navy,
+              fontWeight: FontWeight.w500),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors().white,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(25.0),
           child: Divider(
@@ -44,14 +51,15 @@ class EmpSignUp extends StatelessWidget {
           children: [
             Text(
               stepText,
-              style: TextStyle(fontSize: 19, color: AppColors().grey2),
+              style: GoogleFonts.montserratAlternates(
+                  fontSize: 19, color: AppColors().grey3),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 60),
             CircleAvatar(
               radius: 70,
               backgroundColor: AppColors().grey,
-              child: Icon(Icons.image, color: AppColors().grey, size: 50),
+              child: Icon(Icons.image, color: AppColors().white, size: 50),
             ),
             const SizedBox(height: 60),
             if (!isDisplay)
@@ -60,25 +68,27 @@ class EmpSignUp extends StatelessWidget {
                 children: [
                   Text(
                     "UPLOAD FROM DEVICE",
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppColors().grey2, fontWeight: FontWeight.w500),
+                    style: GoogleFonts.montserratAlternates(
+                        fontSize: 14,
+                        color: AppColors().grey3,
+                        fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.center,
                   ),
                   IconButton(
-                  icon: Container(
-                    width: 50.0, 
-                    height: 50.0, 
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle, 
-                      color: AppColors().orange,
+                    icon: Container(
+                      width: 50.0,
+                      height: 50.0,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors().orange,
+                      ),
+                      child: Icon(
+                        Icons.upload_file,
+                        color: AppColors().white,
+                      ),
                     ),
-                    child: Icon(
-                      Icons.upload_file,
-                      color: AppColors().white, 
-                    ),
-                  ),
-                  onPressed: () {
-                  },
-                )
+                    onPressed: () {},
+                  )
                 ],
               ),
             if (isDisplay)
@@ -86,10 +96,10 @@ class EmpSignUp extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 20.0),
                 child: Text(
                   "ENSURE YOUR FACE IS WELL-LIT, CLEARLY VISIBLE, AND WITHOUT ACCESSORIES. USE A PLAIN BACKGROUND",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors().grey,
-                  ),
+                  style: GoogleFonts.montserratAlternates(
+                      fontSize: 14,
+                      color: AppColors().grey3,
+                      fontWeight: FontWeight.w500),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -99,25 +109,25 @@ class EmpSignUp extends StatelessWidget {
               children: [
                 Text(
                   "CAPTURE WITH CAMERA",
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppColors().grey, fontWeight: FontWeight.w500),
+                  style: GoogleFonts.montserratAlternates(
+                      fontSize: 14,
+                      color: AppColors().grey3,
+                      fontWeight: FontWeight.w500),
                 ),
                 IconButton(
                   icon: Container(
-                    width: 50.0, 
-                    height: 50.0, 
+                    width: 50.0,
+                    height: 50.0,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle, 
+                      shape: BoxShape.circle,
                       color: AppColors().orange,
                     ),
                     child: Icon(
                       Icons.camera_alt,
-                      color: AppColors().white, 
+                      color: AppColors().white,
                     ),
                   ),
-                  onPressed: () {
-                    
-                  },
+                  onPressed: () {},
                 )
               ],
             ),
@@ -127,7 +137,7 @@ class EmpSignUp extends StatelessWidget {
                 backgroundColor: AppColors().orange,
                 padding: const EdgeInsets.symmetric(vertical: 15),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
               onPressed: () {
@@ -135,18 +145,21 @@ class EmpSignUp extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const EmpSignUp(
+                      builder: (context) => const EmpIdVerificationPage(
                         stepText: "Step 3: Take a live selfie",
                         isDisplay: true,
-                        isLastStep: true,
+                        isDone: true,
                       ),
                     ),
                   );
+                } else if (isDone) {
+                  Navigator.pushNamed(
+                      context, AppRoutes.empVerificationSuccessPage);
                 } else {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const EmpSignUp(
+                      builder: (context) => const EmpIdVerificationPage(
                         stepText: "Step 2: Upload the back of your ID",
                         isLastStep: true,
                       ),
@@ -156,7 +169,10 @@ class EmpSignUp extends StatelessWidget {
               },
               child: Text(
                 isDisplay ? 'SUBMIT' : 'NEXT',
-                style: TextStyle(fontSize: 16, color: AppColors().white),
+                style: GoogleFonts.montserratAlternates(
+                    fontSize: 18,
+                    color: AppColors().white,
+                    fontWeight: FontWeight.w500),
               ),
             ),
           ],

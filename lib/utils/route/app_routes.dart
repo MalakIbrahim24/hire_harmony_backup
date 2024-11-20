@@ -13,6 +13,8 @@ class AppRoutes {
       '/cusVerificationSuccess-page';
   static const String empVerificationSuccessPage =
       'empVerificationSuccess-Page';
+  static const String empidverificationPage = '/emp-id-verification-page';
+
 
   static const String welcomePage = '/welcome-page';
   static const String cushomePage = '/cushome-page';

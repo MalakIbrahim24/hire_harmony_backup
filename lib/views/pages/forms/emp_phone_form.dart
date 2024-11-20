@@ -25,34 +25,21 @@ class _PhoneFormState extends State<EmpPhoneForm> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Verify',
-                  style: GoogleFonts.montserratAlternates(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                    color: AppColors().navy,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 80),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text(
                   'Enter your phone number to get an OTP',
                   style: GoogleFonts.montserratAlternates(
                     fontSize: 18,
-                    color: AppColors().grey,
+                    color: AppColors().grey2,
                   ),
                 ),
               ),
 
-              const SizedBox(height: 20),
-
               // Login button
 
-              const SizedBox(height: 10),
+              const SizedBox(height: 70),
               PinCodeTextField(
                 appContext: context,
                 length: 4, // Change this depending on the OTP length
@@ -70,7 +57,7 @@ class _PhoneFormState extends State<EmpPhoneForm> {
             // PIN code field with dashes
           ),
           const SizedBox(
-            height: 200,
+            height: 170,
           ),
           const MainButton().copyWith(
               color: AppColors().white,
@@ -81,7 +68,7 @@ class _PhoneFormState extends State<EmpPhoneForm> {
                 Navigator.pushNamed(
                     // ignore: use_build_context_synchronously
                     context,
-                    AppRoutes.empVerificationSuccessPage);
+                    AppRoutes.empidverificationPage);
               }),
         ],
       ),

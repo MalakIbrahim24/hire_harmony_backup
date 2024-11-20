@@ -16,6 +16,7 @@ import 'package:hire_harmony/views/pages/employee/emp_home_page.dart';
 import 'package:hire_harmony/views/pages/forgot_password_page.dart';
 import 'package:hire_harmony/views/pages/forms/emp_signin_form.dart';
 import 'package:hire_harmony/views/pages/login/login_page.dart';
+import 'package:hire_harmony/views/pages/signup/emp_id_verification_page.dart';
 import 'package:hire_harmony/views/pages/signup/emp_phone_page.dart';
 import 'package:hire_harmony/views/pages/signup/emp_sign_up_page.dart';
 import 'package:hire_harmony/views/pages/signup/phone_page.dart';
@@ -78,6 +79,13 @@ class AppRouter {
       case AppRoutes.empsignupPage:
         return MaterialPageRoute(
           builder: (_) => const EmpSignUpPage(),
+          settings: settings,
+        );
+      case AppRoutes.empidverificationPage:
+        return MaterialPageRoute(
+          builder: (_) => const EmpIdVerificationPage(
+            stepText: 'Please fill in the required information',
+          ),
           settings: settings,
         );
       case AppRoutes.adnhomePage:

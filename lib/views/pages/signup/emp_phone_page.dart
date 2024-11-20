@@ -37,11 +37,11 @@ class _EmpPhonePageState extends State<EmpPhonePage> {
                     Padding(
                       padding: const EdgeInsets.only(top: 5.0),
                       child: Text(
-                        'Verify',
+                        'Phone number verification',
                         style: GoogleFonts.montserratAlternates(
                           fontSize: 20,
                           color: AppColors().navy,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),

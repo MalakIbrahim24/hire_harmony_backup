@@ -5,6 +5,7 @@ class AppColors {
   final Color black = Colors.black;
   final Color grey = Colors.grey;
   final Color grey2 = const Color.fromARGB(255, 118, 118, 118);
+  final Color grey3 = const Color.fromARGB(255, 150, 150, 150);
 
   final Color transparent = Colors.transparent;
 
