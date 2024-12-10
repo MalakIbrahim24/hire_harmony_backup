@@ -26,4 +26,11 @@ class AppRoutes {
   static const String adnsettingsPage = '/adnsettings-page';
   static const String adnactivityPage = '/adnactivity-page';
   static const String adnnotificationsPage = '/adnnotifications-page';
+  static const String editServicesPage = '/edit-services-page';
+  static const String userManagementPage = '/user-management-page';
+
+  // static const String servicesManagementForm = '/services-management-form';
+
+
+
 }

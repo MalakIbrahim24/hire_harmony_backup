@@ -50,10 +50,59 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
           height: 50,
         ),
         AdnProfileContainer(
-          icon: Icons.privacy_tip_outlined,
-          title: 'Privacy Policy',
-          onTap: () {},
-        ),
+            icon: Icons.privacy_tip_outlined,
+            title: 'Privacy Policy',
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  content: Container(
+                    decoration: const BoxDecoration(),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Terms and Conditions',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.montserratAlternates(
+                            fontSize: 28,
+                            color: AppColors().navy,
+                          ),
+                        ),
+                        Text(
+                          'Our app aims to help people and we allow no inappropraite act, we are looking for the comfort and happiness of our customers.',
+                          style: GoogleFonts.montserratAlternates(
+                            fontSize: 14,
+                            color: AppColors().navy,
+                          ),
+                        ),
+                        Text(
+                          'Here are the following rules and regulation that you are kindly requested to follow: ',
+                          style: GoogleFonts.montserratAlternates(
+                            fontSize: 14,
+                            color: AppColors().navy,
+                          ),
+                        ),
+                        Text(
+                          '1. No harmful threats or words/slangs are allowed\n 2. No scamming or refusing to pay, people that refuse to pay will be dealt with through the law, and they shall be punished the proper way.',
+                          style: GoogleFonts.montserratAlternates(
+                            fontSize: 14,
+                            color: AppColors().navy,
+                          ),
+                        ),
+                        Text(
+                          '3. Reciepts are always a must to keep to avoid any confliction and it will be used a evidence in the court of law',
+                          style: GoogleFonts.montserratAlternates(
+                            fontSize: 14,
+                            color: AppColors().navy,
+                          ),
+                        ),
+                        const Text('4.')
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
         const SizedBox(
           height: 20,
         ),

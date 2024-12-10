@@ -18,6 +18,42 @@ class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  // FirestoreService.dart
+
+// Create (Add)
+  Future<void> addData({
+    required String collectionPath,
+    required Map<String, dynamic> data,
+  }) async {
+    await firestore.collection(collectionPath).add(data);
+  }
+
+// Update (Edit)
+  Future<void> updateData({
+    required String documentPath,
+    required Map<String, dynamic> data,
+  }) async {
+    await firestore.doc(documentPath).update(data);
+  }
+
+// Delete
+
+  Future<void> deleteData({required String documentPath}) async {
+    final reference = firestore.doc(documentPath);
+    debugPrint('delete: $documentPath');
+    await reference.delete();
+  }
+
+// Read (Get All)
+  Stream<List<T>> getDataStream<T>({
+    required String collectionPath,
+    required T Function(Map<String, dynamic> data, String documentId) builder,
+  }) {
+    return firestore.collection(collectionPath).snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) => builder(doc.data(), doc.id)).toList();
+    });
+  }
+
   //add and update data
   Future<void> setData({
     required String path,
@@ -44,12 +80,6 @@ class FirestoreService {
       print("Error fetching user role: $e");
       return "unknown"; // Handle any issues by returning an "unknown" role
     }
-  }
-
-  Future<void> deleteData({required String path}) async {
-    final reference = firestore.doc(path);
-    debugPrint('delete: $path');
-    await reference.delete();
   }
 
   Stream<List<T>> collectionStream<T>({

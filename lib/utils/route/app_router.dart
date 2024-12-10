@@ -9,6 +9,8 @@ import 'package:hire_harmony/views/pages/admin/adn_home_page.dart';
 import 'package:hire_harmony/views/pages/admin/adn_navbar.dart';
 import 'package:hire_harmony/views/pages/admin/adn_notifications_page.dart';
 import 'package:hire_harmony/views/pages/admin/adn_personal_info_page.dart';
+import 'package:hire_harmony/views/pages/admin/edit_services_page.dart';
+import 'package:hire_harmony/views/pages/admin/user_management_page.dart';
 import 'package:hire_harmony/views/pages/cus_verification_success_page.dart';
 import 'package:hire_harmony/views/pages/custom_buttom_navbar.dart';
 import 'package:hire_harmony/views/pages/customer/cus_home_page.dart';
@@ -103,6 +105,17 @@ class AppRouter {
           builder: (_) => const AdnNavbar(),
           settings: settings,
         );
+      case AppRoutes.editServicesPage:
+        return MaterialPageRoute(
+          builder: (_) => const EditServicesPage(),
+          settings: settings,
+        );
+      case AppRoutes.userManagementPage:
+        return MaterialPageRoute(
+          builder: (_) => const UserManagementPage(),
+          settings: settings,
+        );
+
       case AppRoutes.adnnpersonalinfoPage:
         return MaterialPageRoute(
           builder: (_) => const AdnPersonalInfoPage(),

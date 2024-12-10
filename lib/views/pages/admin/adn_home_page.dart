@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:hire_harmony/view_models/cubit/adnhome_cubit.dart';
+import 'package:hire_harmony/views/widgets/admin/adn_card.dart';
 
 class AdnHomePage extends StatefulWidget {
   const AdnHomePage({super.key});
@@ -93,7 +94,48 @@ class _AdnHomePageState extends State<AdnHomePage> {
                     Expanded(
                       child: ListView(
                         scrollDirection: Axis.horizontal,
-                        children: state.controlCards,
+                        children: [
+                          ControlCard(
+                            cardName: 'Service Management',
+                            path: 'lib/assets/images/ServManage.jpeg',
+                            img: const AssetImage(
+                                'lib/assets/images/ServManage.jpeg'),
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, AppRoutes.editServicesPage);
+                            },
+                          ),
+                          ControlCard(
+                            cardName: 'AD Management',
+                            path: 'lib/assets/images/adManage.jpeg',
+                            img: const AssetImage(
+                                'lib/assets/images/adManage.jpeg'),
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, AppRoutes.editServicesPage);
+                            },
+                          ),
+                          ControlCard(
+                            cardName: 'Accounts Control',
+                            path: 'lib/assets/images/accControl.jpeg',
+                            img: const AssetImage(
+                                'lib/assets/images/accControl.jpeg'),
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, AppRoutes.userManagementPage);
+                            },
+                          ),
+                          ControlCard(
+                            cardName: 'Category Management',
+                            path: 'lib/assets/images/catgManage.webp',
+                            img: const AssetImage(
+                                'lib/assets/images/catgManage.webp'),
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, AppRoutes.editServicesPage);
+                            },
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 40),

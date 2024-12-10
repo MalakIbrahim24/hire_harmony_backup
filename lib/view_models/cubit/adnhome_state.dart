@@ -6,6 +6,11 @@ final class AdnHomeInitial extends AdnHomeState {}
 
 final class AdnHomeLoading extends AdnHomeState {}
 
+final class AdnHomeSuccess extends AdnHomeState {
+  final String message;
+  AdnHomeSuccess(this.message);
+}
+
 final class AdnHomeLoaded extends AdnHomeState {
   final List<ControlCard> controlCards;
 
