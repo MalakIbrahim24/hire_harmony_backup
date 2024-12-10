@@ -187,7 +187,7 @@ class _LoginFormState extends State<LoginForm> {
                         AppRoutes.adnnavPage);
                   } else if (state is AuthCusSuccess) {
                     Navigator.pushReplacementNamed(
-                        context, AppRoutes.cushomePage);
+                        context, AppRoutes.customButtomNavbarPage);
                   } else if (state is AuthEmpSuccess) {
                     Navigator.pushReplacementNamed(
                         context, AppRoutes.emphomePage);

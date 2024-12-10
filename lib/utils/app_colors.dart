@@ -18,6 +18,7 @@ class AppColors {
   final Color red = Colors.red;
 
   final Color orange = const Color.fromRGBO(255, 100, 4, 1.0);
+  final Color orangelight = const Color.fromARGB(255, 254, 229, 215);
   final Color orange2 = const Color.fromARGB(255, 164, 63, 0);
   final Color brown = const Color.fromARGB(253, 81, 37, 9);
 

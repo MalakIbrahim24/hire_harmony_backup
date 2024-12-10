@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 
+
+// factory design pattern was used here
 class ControlCard extends StatelessWidget {
   final String url;
   final String cardName;
+  final void Function()? onPressed;
 
-  const ControlCard({super.key, required this.cardName, required this.url});
+  const ControlCard(
+      {super.key, required this.cardName, required this.url, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +35,7 @@ class ControlCard extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors().orange.withOpacity(0.3),
+              color: AppColors().navy.withOpacity(0.3),
               borderRadius:
                   const BorderRadius.vertical(bottom: Radius.circular(15)),
             ),
@@ -45,6 +49,7 @@ class ControlCard extends StatelessWidget {
             ),
           ),
         ),
+        
       ),
     );
   }
@@ -54,6 +59,7 @@ class ControlCard extends StatelessWidget {
       cardName:
           data['cardName'] ?? 'Unknown', // Default to 'Unknown' if missing
       url: data['url'] ?? '', // Default to empty string if missing
+   
     );
   }
 }

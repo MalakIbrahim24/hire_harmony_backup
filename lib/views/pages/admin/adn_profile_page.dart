@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hire_harmony/services/auth_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:hire_harmony/view_models/cubit/auth_cubit.dart';
@@ -14,10 +15,14 @@ class AdnProfilePage extends StatefulWidget {
   State<AdnProfilePage> createState() => _AdnProfilePageState();
 }
 
+
 class _AdnProfilePageState extends State<AdnProfilePage> {
+  final AuthServices authServices = AuthServicesImpl();
+
   @override
   Widget build(BuildContext context) {
     final authCubit = BlocProvider.of<AuthCubit>(context);
+
     return Center(
       child: BlocConsumer<AuthCubit, AuthState>(
         bloc: authCubit,
@@ -69,7 +74,7 @@ class _AdnProfilePageState extends State<AdnProfilePage> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Malak Awad',
+                  'Malak Ibrahim',
                   style: GoogleFonts.montserratAlternates(
                     fontSize: 28,
                     color: AppColors().navy,

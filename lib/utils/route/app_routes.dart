@@ -7,6 +7,7 @@ class AppRoutes {
   static const String empSigninForm = '/emp-sign-in-from';
   static const String empphonePage = '/emp-phone-page';
   static const String empsignupPage = '/emp-signup-page';
+  static const String customButtomNavbarPage = '/emp-signup-page';
 
   static const String phonePage = '/phone-page';
   static const String cusVerificationSuccessPage =
@@ -14,12 +15,11 @@ class AppRoutes {
   static const String empVerificationSuccessPage =
       'empVerificationSuccess-Page';
   static const String empidverificationPage = '/emp-id-verification-page';
-
+  static const String cushomePage = '/cus-home-page';
+  static const String emphomePage = '/emp-home-page';
 
   static const String welcomePage = '/welcome-page';
-  static const String cushomePage = '/cushome-page';
 
-  static const String emphomePage = '/emphome-page';
   static const String adnhomePage = '/adnhome-page';
   static const String adnnavPage = '/adnnav-page';
   static const String adnnpersonalinfoPage = '/adnnpersonalinfo-page';

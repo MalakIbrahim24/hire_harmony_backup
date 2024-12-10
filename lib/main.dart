@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
                 log(initRoute);
               }
               return MaterialApp(
-                 title: 'Hire Harmony',
+                title: 'Hire Harmony',
                 initialRoute: initRoute,
                 onGenerateRoute: AppRouter.onGenerateRoute,
               );
