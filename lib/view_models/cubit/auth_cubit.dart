@@ -1,4 +1,3 @@
-
 import 'package:bloc/bloc.dart';
 import 'package:hire_harmony/services/auth_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -109,29 +108,29 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  // Future<void> getCurrentUser() async {
-  //   emit(AuthLoading());
-  //   try {
-  //     final user = await authServices.currentUser();
-  //     if (user != null) {
-  //       emit(AuthSuccess());
-  //     } else {
-  //       emit(AuthInitial());
-  //     }
-  //   } catch (e) {
-  //     emit(AuthFailure(e.toString()));
-  //   }
-  // }
+  Future<void> getCurrentUser() async {
+    emit(AuthLoading());
+    try {
+      final user = await authServices.currentUser();
+      if (user != null) {
+        emit(AuthSuccess());
+      } else {
+        emit(AuthInitial());
+      }
+    } catch (e) {
+      emit(AuthFailure(e.toString()));
+    }
+  }
 
   // Future<void> getCurrentUser() async {
   //   emit(AuthLoading());
   //   try {
   //     final user = await authServices.currentUser();
   //     final signIn = await authServices.isSignIn();
-  //     log('$user');
+  //     //log('$user');
   //     if (signIn) {
   //       String role = await _fireS.getUserRoleByUid(user!.uid);
-  //       log(role);
+  //     //  log(role);
   //       if (role == 'admin') {
   //         emit(AuthSuccess());
   //       } else if (role == 'customer') {

@@ -22,12 +22,6 @@ class _AdnNavbarState extends State<AdnNavbar> {
     super.initState(); // Initialize controller
   }
 
-  // List<PersistentTabConfig> _navBarsItems() {
-  //   return [
-
-  //   ];
-  // }
-
   @override
   Widget build(BuildContext context) {
     // final user = AuthCubit();
@@ -49,7 +43,7 @@ class _AdnNavbarState extends State<AdnNavbar> {
                 backgroundColor:
                     AppColors().transparent, // Transparent when not selected
                 selectedForegroundColor:
-                    AppColors().navy, // Set to teal when selected
+                    AppColors().white, // Set to teal when selected
                 unselectedForegroundColor:
                     AppColors().white, // White when not selected
                 extras: {"label": "Messages"},
@@ -57,14 +51,14 @@ class _AdnNavbarState extends State<AdnNavbar> {
               FluidNavBarIcon(
                 icon: Icons.home_repair_service_outlined,
                 backgroundColor: Colors.transparent,
-                selectedForegroundColor: AppColors().navy,
+                selectedForegroundColor: AppColors().white,
                 unselectedForegroundColor: AppColors().white,
                 extras: {"label": "Home"},
               ),
               FluidNavBarIcon(
                 icon: Icons.person_2_outlined,
                 backgroundColor: Colors.transparent,
-                selectedForegroundColor: AppColors().navy,
+                selectedForegroundColor: AppColors().white,
                 unselectedForegroundColor: AppColors().white,
                 extras: {"label": "Profile"},
               ),

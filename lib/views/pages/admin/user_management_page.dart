@@ -125,7 +125,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                           ),
                         ),
                         trailing: IconButton(
-                          icon: Icon(Icons.delete, color: AppColors().red),
+                          icon: Icon(Icons.delete, color: AppColors().orange),
                           onPressed: () async {
                             // First Confirmation Dialog
                             final confirm1 = await _showConfirmationDialog(
@@ -145,8 +145,23 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                     'This action cannot be undone. Delete this user?',
                               );
 
+                              // Update delete logic in UserManagementPage
                               if (confirm2 == true) {
-                                // Delete the user from Firestore
+                                final deletionTime = DateTime
+                                    .now(); // Capture the deletion timestamp
+
+                                // Add deleted user to Firestore "deleted_users" collection
+                                await FirestoreService.instance.addData(
+                                  collectionPath: 'deleted_users',
+                                  data: {
+                                    'name': user['name'],
+                                    'email': user['email'],
+                                    'deleted_at':
+                                        deletionTime.toIso8601String(),
+                                  },
+                                );
+
+                                // Delete the user from "users" collection
                                 await FirestoreService.instance.deleteData(
                                   documentPath: 'users/${user['id']}',
                                 );

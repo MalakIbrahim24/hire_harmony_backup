@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/services/firestore_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
-import 'package:hire_harmony/views/pages/admin/emp_services_page.dart';
+import 'package:hire_harmony/views/pages/admin/employee_ads_page.dart';
 import 'package:hire_harmony/views/widgets/admin/employee_card.dart';
 
-class EditServicesPage extends StatefulWidget {
-  const EditServicesPage({super.key});
+class AdManagementPage extends StatefulWidget {
+  const AdManagementPage({super.key});
 
   @override
-  State<EditServicesPage> createState() => _EditServicesPageState();
+  State<AdManagementPage> createState() => _AdManagementPageState();
 }
 
-class _EditServicesPageState extends State<EditServicesPage> {
+class _AdManagementPageState extends State<AdManagementPage> {
   String searchQuery = ''; // Holds the current search query
 
   @override
@@ -42,7 +42,7 @@ class _EditServicesPageState extends State<EditServicesPage> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('lib/assets/images/ServManage.jpeg'),
+                image: AssetImage('lib/assets/images/adManage.jpeg'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -53,14 +53,14 @@ class _EditServicesPageState extends State<EditServicesPage> {
             children: [
               const SizedBox(height: 120),
               Text(
-                'Employee Services Management',
+                'Employee Ads Management',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.montserratAlternates(
                   fontSize: 24,
                   color: AppColors().white,
                 ),
               ),
-              const SizedBox(height: 35),
+              const SizedBox(height: 20),
 
               // Search Bar
               Padding(
@@ -69,7 +69,7 @@ class _EditServicesPageState extends State<EditServicesPage> {
                   onChanged: (value) {
                     setState(() {
                       searchQuery =
-                          value.trim().toLowerCase(); // Update the search query
+                          value.trim().toLowerCase(); // Update search query
                     });
                   },
                   decoration: InputDecoration(
@@ -151,12 +151,12 @@ class _EditServicesPageState extends State<EditServicesPage> {
                         final employee = employees[index];
                         return EmployeeCard(
                           name: employee['name'],
-                          description: 'Tap to view services',
+                          description: 'Tap to view created Ads',
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => EmployeeServicesPage(
+                                builder: (_) => EmployeeAdsPage(
                                   employeeId: employee['id'],
                                   employeeName: employee['name'],
                                 ),

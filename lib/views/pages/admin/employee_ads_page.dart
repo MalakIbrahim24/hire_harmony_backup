@@ -5,11 +5,11 @@ import 'package:hire_harmony/services/firestore_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/models/service.dart';
 
-class EmployeeServicesPage extends StatelessWidget {
+class EmployeeAdsPage extends StatelessWidget {
   final String employeeId;
   final String employeeName;
 
-  const EmployeeServicesPage({
+  const EmployeeAdsPage({
     super.key,
     required this.employeeId,
     required this.employeeName,
@@ -20,7 +20,7 @@ class EmployeeServicesPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '$employeeName\'s Services',
+          '$employeeName\'s Ads',
           style: GoogleFonts.montserratAlternates(
             color: AppColors().white,
             fontSize: 18,
@@ -43,12 +43,12 @@ class EmployeeServicesPage extends StatelessWidget {
       ),
       body: StreamBuilder<List<Service>>(
         stream: FirestoreService.instance.getDataStream<Service>(
-          collectionPath: 'users/$employeeId/services',
+          collectionPath: 'users/$employeeId/advertisements',
           builder: (data, documentId) => Service(
             id: documentId,
             name: data['name'] ?? '',
             description: data['description'] ?? '',
-            image: '',
+            image: data['image'] ?? '',
           ),
         ),
         builder: (context, snapshot) {
@@ -60,7 +60,7 @@ class EmployeeServicesPage extends StatelessWidget {
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(
               child: Text(
-                'No services found for $employeeName',
+                'No ADs found for $employeeName',
                 style: GoogleFonts.montserratAlternates(
                   color: AppColors().navy,
                 ),
@@ -89,6 +89,25 @@ class EmployeeServicesPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.network(
+                          service
+                              .image, // Dynamically load the image from Firestore
+                          fit: BoxFit.cover,
+                          height: 150,
+                          width: double.infinity,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Text(
+                              'Image failed to load',
+                              style: GoogleFonts.montserratAlternates(
+                                color: AppColors().red,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 8),
                       Text(
                         service.name,
                         style: GoogleFonts.montserratAlternates(
@@ -118,36 +137,53 @@ class EmployeeServicesPage extends StatelessWidget {
                             final shouldDelete = await showDialog<bool>(
                               context: context,
                               builder: (context) => AlertDialog(
-                                title: const Text('Delete Service'),
-                                content: const Text(
-                                    'Are you sure you want to delete this service?'),
+                                title: Text(
+                                  'Delete AD',
+                                  style: GoogleFonts.montserratAlternates(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                content: Text(
+                                  'Are you sure you want to delete this AD?',
+                                  style: GoogleFonts.montserratAlternates(),
+                                ),
                                 actions: [
                                   TextButton(
-                                    onPressed: () =>
-                                        Navigator.pop(context, false),
-                                    child: const Text('Cancel'),
+                                    onPressed: () {
+                                      Navigator.pop(context, false);
+                                    },
+                                    child: Text(
+                                      'Cancel',
+                                      style: GoogleFonts.montserratAlternates(
+                                        color: AppColors().navy,
+                                      ),
+                                    ),
                                   ),
                                   TextButton(
-                                    onPressed: () =>
-                                        Navigator.pop(context, true),
-                                    child: const Text('Delete',
-                                        style: TextStyle(color: Colors.red)),
+                                    onPressed: () {
+                                      Navigator.pop(context, true);
+                                    },
+                                    child: Text(
+                                      'Delete',
+                                      style: GoogleFonts.montserratAlternates(
+                                        color: AppColors().red,
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
                             );
 
                             if (shouldDelete == true) {
-                              await FirestoreService.instance.deleteDataa(
+                              await FirestoreService.instance.deleteData(
                                 documentPath:
                                     'users/$employeeId/services/${service.id}',
-                                serviceName: service.name,
-                                employeeId: employeeId,
-                                employeeName: employeeName,
                               );
 
+                              // Show success notification after deletion
                               Fluttertoast.showToast(
-                                msg: "Service deleted successfully",
+                                msg: "AD deleted successfully",
                                 textColor: AppColors().white,
                                 backgroundColor:
                                     AppColors().orange.withOpacity(0.8),

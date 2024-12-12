@@ -13,6 +13,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   runApp(const MyApp());
 }
 
@@ -24,12 +25,9 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthCubit>(
-          create: (context) => AuthCubit(),
-          //create: (context) => AuthCubit()..getCurrentUser(),
+          // create: (context) => AuthCubit(),
+          create: (context) => AuthCubit()..getCurrentUser(),
         ),
-        // BlocProvider<AdnHomeCubit>(
-        //   create: (context) => AdnHomeCubit(),
-        // ),
       ],
       child: Builder(
         builder: (context) {

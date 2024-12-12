@@ -28,9 +28,13 @@ class AppRoutes {
   static const String adnnotificationsPage = '/adnnotifications-page';
   static const String editServicesPage = '/edit-services-page';
   static const String userManagementPage = '/user-management-page';
+  static const String adManagementPage = '/ad-management-page';
+  static const String employeeAdsPage = '/employee-ads-page';
+  static const String categoryManagementPage = '/category-management-page';
+  static const String deletedAccountsPage = '/deleted-accounts-page';
+  static const String editedServicesPage = '/edited-services-page';
+
+
 
   // static const String servicesManagementForm = '/services-management-form';
-
-
-
 }

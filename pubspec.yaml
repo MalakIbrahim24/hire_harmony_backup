@@ -13,6 +13,7 @@ dependencies:
   carousel_slider: ^5.0.0
   cloud_firestore: ^5.4.4
   crypto: ^3.0.6
+  csv: ^6.0.0
   cupertino_icons: ^1.0.8
   device_info_plus: ^11.1.1
   dot_navigation_bar: ^1.0.2
@@ -55,5 +56,6 @@ flutter:
     - lib/assets/images/catgManage.webp
     - lib/assets/images/accControl.jpeg
     - lib/assets/images/adManage.jpeg
-
+    - lib/assets/images/notf.jpg
+    - lib/assets/categories.csv
 

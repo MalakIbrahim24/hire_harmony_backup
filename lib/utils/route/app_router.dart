@@ -3,13 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:hire_harmony/view_models/cubit/auth_cubit.dart';
+import 'package:hire_harmony/views/pages/admin/ad_management_page.dart';
 import 'package:hire_harmony/views/pages/admin/admin_activity_page.dart';
 import 'package:hire_harmony/views/pages/admin/admin_settings_page.dart';
 import 'package:hire_harmony/views/pages/admin/adn_home_page.dart';
 import 'package:hire_harmony/views/pages/admin/adn_navbar.dart';
 import 'package:hire_harmony/views/pages/admin/adn_notifications_page.dart';
 import 'package:hire_harmony/views/pages/admin/adn_personal_info_page.dart';
+import 'package:hire_harmony/views/pages/admin/category_management_page.dart';
+import 'package:hire_harmony/views/pages/admin/deleted_accounts_page.dart';
 import 'package:hire_harmony/views/pages/admin/edit_services_page.dart';
+import 'package:hire_harmony/views/pages/admin/edited_services_page.dart';
 import 'package:hire_harmony/views/pages/admin/user_management_page.dart';
 import 'package:hire_harmony/views/pages/cus_verification_success_page.dart';
 import 'package:hire_harmony/views/pages/custom_buttom_navbar.dart';
@@ -115,6 +119,16 @@ class AppRouter {
           builder: (_) => const UserManagementPage(),
           settings: settings,
         );
+      case AppRoutes.adManagementPage:
+        return MaterialPageRoute(
+          builder: (_) => const AdManagementPage(),
+          settings: settings,
+        );
+      case AppRoutes.categoryManagementPage:
+        return MaterialPageRoute(
+          builder: (_) => const CategoryManagementPage(),
+          settings: settings,
+        );
 
       case AppRoutes.adnnpersonalinfoPage:
         return MaterialPageRoute(
@@ -134,6 +148,16 @@ class AppRouter {
       case AppRoutes.adnnotificationsPage:
         return MaterialPageRoute(
           builder: (_) => const AdnNotificationsPage(),
+          settings: settings,
+        );
+      case AppRoutes.deletedAccountsPage:
+        return MaterialPageRoute(
+          builder: (_) => const DeletedAccountsPage(),
+          settings: settings,
+        );
+      case AppRoutes.editedServicesPage:
+        return MaterialPageRoute(
+          builder: (_) => const EditedServicesPage(),
           settings: settings,
         );
       case AppRoutes.adnactivityPage:

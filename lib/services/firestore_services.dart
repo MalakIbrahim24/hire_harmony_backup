@@ -44,6 +44,26 @@ class FirestoreService {
     await reference.delete();
   }
 
+Future<void> deleteDataa({
+  required String documentPath,
+  required String serviceName,
+  required String employeeId,
+  required String employeeName,
+}) async {
+  final reference = firestore.doc(documentPath);
+  debugPrint('Deleting document: $documentPath');
+
+  // Log deleted service
+  await firestore.collection('deleted_services').add({
+    'service_name': serviceName,
+    'employee_id': employeeId,
+    'employee_name': employeeName,
+    'deleted_at': DateTime.now().toIso8601String(),
+  });
+
+  await reference.delete();
+}
+
 // Read (Get All)
   Stream<List<T>> getDataStream<T>({
     required String collectionPath,
@@ -171,6 +191,33 @@ class FirestoreService {
       print("Error logging activity: $e");
     }
   }
+
+   // Log Added Service
+  Future<void> logAddedService(String serviceName) async {
+    try {
+      await _firestore.collection('added_services').add({
+        'service_name': serviceName,
+        'added_at': DateTime.now().toIso8601String(),
+      });
+      debugPrint("Logged added service: $serviceName");
+    } catch (e) {
+      debugPrint("Failed to log added service: $e");
+    }
+  }
+
+  // Log Deleted Service
+  Future<void> logDeletedService(String serviceName) async {
+    try {
+      await _firestore.collection('deleted_services').add({
+        'service_name': serviceName,
+        'deleted_at': DateTime.now().toIso8601String(),
+      });
+      debugPrint("Logged deleted service: $serviceName");
+    } catch (e) {
+      debugPrint("Failed to log deleted service: $e");
+    }
+  }
+
 
   // Method to get activity logs
   Stream<List<Map<String, dynamic>>> getActivityLogs(String uid) {

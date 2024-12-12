@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,7 +16,6 @@ class AdnProfilePage extends StatefulWidget {
   @override
   State<AdnProfilePage> createState() => _AdnProfilePageState();
 }
-
 
 class _AdnProfilePageState extends State<AdnProfilePage> {
   final AuthServices authServices = AuthServicesImpl();
@@ -54,60 +55,78 @@ class _AdnProfilePageState extends State<AdnProfilePage> {
 
           return Scaffold(
             backgroundColor: Colors.white,
-            body: Column(
-              children: [
-                Center(
+            body: Stack(children: [
+              Positioned.fill(
+                child: Image.asset(
+                  'lib/assets/images/notf.jpg',
+                  fit: BoxFit.cover,
+                ),
+              ),
+              // Blur Filter
+              Positioned.fill(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 17.0, sigmaY: 17.0),
                   child: Container(
-                    width: 250,
-                    height: 400,
-                    decoration: BoxDecoration(
-                      color: AppColors().orange2.withOpacity(0.3),
-                      borderRadius: const BorderRadius.vertical(
-                        bottom: Radius.circular(180),
-                      ),
-                      image: const DecorationImage(
-                        image: AssetImage('lib/assets/images/adminmalak.jpeg'),
-                        fit: BoxFit.cover,
+                    color: AppColors().navy.withOpacity(0.3),
+                  ),
+                ),
+              ),
+              Column(
+                children: [
+                  Center(
+                    child: Container(
+                      width: 250,
+                      height: 400,
+                      decoration: BoxDecoration(
+                        color: AppColors().orange2.withOpacity(0.3),
+                        borderRadius: const BorderRadius.vertical(
+                          bottom: Radius.circular(180),
+                        ),
+                        image: const DecorationImage(
+                          image:
+                              AssetImage('lib/assets/images/adminmalak.jpeg'),
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Malak Ibrahim',
-                  style: GoogleFonts.montserratAlternates(
-                    fontSize: 28,
-                    color: AppColors().navy,
+                  const SizedBox(height: 20),
+                  Text(
+                    'Malak Ibrahim',
+                    style: GoogleFonts.montserratAlternates(
+                      fontSize: 28,
+                      color: AppColors().white,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                AdnProfileContainer(
-                  icon: Icons.person_outline,
-                  title: 'Personal Information',
-                  onTap: () {
-                    Navigator.pushNamed(
-                        context, AppRoutes.adnnpersonalinfoPage);
-                  },
-                ),
-                AdnProfileContainer(
-                  icon: Icons.settings_outlined,
-                  title: 'Settings and Privacy',
-                  onTap: () {
-                    Navigator.pushNamed(context, AppRoutes.adnsettingsPage);
-                  },
-                ),
-                AdnProfileContainer(
-                  icon: Icons.logout_outlined,
-                  title: 'Logout',
-                  onTap: () async {
-                    await authCubit.signOut();
-                  },
-                ),
-                const SizedBox(
-                  height: 80,
-                ),
-              ],
-            ),
+                  const SizedBox(height: 20),
+                  AdnProfileContainer(
+                    icon: Icons.person_outline,
+                    title: 'Personal Information',
+                    onTap: () {
+                      Navigator.pushNamed(
+                          context, AppRoutes.adnnpersonalinfoPage);
+                    },
+                  ),
+                  AdnProfileContainer(
+                    icon: Icons.settings_outlined,
+                    title: 'Settings and Privacy',
+                    onTap: () {
+                      Navigator.pushNamed(context, AppRoutes.adnsettingsPage);
+                    },
+                  ),
+                  AdnProfileContainer(
+                    icon: Icons.logout_outlined,
+                    title: 'Logout',
+                    onTap: () async {
+                      await authCubit.signOut();
+                    },
+                  ),
+                  const SizedBox(
+                    height: 80,
+                  ),
+                ],
+              ),
+            ]),
           );
         },
       ),
