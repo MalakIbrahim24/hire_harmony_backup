@@ -41,7 +41,7 @@ class AdminActivityPage extends StatelessWidget {
                 Divider(
                   thickness: 15,
                   indent: 150,
-                  color: AppColors().orange.withOpacity(0.7),
+                  color: AppColors().orange.withValues(alpha: 0.7),
                 ),
                 const SizedBox(
                   height: 15,
@@ -82,7 +82,6 @@ class AdminActivityPage extends StatelessWidget {
                       icon: Icons.access_time_outlined,
                       title: '$action \nDevice: $device \nTime: $formattedTime',
                       onTap: () {},
-                      
                     );
                   },
                 );

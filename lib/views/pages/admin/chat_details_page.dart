@@ -76,7 +76,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
                       decoration: BoxDecoration(
                         color: isUser
                             ? AppColors().orange
-                            : AppColors().white.withOpacity(0.9),
+                            : AppColors().white.withValues(alpha: 0.9),
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(isUser ? 15 : 0),
                           topRight: Radius.circular(isUser ? 0 : 15),
@@ -102,7 +102,7 @@ class _ChatDetailsPageState extends State<ChatDetailsPage> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors().white.withOpacity(0.9),
+              color: AppColors().white.withValues(alpha:0.9),
               borderRadius: BorderRadius.circular(30),
             ),
             child: Row(

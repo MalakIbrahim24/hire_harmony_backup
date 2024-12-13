@@ -47,7 +47,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 17.0, sigmaY: 17.0),
             child: Container(
-              color: AppColors().navy.withOpacity(0.3),
+              color: AppColors().navy.withValues(alpha: 0.3),
             ),
           ),
         ),
@@ -62,11 +62,6 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
             ),
             const SizedBox(
               height: 80,
-            ),
-            Divider(
-              thickness: 15,
-              indent: 150,
-              color: AppColors().orange.withOpacity(0.7),
             ),
             const SizedBox(
               height: 50,
@@ -155,11 +150,6 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
             ),
             const SizedBox(
               height: 50,
-            ),
-            Divider(
-              thickness: 15,
-              endIndent: 150,
-              color: AppColors().navy,
             ),
           ]),
         ),

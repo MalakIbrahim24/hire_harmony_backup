@@ -56,6 +56,6 @@ flutter:
     - lib/assets/images/catgManage.webp
     - lib/assets/images/accControl.jpeg
     - lib/assets/images/adManage.jpeg
+    - lib/assets/images/adManage.jpg
     - lib/assets/images/notf.jpg
     - lib/assets/categories.csv
-

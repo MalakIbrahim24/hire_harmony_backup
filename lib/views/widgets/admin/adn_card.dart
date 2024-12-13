@@ -31,7 +31,9 @@ class ControlCard extends StatelessWidget {
               image: AssetImage(path),
               fit: BoxFit.cover,
               colorFilter: ColorFilter.mode(
-                AppColors().navy.withOpacity(0.3), // Adjust opacity level here
+                AppColors()
+                    .navy
+                    .withValues(alpha: 0.3), // Adjust opacity level here
                 BlendMode.darken,
               ),
             ),
@@ -42,7 +44,7 @@ class ControlCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors().navy.withOpacity(0.3),
+                color: AppColors().navy.withValues(alpha: 0.3),
                 borderRadius:
                     const BorderRadius.vertical(bottom: Radius.circular(15)),
               ),

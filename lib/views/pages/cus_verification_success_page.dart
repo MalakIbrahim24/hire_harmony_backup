@@ -109,7 +109,7 @@ class _VerificationSuccessPageState extends State<CusVerificationSuccessPage> {
           const Spacer(),
           DecoratedBox(
             decoration: BoxDecoration(
-              color: AppColors().orange.withOpacity(0.3),
+              color: AppColors().orange.withValues(alpha:0.3),
             ),
             child: SizedBox(
               width: double.infinity,

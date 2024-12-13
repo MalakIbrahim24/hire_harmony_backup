@@ -113,7 +113,7 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                     currentPageIndex = index;
                   });
                 },
-                backgroundColor: AppColors().white.withOpacity(0.85),
+                backgroundColor: AppColors().white.withValues(alpha:0.85),
                 indicatorColor: AppColors().orange,
                 selectedIndex: currentPageIndex,
                 elevation: 0,

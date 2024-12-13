@@ -67,7 +67,7 @@ class _AdnProfilePageState extends State<AdnProfilePage> {
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 17.0, sigmaY: 17.0),
                   child: Container(
-                    color: AppColors().navy.withOpacity(0.3),
+                    color: AppColors().navy.withValues(alpha: 0.3),
                   ),
                 ),
               ),
@@ -78,7 +78,7 @@ class _AdnProfilePageState extends State<AdnProfilePage> {
                       width: 250,
                       height: 400,
                       decoration: BoxDecoration(
-                        color: AppColors().orange2.withOpacity(0.3),
+                        color: AppColors().orange2.withValues(alpha: 0.3),
                         borderRadius: const BorderRadius.vertical(
                           bottom: Radius.circular(180),
                         ),

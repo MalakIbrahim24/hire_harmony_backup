@@ -64,7 +64,7 @@ class _CustomCarouselIndicatorState extends State<CustomCarouselIndicator> {
                     color: (Theme.of(context).brightness == Brightness.dark
                             ? AppColors().orange
                             : AppColors().navy)
-                        .withOpacity(_current == entry.key ? 0.9 : 0.3)),
+                        .withValues(alpha:_current == entry.key ? 0.9 : 0.3)),
               ),
             );
           }).toList(),

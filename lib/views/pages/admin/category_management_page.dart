@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -38,16 +40,23 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
       body: Stack(
         children: [
           // Background Image
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('lib/assets/images/adManage.jpeg'),
-                fit: BoxFit.cover,
+          Positioned.fill(
+            child: Image.asset(
+              'lib/assets/images/catgManage.webp',
+              fit: BoxFit.cover,
+            ),
+          ),
+          // Blur Filter
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 17.0, sigmaY: 17.0),
+              child: Container(
+                color: AppColors().navy.withValues(alpha: 0.3),
               ),
             ),
           ),
           // Overlay
-          Container(color: AppColors().navy.withOpacity(0.3)),
+          Container(color: AppColors().navy.withValues(alpha: 0.3)),
           Column(
             children: [
               const SizedBox(height: 120),
@@ -76,10 +85,10 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
                         decoration: InputDecoration(
                           hintText: 'Search by category name...',
                           hintStyle: GoogleFonts.montserratAlternates(
-                            color: AppColors().white.withOpacity(0.8),
+                            color: AppColors().white.withValues(alpha: 0.8),
                           ),
                           filled: true,
-                          fillColor: AppColors().navy.withOpacity(0.5),
+                          fillColor: AppColors().navy.withValues(alpha: 0.5),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide.none,
@@ -167,7 +176,7 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
                               vertical: 8, horizontal: 16),
                           shape: RoundedRectangleBorder(
                             side: BorderSide(
-                              color: AppColors().navy.withOpacity(0.2),
+                              color: AppColors().navy.withValues(alpha: 0.2),
                               width: 1,
                             ),
                             borderRadius: BorderRadius.circular(10),
@@ -185,7 +194,7 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
                               category['description'],
                               style: GoogleFonts.montserratAlternates(
                                 fontSize: 14,
-                                color: AppColors().navy.withOpacity(0.7),
+                                color: AppColors().navy.withValues(alpha: 0.7),
                               ),
                             ),
                           ),
@@ -256,7 +265,7 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
                 Fluttertoast.showToast(
                   msg: "Please fill in both fields",
                   textColor: AppColors().white,
-                  backgroundColor: AppColors().red.withOpacity(0.8),
+                  backgroundColor: AppColors().red.withValues(alpha: 0.8),
                 );
                 return;
               }
@@ -265,7 +274,7 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
                 Fluttertoast.showToast(
                   msg: "Category names do not match!",
                   textColor: AppColors().white,
-                  backgroundColor: AppColors().red.withOpacity(0.8),
+                  backgroundColor: AppColors().red.withValues(alpha: 0.8),
                 );
                 return;
               }
@@ -278,7 +287,7 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
               Fluttertoast.showToast(
                 msg: "Category added successfully",
                 textColor: AppColors().white,
-                backgroundColor: AppColors().orange.withOpacity(0.8),
+                backgroundColor: AppColors().orange.withValues(alpha: 0.8),
               );
 
               // ignore: use_build_context_synchronously

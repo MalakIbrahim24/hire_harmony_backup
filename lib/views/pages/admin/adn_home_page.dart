@@ -52,7 +52,7 @@ class _AdnHomePageState extends State<AdnHomePage> {
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 17.0, sigmaY: 17.0),
                   child: Container(
-                    color: AppColors().navy.withOpacity(0.3),
+                    color: AppColors().navy.withValues(alpha: 0.3),
                   ),
                 ),
               ),
@@ -125,9 +125,9 @@ class _AdnHomePageState extends State<AdnHomePage> {
                             ),
                             ControlCard(
                               cardName: 'AD Management',
-                              path: 'lib/assets/images/adManage.jpeg',
+                              path: 'lib/assets/images/adManage.jpg',
                               img: const AssetImage(
-                                  'lib/assets/images/adManage.jpeg'),
+                                  'lib/assets/images/adManage.jpg'),
                               onTap: () {
                                 Navigator.pushNamed(
                                     context, AppRoutes.adManagementPage);

@@ -79,7 +79,7 @@ class EmployeeServicesPage extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   side: BorderSide(
                     color:
-                        AppColors().navy.withOpacity(0.2), // Light navy border
+                        AppColors().navy.withValues(alpha:0.2), // Light navy border
                     width: 1,
                   ),
                   borderRadius: BorderRadius.circular(10),
@@ -111,7 +111,7 @@ class EmployeeServicesPage extends StatelessWidget {
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
-                                AppColors().orange.withOpacity(0.8),
+                                AppColors().orange.withValues(alpha:0.8),
                             foregroundColor: AppColors().white,
                           ),
                           onPressed: () async {
@@ -150,7 +150,7 @@ class EmployeeServicesPage extends StatelessWidget {
                                 msg: "Service deleted successfully",
                                 textColor: AppColors().white,
                                 backgroundColor:
-                                    AppColors().orange.withOpacity(0.8),
+                                    AppColors().orange.withValues(alpha:0.8),
                               );
                             }
                           },

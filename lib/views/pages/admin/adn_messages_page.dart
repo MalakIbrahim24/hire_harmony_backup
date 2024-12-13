@@ -50,7 +50,7 @@ class _AdnMessagesPageState extends State<AdnMessagesPage> {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 17.0, sigmaY: 17.0),
               child: Container(
-                color: AppColors().navy.withOpacity(0.3),
+                color: AppColors().navy.withValues(alpha: 0.3),
               ),
             ),
           ),
@@ -110,7 +110,7 @@ class _AdnMessagesPageState extends State<AdnMessagesPage> {
                             margin: const EdgeInsets.symmetric(vertical: 8),
                             padding: const EdgeInsets.all(15),
                             decoration: BoxDecoration(
-                              color: AppColors().white.withOpacity(0.9),
+                              color: AppColors().white.withValues(alpha: 0.9),
                               borderRadius: BorderRadius.circular(15),
                             ),
                             child: Row(
@@ -144,8 +144,9 @@ class _AdnMessagesPageState extends State<AdnMessagesPage> {
                                         overflow: TextOverflow.ellipsis,
                                         style: GoogleFonts.montserratAlternates(
                                           fontSize: 14,
-                                          color:
-                                              AppColors().navy.withOpacity(0.7),
+                                          color: AppColors()
+                                              .navy
+                                              .withValues(alpha: 0.7),
                                         ),
                                       ),
                                     ],

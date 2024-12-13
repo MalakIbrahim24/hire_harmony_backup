@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/services/firestore_services.dart';
@@ -39,16 +41,23 @@ class _EditServicesPageState extends State<EditServicesPage> {
       body: Stack(
         children: [
           // Background Image
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('lib/assets/images/ServManage.jpeg'),
-                fit: BoxFit.cover,
+          Positioned.fill(
+            child: Image.asset(
+              'lib/assets/images/ServManage.jpeg',
+              fit: BoxFit.cover,
+            ),
+          ),
+          // Blur Filter
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 17.0, sigmaY: 17.0),
+              child: Container(
+                color: AppColors().navy.withValues(alpha: 0.3),
               ),
             ),
           ),
           // Overlay
-          Container(color: AppColors().navy.withOpacity(0.3)),
+          Container(color: AppColors().navy.withValues(alpha: 0.3)),
           Column(
             children: [
               const SizedBox(height: 120),
@@ -75,10 +84,10 @@ class _EditServicesPageState extends State<EditServicesPage> {
                   decoration: InputDecoration(
                     hintText: 'Search by employee name...',
                     hintStyle: GoogleFonts.montserratAlternates(
-                      color: AppColors().white.withOpacity(0.8),
+                      color: AppColors().white.withValues(alpha: 0.8),
                     ),
                     filled: true,
-                    fillColor: AppColors().navy.withOpacity(0.5),
+                    fillColor: AppColors().navy.withValues(alpha: 0.5),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide.none,

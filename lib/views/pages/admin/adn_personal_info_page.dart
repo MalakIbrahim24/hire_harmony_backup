@@ -122,7 +122,7 @@ class _AdnPersonalInfoPageState extends State<AdnPersonalInfoPage> {
               ),
             ),
           ),
-          Container(color: AppColors().grey.withOpacity(0.7)),
+          Container(color: AppColors().grey.withValues(alpha: 0.7)),
           Padding(
             padding: const EdgeInsets.only(top: 80),
             child: Column(

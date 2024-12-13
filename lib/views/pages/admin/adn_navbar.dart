@@ -65,10 +65,11 @@ class _AdnNavbarState extends State<AdnNavbar> {
             ],
             onChange: _handleNavigationChange,
             style: FluidNavBarStyle(
-              barBackgroundColor:
-                  AppColors().navy, // Main background color of the bar
+              barBackgroundColor: AppColors()
+                  .navy
+                  .withValues(alpha: 0.5), // Main background color of the bar
               iconBackgroundColor:
-                  AppColors().orange2, // Set selected icon background to teal
+                  AppColors().navy, // Set selected icon background to teal
             ),
             scaleFactor: 1.5,
             defaultIndex: 1,

@@ -36,7 +36,7 @@ class EmpSigninForm extends StatelessWidget {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Colors.grey.withOpacity(
+                    color: Colors.grey.withValues(alpha:
                         0.5), // Light gray color with some transparency
                     width: 1.0, // Make the border barely visible
                   ),
@@ -67,7 +67,7 @@ class EmpSigninForm extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
                     color: Colors.grey
-                        .withOpacity(0.5), // Light gray color with transparency
+                        .withValues(alpha:0.5), // Light gray color with transparency
                     width: 1.0, // Thin border to make it barely visible
                   ),
                 ),
@@ -96,7 +96,7 @@ class EmpSigninForm extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
                     color: Colors.grey
-                        .withOpacity(0.5), // Light gray color with transparency
+                        .withValues(alpha:0.5), // Light gray color with transparency
                     width: 1.0, // Thin border to make it barely visible
                   ),
                 ),
@@ -124,7 +124,7 @@ class EmpSigninForm extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
                     color: Colors.grey
-                        .withOpacity(0.5), // Light gray color with transparency
+                        .withValues(alpha:0.5), // Light gray color with transparency
                     width: 1.0, // Thin border to make it barely visible
                   ),
                 ),

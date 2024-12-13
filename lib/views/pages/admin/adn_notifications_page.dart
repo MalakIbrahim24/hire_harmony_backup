@@ -51,7 +51,7 @@ class AdnNotificationsPage extends StatelessWidget {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 17.0, sigmaY: 17.0),
               child: Container(
-                color: AppColors().navy.withOpacity(0.3),
+                color: AppColors().navy.withValues(alpha: 0.3),
               ),
             ),
           ),
@@ -159,7 +159,7 @@ class NotificationItem extends StatelessWidget {
         time,
         style: GoogleFonts.montserratAlternates(
           fontSize: 12,
-          color: AppColors().white.withOpacity(0.7),
+          color: AppColors().white.withValues(alpha: 0.7),
         ),
       ),
     );
