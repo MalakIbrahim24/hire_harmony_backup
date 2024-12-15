@@ -6,7 +6,7 @@ import 'package:hire_harmony/view_models/cubit/auth_cubit.dart';
 import 'package:hire_harmony/views/pages/admin/ad_management_page.dart';
 import 'package:hire_harmony/views/pages/admin/admin_activity_page.dart';
 import 'package:hire_harmony/views/pages/admin/admin_settings_page.dart';
-import 'package:hire_harmony/views/pages/admin/adn_home_page.dart';
+import 'package:hire_harmony/views/pages/admin/adn_home_page.dart' as admin;
 import 'package:hire_harmony/views/pages/admin/adn_navbar.dart';
 import 'package:hire_harmony/views/pages/admin/adn_notifications_page.dart';
 import 'package:hire_harmony/views/pages/admin/adn_personal_info_page.dart';
@@ -101,7 +101,7 @@ class AppRouter {
         );
       case AppRoutes.adnhomePage:
         return MaterialPageRoute(
-          builder: (_) => const AdnHomePage(),
+          builder: (_) => const admin.AdnHomePage(),
           settings: settings,
         );
       case AppRoutes.adnnavPage:
