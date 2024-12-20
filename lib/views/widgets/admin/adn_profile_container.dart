@@ -3,17 +3,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 
 class AdnProfileContainer extends StatelessWidget {
-  final IconData icon;
-  final String title;
+  final String title; // Define as class member
+  final IconData icon; // Define as class member
+  final VoidCallback? onTap; // Define as class member
+
   final int? badgeCount;
-  final VoidCallback onTap;
 
   const AdnProfileContainer({
     super.key,
-    required this.icon,
     required this.title,
+    required this.icon,
+    this.onTap,
     this.badgeCount,
-    required this.onTap,
   });
 
   @override
@@ -28,9 +29,10 @@ class AdnProfileContainer extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: AppColors().orange2,
-              blurRadius: 3,
-              offset: const Offset(0, 1),
+              color: AppColors().black,
+              blurRadius: 10,
+              spreadRadius: 1,
+              offset: const Offset(0, 5),
             ),
           ],
         ),
@@ -39,13 +41,14 @@ class AdnProfileContainer extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(icon, size: 24, color: AppColors().navy),
-                const SizedBox(width: 12),
+                Icon(icon, color: AppColors().navy, size: 28),
+                const SizedBox(width: 15),
                 Text(
                   title,
                   style: GoogleFonts.montserratAlternates(
-                    fontSize: 16,
+                    fontSize: 18,
                     color: AppColors().navy,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 if (badgeCount != null) ...[

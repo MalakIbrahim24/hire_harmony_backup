@@ -22,7 +22,8 @@ class _AdnNotificationsPageState extends State<AdnNotificationsPage> {
   @override
   void initState() {
     super.initState();
-    _listenToFirebaseMessages();
+    BlocProvider.of<AdnHomeCubit>(context).loadData();
+    // _listenToFirebaseMessages();
     _getFCMToken();
     _loadNotifications();
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
@@ -65,57 +66,57 @@ class _AdnNotificationsPageState extends State<AdnNotificationsPage> {
     }
   }
 
-  Future<void> _listenToFirebaseMessages() async {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      if (message.notification != null) {
-        final userId = FirebaseAuth.instance.currentUser?.uid;
-        if (userId == null) return;
+  // Future<void> _listenToFirebaseMessages() async {
+  //   FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+  //     if (message.notification != null) {
+  //       final userId = FirebaseAuth.instance.currentUser?.uid;
+  //       if (userId == null) return;
 
-        // Save the notification in Firestore for the specific user
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userId)
-            .collection('notifications')
-            .add({
-          'title': message.notification!.title ?? 'No Title',
-          'body': message.notification!.body ?? 'No Body',
-          'timestamp': Timestamp.now(),
-          'read': false, // Default to unread
-        });
+  //       // Save the notification in Firestore for the specific user
+  //       await FirebaseFirestore.instance
+  //           .collection('users')
+  //           .doc(userId)
+  //           .collection('notifications')
+  //           .add({
+  //         'title': message.notification!.title ?? 'No Title',
+  //         'body': message.notification!.body ?? 'No Body',
+  //         'timestamp': Timestamp.now(),
+  //         'read': false, // Default to unread
+  //       });
 
-        setState(() {
-          notifications.add({
-            'title': message.notification!.title ?? 'No Title',
-            'body': message.notification!.body ?? 'No Body',
-            'time': 'Just now',
-            'read': false,
-          });
-        });
-      }
-    });
-  }
+  //       setState(() {
+  //         notifications.add({
+  //           'title': message.notification!.title ?? 'No Title',
+  //           'body': message.notification!.body ?? 'No Body',
+  //           'time': 'Just now',
+  //           'read': false,
+  //         });
+  //       });
+  //     }
+  //   });
+  // }
 
-  Future<void> markNotificationsAsRead() async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId == null) return;
+  // Future<void> markNotificationsAsRead() async {
+  //   final userId = FirebaseAuth.instance.currentUser?.uid;
+  //   if (userId == null) return;
 
-    final batch = FirebaseFirestore.instance.batch();
+  //   final batch = FirebaseFirestore.instance.batch();
 
-    for (var notif in notifications) {
-      final docRef = FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('notifications')
-          .doc(notif['id']);
-      batch.update(docRef, {'read': true});
-    }
+  //   for (var notif in notifications) {
+  //     final docRef = FirebaseFirestore.instance
+  //         .collection('users')
+  //         .doc(userId)
+  //         .collection('notifications')
+  //         .doc(notif['id']);
+  //     batch.update(docRef, {'read': true});
+  //   }
 
-    await batch.commit();
+  //   await batch.commit();
 
-    // Reset unread notifications
-    // ignore: use_build_context_synchronously
-    BlocProvider.of<AdnHomeCubit>(context).resetUnreadNotifications();
-  }
+  //   // Reset unread notifications
+  //   // ignore: use_build_context_synchronously
+  //   BlocProvider.of<AdnHomeCubit>(context).resetUnreadNotifications();
+  // }
 
   Future<void> _loadNotifications() async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
@@ -183,7 +184,7 @@ class _AdnNotificationsPageState extends State<AdnNotificationsPage> {
           ),
           Positioned.fill(
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 17.0, sigmaY: 17.0),
+              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
               child: Container(
                 color: AppColors().navy.withValues(alpha: 0.3),
               ),

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
+import 'package:hire_harmony/view_models/cubit/adnhome_cubit.dart';
 import 'package:hire_harmony/view_models/cubit/auth_cubit.dart';
 import 'package:hire_harmony/views/pages/admin/ad_management_page.dart';
 import 'package:hire_harmony/views/pages/admin/admin_activity_page.dart';
@@ -11,22 +12,25 @@ import 'package:hire_harmony/views/pages/admin/adn_navbar.dart';
 import 'package:hire_harmony/views/pages/admin/adn_notifications_page.dart';
 import 'package:hire_harmony/views/pages/admin/adn_personal_info_page.dart';
 import 'package:hire_harmony/views/pages/admin/category_management_page.dart';
-import 'package:hire_harmony/views/pages/admin/deleted_accounts_page.dart';
+import 'package:hire_harmony/views/pages/admin/deleted_acounts.dart';
 import 'package:hire_harmony/views/pages/admin/edit_services_page.dart';
 import 'package:hire_harmony/views/pages/admin/edited_services_page.dart';
 import 'package:hire_harmony/views/pages/admin/user_management_page.dart';
-import 'package:hire_harmony/views/pages/cus_verification_success_page.dart';
-import 'package:hire_harmony/views/pages/custom_buttom_navbar.dart';
+import 'package:hire_harmony/views/pages/forms/emp_sign_up_form.dart';
+import 'package:hire_harmony/views/pages/signup/sign_up_page.dart';
+import 'package:hire_harmony/views/pages/customer/cus_verification_success_page.dart';
+import 'package:hire_harmony/views/pages/customer/cus_messages_page.dart';
+import 'package:hire_harmony/views/pages/customer/cus_notifications_page.dart';
+import 'package:hire_harmony/views/pages/customer/custom_buttom_navbar.dart';
 import 'package:hire_harmony/views/pages/customer/cus_home_page.dart';
-import 'package:hire_harmony/views/pages/emp_verification_success_page.dart';
+import 'package:hire_harmony/views/pages/employee/emp_verification_success_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_home_page.dart';
-import 'package:hire_harmony/views/pages/forgot_password_page.dart';
-import 'package:hire_harmony/views/pages/forms/emp_signin_form.dart';
+import 'package:hire_harmony/views/pages/signup/forgot_password_page.dart';
 import 'package:hire_harmony/views/pages/login/login_page.dart';
-import 'package:hire_harmony/views/pages/signup/emp_id_verification_page.dart';
-import 'package:hire_harmony/views/pages/signup/emp_phone_page.dart';
-import 'package:hire_harmony/views/pages/signup/phone_page.dart';
-import 'package:hire_harmony/views/pages/signup/signIn_page.dart';
+import 'package:hire_harmony/views/pages/employee/emp_id_verification_page.dart';
+import 'package:hire_harmony/views/pages/employee/emp_phone_page.dart';
+import 'package:hire_harmony/views/pages/employee/emp_sign_up_page.dart';
+import 'package:hire_harmony/views/pages/customer/phone_page.dart';
 import 'package:hire_harmony/views/pages/signup/sign_up_choice.dart';
 import 'package:hire_harmony/views/pages/welcome_page.dart';
 
@@ -49,19 +53,29 @@ class AppRouter {
           builder: (_) => const LoginPage(),
           settings: settings,
         );
-      case AppRoutes.signinPage:
+      case AppRoutes.signUpPage:
         return MaterialPageRoute(
-          builder: (_) => const SigninPage(),
+          builder: (_) => const SignUpPage(),
           settings: settings,
         );
-      case AppRoutes.empSigninForm:
+      case AppRoutes.empSignupForm:
         return MaterialPageRoute(
-          builder: (_) => const EmpSigninForm(),
+          builder: (_) => const EmpSignupForm(),
           settings: settings,
         );
       case AppRoutes.cushomePage:
         return MaterialPageRoute(
           builder: (_) => const CusHomePage(),
+          settings: settings,
+        );
+      case AppRoutes.cusMessagesPage:
+        return MaterialPageRoute(
+          builder: (_) => const CusMessagesPage(),
+          settings: settings,
+        );
+      case AppRoutes.cusNotificationsPage:
+        return MaterialPageRoute(
+          builder: (_) => const CusNotificationsPage(),
           settings: settings,
         );
       case AppRoutes.customButtomNavbarPage:
@@ -87,11 +101,11 @@ class AppRouter {
                   'User verified successfully,\nShare your skills and experience with everyone!'),
           settings: settings,
         );
-      /*case AppRoutes.empsignupPage:
+      case AppRoutes.empsignupPage:
         return MaterialPageRoute(
           builder: (_) => const EmpSignUpPage(),
           settings: settings,
-        );*/
+        );
       case AppRoutes.empidverificationPage:
         return MaterialPageRoute(
           builder: (_) => const EmpIdVerificationPage(
@@ -147,17 +161,25 @@ class AppRouter {
         );
       case AppRoutes.adnnotificationsPage:
         return MaterialPageRoute(
-          builder: (_) => const AdnNotificationsPage(),
+          builder: (_) => BlocProvider(
+            create: (context) {
+              final cubit = AdnHomeCubit();
+              return cubit;
+            },
+            child: const AdnNotificationsPage(),
+          ),
           settings: settings,
         );
-      case AppRoutes.deletedAccountsPage:
+      case AppRoutes.deletedAccounts:
         return MaterialPageRoute(
-          builder: (_) => const DeletedAccountsPage(),
+          builder: (_) =>
+              DeletedAcounts(uid: FirebaseAuth.instance.currentUser!.uid),
           settings: settings,
         );
       case AppRoutes.editedServicesPage:
         return MaterialPageRoute(
-          builder: (_) => const EditedServicesPage(),
+          builder: (_) =>
+              EditedServicesPage(uid: FirebaseAuth.instance.currentUser!.uid),
           settings: settings,
         );
       case AppRoutes.adnactivityPage:

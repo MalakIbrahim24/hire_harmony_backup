@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
-import 'package:hire_harmony/views/widgets/best_worker.dart';
-import 'package:hire_harmony/views/widgets/category_widget.dart';
-import 'package:hire_harmony/views/widgets/custom_carousel_indicator.dart';
-import 'package:hire_harmony/views/widgets/populer_service.dart';
+import 'package:hire_harmony/views/widgets/customer/best_worker.dart';
+import 'package:hire_harmony/views/widgets/customer/category_widget.dart';
+import 'package:hire_harmony/views/widgets/customer/custom_carousel_indicator.dart';
+import 'package:hire_harmony/views/widgets/customer/populer_service.dart';
 
 class EmpHomePage extends StatelessWidget {
   const EmpHomePage({super.key});

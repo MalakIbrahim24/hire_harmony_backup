@@ -83,7 +83,7 @@ class SignUpChoice extends StatelessWidget {
                 const SizedBox(height: 10),
                 SignUpWidget(
                   onPressed: () {
-                    Navigator.pushNamed(context, AppRoutes.signinPage);
+                    Navigator.pushNamed(context, AppRoutes.signUpPage);
                   },
                   userType: 'Customer',
                   description:

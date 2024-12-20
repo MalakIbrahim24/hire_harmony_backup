@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,7 +19,6 @@ class _AdnPersonalInfoPageState extends State<AdnPersonalInfoPage> {
   final FirestoreService _firestoreService = FirestoreService.instance;
 
   Future<void> _updatePassword() async {
-    // Step 1: Ask for the current password
     String? currentPassword = await _showInputDialog(
       'Verify Password',
       'Enter current password',
@@ -26,7 +27,6 @@ class _AdnPersonalInfoPageState extends State<AdnPersonalInfoPage> {
 
     if (currentPassword == null || currentPassword.isEmpty) return;
 
-    // Step 2: Re-authenticate user
     bool isAuthenticated =
         await _firestoreService.reauthenticateUser(currentPassword);
     if (!isAuthenticated) {
@@ -38,7 +38,6 @@ class _AdnPersonalInfoPageState extends State<AdnPersonalInfoPage> {
       return;
     }
 
-    // Step 3: Ask for the new password
     String? newPassword = await _showInputDialog(
       'Change Password',
       'Enter new password',
@@ -54,7 +53,6 @@ class _AdnPersonalInfoPageState extends State<AdnPersonalInfoPage> {
       return;
     }
 
-    // Step 4: Check if the new password is the same as the current password
     if (newPassword == currentPassword) {
       Fluttertoast.showToast(
         msg: "New password should be different from the current one",
@@ -64,7 +62,6 @@ class _AdnPersonalInfoPageState extends State<AdnPersonalInfoPage> {
       return;
     }
 
-    // Step 5: Update the password
     await _firestoreService.updatePassword(newPassword);
     Fluttertoast.showToast(
       msg: "Password updated successfully",
@@ -107,53 +104,89 @@ class _AdnPersonalInfoPageState extends State<AdnPersonalInfoPage> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors().navy),
+          icon: Icon(Icons.arrow_back, color: AppColors().white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Stack(
         children: [
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('lib/assets/images/adminmalak.jpeg'),
-                fit: BoxFit.cover,
+          // Background Image with Gradient Overlay
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('lib/assets/images/adminmalak.jpeg'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors().black.withValues(alpha: 0.5),
+                      AppColors().black.withValues(alpha: 0.8),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
               ),
             ),
           ),
-          Container(color: AppColors().grey.withValues(alpha: 0.7)),
-          Padding(
-            padding: const EdgeInsets.only(top: 80),
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 17.0, sigmaY: 17.0),
+              child: Container(
+                color: AppColors().navy.withValues(alpha: 0.3),
+              ),
+            ),
+          ),
+          SafeArea(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 100),
+                // Profile Header with Circle Avatar
+                const SizedBox(height: 20),
+                const CircleAvatar(
+                  radius: 100,
+                  backgroundImage:
+                      AssetImage('lib/assets/images/adminmalak.jpeg'),
+                ),
+                const SizedBox(height: 30),
                 Text(
                   'Malak\'s Personal Information',
                   style: GoogleFonts.montserratAlternates(
-                    fontSize: 20,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
                     color: AppColors().white,
-                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 100),
-                AdnProfileContainer(
-                  icon: Icons.email_rounded,
-                  title: 'Reset Password',
-                  onTap: _updatePassword,
-                ),
-                AdnProfileContainer(
-                  icon: Icons.notifications_active,
-                  title: 'Notifications',
-                  onTap: () {},
-                ),
-                AdnProfileContainer(
-                  icon: Icons.access_time_outlined,
-                  title: 'Activity',
-                  onTap: () {
-                    Navigator.pushNamed(context, AppRoutes.adnactivityPage);
-                  },
+                const SizedBox(height: 60),
+
+                // Information Cards
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: ListView(
+                      children: [
+                        AdnProfileContainer(
+                          title: 'Reset Password',
+                          icon: Icons.lock_reset,
+                          onTap: _updatePassword,
+                        ),
+                        const SizedBox(height: 50),
+                        AdnProfileContainer(
+                          title: 'View Activity',
+                          icon: Icons.access_time_outlined,
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, AppRoutes.adnactivityPage);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),

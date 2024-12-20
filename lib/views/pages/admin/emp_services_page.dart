@@ -78,8 +78,9 @@ class EmployeeServicesPage extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(vertical: 8),
                 shape: RoundedRectangleBorder(
                   side: BorderSide(
-                    color:
-                        AppColors().navy.withValues(alpha:0.2), // Light navy border
+                    color: AppColors()
+                        .navy
+                        .withValues(alpha: 0.2), // Light navy border
                     width: 1,
                   ),
                   borderRadius: BorderRadius.circular(10),
@@ -111,7 +112,7 @@ class EmployeeServicesPage extends StatelessWidget {
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
-                                AppColors().orange.withValues(alpha:0.8),
+                                AppColors().orange.withValues(alpha: 0.8),
                             foregroundColor: AppColors().white,
                           ),
                           onPressed: () async {
@@ -130,8 +131,9 @@ class EmployeeServicesPage extends StatelessWidget {
                                   TextButton(
                                     onPressed: () =>
                                         Navigator.pop(context, true),
-                                    child: const Text('Delete',
-                                        style: TextStyle(color: Colors.red)),
+                                    child: Text('Delete',
+                                        style: TextStyle(
+                                            color: AppColors().orange)),
                                   ),
                                 ],
                               ),
@@ -150,7 +152,7 @@ class EmployeeServicesPage extends StatelessWidget {
                                 msg: "Service deleted successfully",
                                 textColor: AppColors().white,
                                 backgroundColor:
-                                    AppColors().orange.withValues(alpha:0.8),
+                                    AppColors().orange.withValues(alpha: 0.8),
                               );
                             }
                           },

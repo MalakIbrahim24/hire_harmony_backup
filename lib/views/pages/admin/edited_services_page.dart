@@ -1,59 +1,71 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/widgets/admin/services_list.dart';
 
 class EditedServicesPage extends StatefulWidget {
-  const EditedServicesPage({super.key});
+  final String uid; // Pass the user ID to this page
+
+  const EditedServicesPage({
+    super.key,
+    required this.uid, // Make it a required parameter
+  });
 
   @override
   State<EditedServicesPage> createState() => _EditedServicesPageState();
 }
 
-class _EditedServicesPageState extends State<EditedServicesPage>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    // Set focus on "Deleted Services" tab (index 1)
-    _tabController = TabController(length: 2, vsync: this, initialIndex: 1);
-  }
-
+class _EditedServicesPageState extends State<EditedServicesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: AppColors().navy,
+        backgroundColor: AppColors().transparent,
         iconTheme: IconThemeData(
           color: AppColors().white, // White Back Arrow
         ),
-        title: Text(
-          'Edited Services',
-          style: GoogleFonts.montserratAlternates(
-            color: AppColors().white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+      ),
+      body: Stack(children: [
+        Positioned.fill(
+          child: Image.asset(
+            'lib/assets/images/notf.jpg',
+            fit: BoxFit.cover,
           ),
         ),
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: AppColors().white,
-          indicatorColor: AppColors().orange,
-          tabs: const [
-            Tab(text: "Added Services"),
-            Tab(text: "Deleted Services"),
-          ],
+        // Blur Filter
+        Positioned.fill(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+            child: Container(
+              color: AppColors().navy.withValues(alpha: 0.3),
+            ),
+          ),
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          ServicesList(collection: 'added_services', action: 'added_at'),
-          ServicesList(collection: 'deleted_services', action: 'deleted_at'),
-        ],
-      ),
+        SafeArea(
+          child: Column(
+            children: [
+              Text(
+                'Deleted Services',
+                style: GoogleFonts.montserratAlternates(
+                  color: AppColors().white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Expanded(
+                child: ServicesList(
+                  userId: widget.uid, // Pass the correct userId
+                  subCollection: 'deletedServices', // Sub-collection path
+                  action: 'deleted_at',
+                ),
+              ),
+            ],
+          ),
+        )
+      ]),
     );
   }
 }

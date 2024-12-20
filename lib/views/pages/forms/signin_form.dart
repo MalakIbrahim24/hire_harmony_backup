@@ -16,6 +16,32 @@ class SigninForm extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: Text(
+                'Name',
+                style: GoogleFonts.montserratAlternates(
+                  fontSize: 15,
+                  color: AppColors().navy,
+                ),
+              ),
+            ),
+            TextField(
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Icons.person_outline),
+                // No border when not focused
+                border: InputBorder.none,
+                // Light gray border when focused
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(
+                    color: Colors.grey.withValues(
+                        alpha: 0.5), // Light gray color with some transparency
+                    width: 1.0, // Make the border barely visible
+                  ),
+                ),
+              ),
+            ),
             const SizedBox(height: 30),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -36,14 +62,14 @@ class SigninForm extends StatelessWidget {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Colors.grey.withValues(alpha:
-                        0.5), // Light gray color with some transparency
+                    color: Colors.grey.withValues(
+                        alpha: 0.5), // Light gray color with some transparency
                     width: 1.0, // Make the border barely visible
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -58,7 +84,7 @@ class SigninForm extends StatelessWidget {
             TextField(
               obscureText: true,
               decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.lock),
+                prefixIcon: const Icon(Icons.lock_outline),
                 suffixIcon: const Icon(Icons.visibility),
                 // No border when not focused
                 border: InputBorder.none,
@@ -66,13 +92,14 @@ class SigninForm extends StatelessWidget {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Colors.grey
-                        .withValues(alpha:0.5), // Light gray color with transparency
+                    color: Colors.grey.withValues(
+                        alpha: 0.5), // Light gray color with transparency
                     width: 1.0, // Thin border to make it barely visible
                   ),
                 ),
               ),
             ),
+            const SizedBox(height: 30),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: Text(
@@ -86,7 +113,7 @@ class SigninForm extends StatelessWidget {
             TextField(
               obscureText: true,
               decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.lock_person),
+                prefixIcon: const Icon(Icons.lock_person_outlined),
                 suffixIcon: const Icon(Icons.visibility),
 
                 // No border when not focused
@@ -95,13 +122,14 @@ class SigninForm extends StatelessWidget {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Colors.grey
-                        .withValues(alpha:0.5), // Light gray color with transparency
+                    color: Colors.grey.withValues(
+                        alpha: 0.5), // Light gray color with transparency
                     width: 1.0, // Thin border to make it barely visible
                   ),
                 ),
               ),
             ),
+            const SizedBox(height: 30),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: Text(
@@ -115,7 +143,7 @@ class SigninForm extends StatelessWidget {
             TextField(
               obscureText: true,
               decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.phone),
+                prefixIcon: const Icon(Icons.phone_android_outlined),
 
                 // No border when not focused
                 border: InputBorder.none,
@@ -123,8 +151,8 @@ class SigninForm extends StatelessWidget {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Colors.grey
-                        .withValues(alpha:0.5), // Light gray color with transparency
+                    color: Colors.grey.withValues(
+                        alpha: 0.5), // Light gray color with transparency
                     width: 1.0, // Thin border to make it barely visible
                   ),
                 ),
@@ -141,7 +169,7 @@ class SigninForm extends StatelessWidget {
                   Navigator.pushNamed(context, AppRoutes.phonePage),
             ),
 
-            const SizedBox(height: 80),
+            const SizedBox(height: 50),
             Center(
               child: TextButton(
                 onPressed: () {
@@ -156,15 +184,14 @@ class SigninForm extends StatelessWidget {
                   text: TextSpan(
                     text: 'Have an account? ',
                     style: GoogleFonts.montserratAlternates(
-                      fontSize: 18,
+                      fontSize: 16.5,
                       color: AppColors().navy,
                     ),
-                    
                     children: [
                       TextSpan(
                         text: 'Log In!',
                         style: GoogleFonts.montserratAlternates(
-                          fontSize: 18,
+                          fontSize: 16.5,
                           color: AppColors().orange,
                         ),
                         recognizer: TapGestureRecognizer()

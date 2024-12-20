@@ -65,7 +65,7 @@ class _AdnProfilePageState extends State<AdnProfilePage> {
               // Blur Filter
               Positioned.fill(
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 17.0, sigmaY: 17.0),
+                  filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
                   child: Container(
                     color: AppColors().navy.withValues(alpha: 0.3),
                   ),

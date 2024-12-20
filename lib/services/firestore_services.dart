@@ -1,12 +1,11 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hire_harmony/services/admin_service.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 
 class FirestoreService {
@@ -44,25 +43,28 @@ class FirestoreService {
     await reference.delete();
   }
 
-Future<void> deleteDataa({
-  required String documentPath,
-  required String serviceName,
-  required String employeeId,
-  required String employeeName,
-}) async {
-  final reference = firestore.doc(documentPath);
-  debugPrint('Deleting document: $documentPath');
+  Future<void> deleteDataa({
+    required String documentPath,
+    required String serviceName,
+    required String employeeId,
+    required String employeeName,
+  }) async {
+    try {
+      // Delete the service document
+      await FirebaseFirestore.instance.doc(documentPath).delete();
 
-  // Log deleted service
-  await firestore.collection('deleted_services').add({
-    'service_name': serviceName,
-    'employee_id': employeeId,
-    'employee_name': employeeName,
-    'deleted_at': DateTime.now().toIso8601String(),
-  });
+      // Log deletion
+      await AdminService.instance.logDeletedService(
+        adminId: FirebaseAuth.instance.currentUser!.uid, // Admin UID
+        serviceName: serviceName,
+        employeeName: employeeName, // Employee's name for reference
+      );
 
-  await reference.delete();
-}
+      debugPrint("Service deleted and logged successfully.");
+    } catch (e) {
+      debugPrint("Failed to delete and log service: $e");
+    }
+  }
 
 // Read (Get All)
   Stream<List<T>> getDataStream<T>({
@@ -192,56 +194,72 @@ Future<void> deleteDataa({
     }
   }
 
-   // Log Added Service
-  Future<void> logAddedService(String serviceName) async {
-    try {
-      await _firestore.collection('added_services').add({
-        'service_name': serviceName,
-        'added_at': DateTime.now().toIso8601String(),
-      });
-      debugPrint("Logged added service: $serviceName");
-    } catch (e) {
-      debugPrint("Failed to log added service: $e");
-    }
-  }
+  // // Log Added Service
+  // Future<void> logAddedService(String serviceName) async {
+  //   try {
+  //     await _firestore.collection('added_services').add({
+  //       'service_name': serviceName,
+  //       'added_at': DateTime.now().toIso8601String(),
+  //     });
+  //     debugPrint("Logged added service: $serviceName");
+  //   } catch (e) {
+  //     debugPrint("Failed to log added service: $e");
+  //   }
+  // }
 
-  // Log Deleted Service
-  Future<void> logDeletedService(String serviceName) async {
-    try {
-      await _firestore.collection('deleted_services').add({
-        'service_name': serviceName,
-        'deleted_at': DateTime.now().toIso8601String(),
-      });
-      debugPrint("Logged deleted service: $serviceName");
-    } catch (e) {
-      debugPrint("Failed to log deleted service: $e");
-    }
-  }
+  // // Log Deleted Service
+  // Future<void> logDeletedService(String serviceName) async {
+  //   try {
+  //     await _firestore.collection('deleted_services').add({
+  //       'service_name': serviceName,
+  //       'deleted_at': DateTime.now().toIso8601String(),
+  //     });
+  //     debugPrint("Logged deleted service: $serviceName");
+  //   } catch (e) {
+  //     debugPrint("Failed to log deleted service: $e");
+  //   }
+  // }
 
+  // // Method to get activity logs
+  // Stream<List<Map<String, dynamic>>> getActivityLogs(String uid) {
+  //   return _firestore
+  //       .collection('users')
+  //       .doc(uid)
+  //       .collection('activityLogs')
+  //       .orderBy('timestamp', descending: true)
+  //       .snapshots()
+  //       .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+  // }
 
-  // Method to get activity logs
-  Stream<List<Map<String, dynamic>>> getActivityLogs(String uid) {
-    return _firestore
-        .collection('users')
-        .doc(uid)
-        .collection('activityLogs')
-        .orderBy('timestamp', descending: true)
-        .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
-  }
+  // Stream<List<Map<String, dynamic>>> getDeletedAccounts(String uid) {
+  //   return FirebaseFirestore.instance
+  //       .collection('users') // Main 'users' collection
+  //       .doc(uid) // Specific user document
+  //       .collection('deletedAccounts') // Subcollection 'deletedAccounts'
+  //       .snapshots()
+  //       .map((snapshot) => snapshot.docs.map((doc) {
+  //             final data = doc.data();
+  //             return {
+  //               'id': doc.id,
+  //               'name':
+  //                   data['name'] ?? 'Unnamed User', // Default to 'Unnamed User'
+  //               'email': data['email'] ?? 'No Email', // Default to 'No Email'
+  //             };
+  //           }).toList());
+  // }
 
-  Future<String> getDeviceInfo() async {
-    final deviceInfo = DeviceInfoPlugin();
-    if (Platform.isAndroid) {
-      final androidInfo = await deviceInfo.androidInfo;
-      return 'Android - ${androidInfo.model}';
-    } else if (Platform.isIOS) {
-      final iosInfo = await deviceInfo.iosInfo;
-      return 'iOS - ${iosInfo.utsname.machine}';
-    } else {
-      return 'Unknown Device';
-    }
-  }
+  // Future<String> getDeviceInfo() async {
+  //   final deviceInfo = DeviceInfoPlugin();
+  //   if (Platform.isAndroid) {
+  //     final androidInfo = await deviceInfo.androidInfo;
+  //     return 'Android - ${androidInfo.model}';
+  //   } else if (Platform.isIOS) {
+  //     final iosInfo = await deviceInfo.iosInfo;
+  //     return 'iOS - ${iosInfo.utsname.machine}';
+  //   } else {
+  //     return 'Unknown Device';
+  //   }
+  // }
 
   Future<bool> reauthenticateUser(String currentPassword) async {
     User? user = _auth.currentUser;

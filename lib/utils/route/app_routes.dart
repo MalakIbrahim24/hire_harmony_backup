@@ -3,11 +3,11 @@ class AppRoutes {
   static const String forgotPasswordPage = '/forgot-Password-page';
 
   static const String signupChoicePage = '/sign-up-choice-page';
-  static const String signinPage = '/sign-in-page';
-  static const String empSigninForm = '/emp-sign-in-from';
+  static const String signUpPage = '/sign-up-page';
+  static const String empSignupForm = '/emp-sign-up-from';
   static const String empphonePage = '/emp-phone-page';
   static const String empsignupPage = '/emp-signup-page';
-  static const String customButtomNavbarPage = '/emp-signup-page';
+  static const String customButtomNavbarPage = '/custom-bottom-navbar-page';
 
   static const String phonePage = '/phone-page';
   static const String cusVerificationSuccessPage =
@@ -15,7 +15,12 @@ class AppRoutes {
   static const String empVerificationSuccessPage =
       'empVerificationSuccess-Page';
   static const String empidverificationPage = '/emp-id-verification-page';
+
   static const String cushomePage = '/cus-home-page';
+  static const String cusMessagesPage = '/cus-messages-page';
+  static const String cusProfilePage = '/cus-profile-page';
+  static const String cusNotificationsPage = '/cus-notifications-page';
+
   static const String emphomePage = '/emp-home-page';
 
   static const String welcomePage = '/welcome-page';
@@ -31,10 +36,7 @@ class AppRoutes {
   static const String adManagementPage = '/ad-management-page';
   static const String employeeAdsPage = '/employee-ads-page';
   static const String categoryManagementPage = '/category-management-page';
-  static const String deletedAccountsPage = '/deleted-accounts-page';
   static const String editedServicesPage = '/edited-services-page';
-
-
-
+  static const String deletedAccounts = '/deleted-accounts';
   // static const String servicesManagementForm = '/services-management-form';
 }

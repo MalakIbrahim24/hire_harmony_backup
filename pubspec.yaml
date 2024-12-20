@@ -27,7 +27,9 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^8.1.6
   fluttertoast: ^8.2.8
+  geolocator: ^13.0.2
   google_fonts: ^6.2.1
+  google_maps_flutter: ^2.10.0
   gradient_icon: ^2.0.9
   intl: ^0.19.0
   persistent_bottom_nav_bar_v2: ^5.3.1
@@ -60,4 +62,6 @@ flutter:
     - lib/assets/images/adManage.jpeg
     - lib/assets/images/adManage.jpg
     - lib/assets/images/notf.jpg
+    - lib/assets/images/welcome.jpg
+    - lib/assets/images/welcome3.jpg
     - lib/assets/categories.csv

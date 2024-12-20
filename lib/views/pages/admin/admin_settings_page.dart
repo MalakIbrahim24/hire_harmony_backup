@@ -45,7 +45,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
         // Blur Filter
         Positioned.fill(
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 17.0, sigmaY: 17.0),
+            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
             child: Container(
               color: AppColors().navy.withValues(alpha: 0.3),
             ),
@@ -53,6 +53,9 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
         ),
         SafeArea(
           child: Column(children: [
+            const SizedBox(
+              height: 50,
+            ),
             Text(
               'Settings and privacy',
               style: GoogleFonts.montserratAlternates(
@@ -121,29 +124,29 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                   );
                 }),
             const SizedBox(
-              height: 20,
+              height: 40,
             ),
             AdnProfileContainer(
               icon: Icons.delete_sweep_outlined,
               title: 'Deleted Accounts',
               onTap: () {
-                Navigator.pushNamed(context, AppRoutes.deletedAccountsPage);
+                Navigator.pushNamed(context, AppRoutes.deletedAccounts);
               },
             ),
+            // const SizedBox(
+            //   height: 20,
+            // ),
+            // AdnProfileContainer(
+            //   icon: Icons.timer_off_outlined,
+            //   title: 'Deactivated Accounts',
+            //   onTap: () {},
+            // ),
             const SizedBox(
-              height: 20,
-            ),
-            AdnProfileContainer(
-              icon: Icons.timer_off_outlined,
-              title: 'Deactivated Accounts',
-              onTap: () {},
-            ),
-            const SizedBox(
-              height: 20,
+              height: 40,
             ),
             AdnProfileContainer(
               icon: Icons.home_repair_service_outlined,
-              title: 'Edited Services',
+              title: 'Deleted Services',
               onTap: () {
                 Navigator.pushNamed(context, AppRoutes.editedServicesPage);
               },

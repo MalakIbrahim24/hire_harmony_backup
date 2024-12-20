@@ -18,7 +18,7 @@ class _AdnHomePageState extends State<AdnHomePage> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<AdnHomeCubit>(context).loadNotifications();
+    BlocProvider.of<AdnHomeCubit>(context).loadData();
   }
 
   @override
@@ -52,7 +52,7 @@ class _AdnHomePageState extends State<AdnHomePage> {
                 ),
                 Positioned.fill(
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 17.0, sigmaY: 17.0),
+                    filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
                     child: Container(
                       color: AppColors().navy.withValues(alpha: 0.3),
                     ),
@@ -78,11 +78,24 @@ class _AdnHomePageState extends State<AdnHomePage> {
                                     color: AppColors().white,
                                   ),
                                 ),
-                                Text(
-                                  'Welcome to your Control Panel',
-                                  style: GoogleFonts.montserratAlternates(
-                                    fontSize: 16,
-                                    color: AppColors().grey,
+                                RichText(
+                                  text: TextSpan(
+                                    style: GoogleFonts.montserratAlternates(
+                                      fontSize: 16,
+                                      color: AppColors().navy, // Default color
+                                    ),
+                                    children: [
+                                      const TextSpan(
+                                        text: 'Welcome to your ',
+                                      ),
+                                      TextSpan(
+                                        text: 'Control Panel',
+                                        style: GoogleFonts.montserratAlternates(
+                                          color: AppColors()
+                                              .white, // White color for 'Control Panel'
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
