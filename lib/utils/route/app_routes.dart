@@ -6,7 +6,6 @@ class AppRoutes {
   static const String signUpPage = '/sign-up-page';
   static const String empSignupForm = '/emp-sign-up-from';
   static const String empphonePage = '/emp-phone-page';
-  static const String empsignupPage = '/emp-signup-page';
   static const String customButtomNavbarPage = '/custom-bottom-navbar-page';
 
   static const String phonePage = '/phone-page';

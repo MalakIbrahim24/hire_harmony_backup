@@ -14,6 +14,23 @@ class AuthCubit extends Cubit<AuthState> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirestoreService _fireS = FirestoreService.instance;
 
+  String getFriendlyErrorMessage(String firebaseErrorCode) {
+    switch (firebaseErrorCode) {
+      case 'user-not-found':
+        return 'No account found with this email.';
+      case 'wrong-password':
+        return 'Incorrect password.';
+      case 'invalid-email':
+        return 'Invalid email address.';
+      case 'user-disabled':
+        return 'This account has been disabled.';
+      case 'too-many-requests':
+        return 'Too many attempts. Try again later.';
+      default:
+        return 'An error occurred. Please try again.';
+    }
+  }
+
   Future<void> signInWithEmailAndPassword(String email, String password) async {
     emit(AuthLoading());
     try {
@@ -22,11 +39,10 @@ class AuthCubit extends Cubit<AuthState> {
 
       if (result) {
         final user = await authServices.currentUser();
-        // Fetch the user role using the method within this cubit
+
         if (user != null) {
           String role = await _fireS.getUserRoleByUid(user.uid);
 
-          // Emit the appropriate success state based on the role
           if (role == "admin") {
             emit(AuthSuccess());
           } else if (role == "customer") {
@@ -34,33 +50,39 @@ class AuthCubit extends Cubit<AuthState> {
           } else if (role == "employee") {
             emit(AuthEmpSuccess());
           } else {
-            // Handle unexpected roles or lack of role data
-            emit(AuthFailure("Role not recognized or missing."));
+            emit(AuthFailure(
+                "Account role not recognized. Please contact support."));
           }
+        } else {
+          emit(AuthFailure("Unable to fetch user data. Try again later."));
         }
       } else {
-        emit(AuthFailure('Failed to log in'));
+        emit(
+            AuthFailure("Login failed. Check your credentials and try again."));
       }
+    } on FirebaseAuthException catch (firebaseAuthException) {
+      emit(AuthFailure(getFriendlyErrorMessage(firebaseAuthException.code)));
     } catch (e) {
-      // Ensure that any errors are caught, and a failure state is emitted
-      emit(AuthFailure("An error occurred: ${e.toString()}"));
+      emit(AuthFailure("An unexpected error occurred. Try again later."));
     }
   }
 
   Future<void> signUpWithEmailAndPassword(
       String email, String password, String role) async {
+    emit(AuthLoading());
     try {
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
         email: email,
-        password: password,
+        password: password, // Raw password
       );
 
-      // Store the user role in Firestore
+      // Store the user role and other details in Firestore
       await _firestore.collection('users').doc(userCredential.user!.uid).set({
         'email': email,
-        'role': role, // Add the role (e.g., "customer", "employee", "admin")
+        'role': role, // "customer", "employee", "admin"
       });
+
       emit(AuthSuccess());
     } catch (e) {
       emit(AuthFailure(e.toString()));

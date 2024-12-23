@@ -14,50 +14,6 @@ class AdminService {
   final firestoreService = FirestoreService.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // @override
-  // Future<void> logActivity({
-  //   required String uid,
-  //   required String action,
-  //   required String device,
-  // }) async {
-  //   try {
-  //     await _firestore
-  //         .collection('users')
-  //         .doc(uid)
-  //         .collection('activityLogs')
-  //         .add({
-  //       'action': action,
-  //       'timestamp': Timestamp.now(),
-  //       'device': device,
-  //     });
-  //   } catch (e) {
-  //     print("Error logging activity: $e");
-  //   }
-  // }
-
-  // Log Added Service
-
-//   Future<void> logAddedService({
-//   required String adminId, // Admin's UID
-//   required String serviceName,
-// }) async {
-//   try {
-//     // Reference the 'addedServices' sub-collection under the admin's document
-//     await _firestore
-//         .collection('users') // Root collection
-//         .doc(adminId) // Admin's document
-//         .collection('addedServices') // Sub-collection for added services
-//         .add({
-//           'service_name': serviceName,
-//           'added_at': Timestamp.now(), // Firestore server timestamp
-//         });
-
-//     debugPrint("Logged added service under admin $adminId: $serviceName");
-//   } catch (e) {
-//     debugPrint("Failed to log added service: $e");
-//   }
-// }
-
   // Log Deleted Service
   Future<void> logDeletedService({
     required String adminId, // Admin's UID

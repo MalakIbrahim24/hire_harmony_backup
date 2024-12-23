@@ -11,13 +11,13 @@ class CusEditProfilePage extends StatefulWidget {
 }
 
 class _CusEditProfilePageState extends State<CusEditProfilePage> {
-    final String documentId = 'tAkdNFqswzMaxOPRC239';
-TextEditingController nameController= TextEditingController();
-    TextEditingController locationController = TextEditingController();
-    TextEditingController mobileController = TextEditingController();
-        TextEditingController emailController = TextEditingController();
+  final String documentId = 'tAkdNFqswzMaxOPRC239';
+  TextEditingController nameController = TextEditingController();
+  TextEditingController locationController = TextEditingController();
+  TextEditingController mobileController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
 
-Future<void> fetchData() async {
+  Future<void> fetchData() async {
     try {
       DocumentSnapshot doc = await FirebaseFirestore.instance
           .collection('client')
@@ -33,19 +33,24 @@ Future<void> fetchData() async {
       }
     } catch (e) {
       print('Error fetching data: $e');
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('فشل تحميل البيانات')),
       );
     }
   }
+
   Future<void> updateData() async {
     try {
-      await FirebaseFirestore.instance.collection('client').doc(documentId).set({
+      await FirebaseFirestore.instance
+          .collection('client')
+          .doc(documentId)
+          .set({
         'name': nameController.text,
         'location': locationController.text,
         'phone_number': mobileController.text,
       }, SetOptions(merge: true));
-
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تم تحديث البيانات بنجاح')),
       );
@@ -58,15 +63,15 @@ Future<void> fetchData() async {
       );
     }
   }
-@override
+
+  @override
   void initState() {
     super.initState();
     fetchData(); // تحميل البيانات عند فتح الصفحة
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       backgroundColor: AppColors().white,
       appBar: AppBar(
@@ -135,7 +140,6 @@ Future<void> fetchData() async {
             ),
             Text(
               'haneendaoud@gmail.com',
-
               style: GoogleFonts.montserratAlternates(
                 textStyle: TextStyle(
                   fontSize: 14,
@@ -154,13 +158,11 @@ Future<void> fetchData() async {
                       hintText: 'First Name',
                       controller: nameController),
                   const SizedBox(height: 10),
-                   buildTextField(
+                  buildTextField(
                       label: 'Email',
                       hintText: 'Email',
                       controller: emailController),
-                    const SizedBox(height: 10),
-
-                  
+                  const SizedBox(height: 10),
                   buildTextField(
                       label: 'Location',
                       hintText: 'Location',

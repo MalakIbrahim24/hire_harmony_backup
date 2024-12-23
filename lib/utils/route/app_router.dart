@@ -29,8 +29,7 @@ import 'package:hire_harmony/views/pages/signup/forgot_password_page.dart';
 import 'package:hire_harmony/views/pages/login/login_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_id_verification_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_phone_page.dart';
-import 'package:hire_harmony/views/pages/employee/emp_sign_up_page.dart';
-import 'package:hire_harmony/views/pages/customer/phone_page.dart';
+import 'package:hire_harmony/views/pages/signup/phone_page.dart';
 import 'package:hire_harmony/views/pages/signup/sign_up_choice.dart';
 import 'package:hire_harmony/views/pages/welcome_page.dart';
 
@@ -101,11 +100,7 @@ class AppRouter {
                   'User verified successfully,\nShare your skills and experience with everyone!'),
           settings: settings,
         );
-      case AppRoutes.empsignupPage:
-        return MaterialPageRoute(
-          builder: (_) => const EmpSignUpPage(),
-          settings: settings,
-        );
+
       case AppRoutes.empidverificationPage:
         return MaterialPageRoute(
           builder: (_) => const EmpIdVerificationPage(

@@ -37,7 +37,6 @@ class _WelcomePageState extends State<WelcomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors().navy, // Background dark blue
       body: Stack(children: [
         Positioned.fill(
           child: Image.asset(

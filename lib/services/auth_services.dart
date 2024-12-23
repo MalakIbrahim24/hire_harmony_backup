@@ -15,10 +15,56 @@ abstract class AuthServices {
 }
 
 class AuthServicesImpl implements AuthServices {
-  // singleton design pattern
-
   final firebaseAuth = FirebaseAuth.instance;
   final firestoreService = FirestoreService.instance;
+
+  @override
+  Future<bool> signInWithEmailAndPassword(String email, String password) async {
+    try {
+      final userCredential = await firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password, // Use raw password directly
+      );
+
+      return userCredential.user != null;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> signUpWithEmailAndPassword(String email, String password) async {
+    try {
+      final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password, // Use raw password here
+      );
+
+      User? user = userCredential.user;
+      if (user != null) {
+        // Save user info (without password) in Firestore
+        await firestoreService.setData(path: ApiPaths.user(user.uid), data: {
+          'email': email,
+          'uid': user.uid,
+          'role': 'customer', // Default role for sign-up
+        });
+        return true;
+      }
+    } catch (e) {
+      return false;
+    }
+    return false;
+  }
+
+  @override
+  Future<void> signOut() async {
+    await firebaseAuth.signOut();
+  }
+
+  @override
+  Future<User?> currentUser() async {
+    return firebaseAuth.currentUser;
+  }
 
   @override
   Future<bool> isSignIn() async {
@@ -26,75 +72,15 @@ class AuthServicesImpl implements AuthServices {
   }
 
   @override
-  Future<bool> signInWithEmailAndPassword(String email, String password) async {
-    final userCredential = await firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password);
-
-    User? user = userCredential.user;
-
-    if (user != null) {
-      return true;
-    }
-
-    return false;
-  }
-
-  @override
-  Future<void> signOut() async {
-    firebaseAuth.signOut();
-  }
-
-  @override
-  Future<bool> signUpWithEmailAndPassword(String email, String password) async {
-    final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
-        email: email, password: password);
-
-    User? user = userCredential.user;
-    if (user != null) {
-      await firestoreService.setData(path: ApiPaths.user(user.uid), data: {
-        'email': user.email,
-        'uid': user.uid,
-        'name': user.displayName,
-        'phone': user.phoneNumber,
-        'photoUrl': user.photoURL,
-      });
-      return true;
-    }
-    return false;
-  }
-
-  @override
-  Future<User?> currentUser() async {
-    return Future.value(firebaseAuth.currentUser);
-  }
-
-  @override
   Future<bool> cusSignInWithEmailAndPassword(
       String email, String password) async {
-    final userCredential = await firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password);
-
-    User? user = userCredential.user;
-
-    if (user != null) {
-      return true;
-    }
-
-    return false;
+    return await signInWithEmailAndPassword(email, password);
   }
 
   @override
   Future<bool> empSignInWithEmailAndPassword(
       String email, String password) async {
-    final userCredential = await firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password);
-
-    User? user = userCredential.user;
-
-    if (user != null) {
-      return true;
-    }
-
-    return false;
+    return await signInWithEmailAndPassword(email, password);
   }
 }
+

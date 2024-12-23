@@ -83,7 +83,13 @@ class SignUpChoice extends StatelessWidget {
                 const SizedBox(height: 10),
                 SignUpWidget(
                   onPressed: () {
-                    Navigator.pushNamed(context, AppRoutes.signUpPage);
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.signUpPage, // Navigate to sign-up page
+                      arguments: {
+                        'role': 'customer' // Pass the 'customer' role
+                      },
+                    );
                   },
                   userType: 'Customer',
                   description:
@@ -93,7 +99,13 @@ class SignUpChoice extends StatelessWidget {
                 const SizedBox(height: 15),
                 SignUpWidget(
                   onPressed: () {
-                    Navigator.pushNamed(context, AppRoutes.empsignupPage);
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.signUpPage, // Navigate to sign-up page
+                      arguments: {
+                        'role': 'employee' // Pass the 'employee' role
+                      },
+                    );
                   },
                   userType: 'EMPLOYEE',
                   description:

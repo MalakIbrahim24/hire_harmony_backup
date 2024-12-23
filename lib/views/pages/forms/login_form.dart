@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,22 +30,22 @@ class _LoginFormState extends State<LoginForm> {
   bool _isVisible = false;
   bool isLogin = true;
 
+
+
+
   Future<void> login() async {
     if (_formKey.currentState!.validate()) {
       debugPrint('Email: ${_emailController.text}');
-      debugPrint('Email: ${_passwordController.text}');
+      debugPrint('Password: ${_passwordController.text}');
       await BlocProvider.of<AuthCubit>(context).signInWithEmailAndPassword(
-          _emailController.text, _passwordController.text);
-
-      // _emailController.text is used  to get the email from the text field
+          _emailController.text, _passwordController.text); // Raw password
     }
   }
 
   Future<void> register() async {
     if (_formKey.currentState!.validate()) {
-      // _emailController.text is used  to get the email from the text field
       debugPrint('Email: ${_emailController.text}');
-      debugPrint('Email: ${_passwordController.text}');
+      debugPrint('Password: ${_passwordController.text}');
       await BlocProvider.of<AuthCubit>(context).signUpWithEmailAndPassword(
           _emailController.text,
           _passwordController.text,
@@ -49,27 +53,25 @@ class _LoginFormState extends State<LoginForm> {
     }
   }
 
-  String? validatePassword(String value) {
-    String pattern =
-        r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
-    RegExp regExp = RegExp(pattern);
+  Future<String> getDeviceInfo() async {
+    final deviceInfoPlugin = DeviceInfoPlugin();
+    String deviceDetails = '';
 
-    if (regExp.hasMatch(value)) {
-      return null;
+    if (Platform.isAndroid) {
+      // For Android devices
+      final androidInfo = await deviceInfoPlugin.androidInfo;
+      deviceDetails =
+          'Android ${androidInfo.version.release} (${androidInfo.model})';
+    } else if (Platform.isIOS) {
+      // For iOS devices
+      final iosInfo = await deviceInfoPlugin.iosInfo;
+      deviceDetails =
+          '${iosInfo.name} (${iosInfo.systemName} ${iosInfo.systemVersion})';
     } else {
-      return 'Password must be at least 8 characters long and must contain at least one uppercase letter';
+      deviceDetails = 'Unknown Device';
     }
-  }
 
-  String? validateUserName(String value) {
-    String pattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
-    RegExp regExp = RegExp(pattern);
-
-    if (regExp.hasMatch(value)) {
-      return null;
-    } else {
-      return 'Please enter a valid User name';
-    }
+    return deviceDetails;
   }
 
   @override
@@ -99,7 +101,7 @@ class _LoginFormState extends State<LoginForm> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: Text(
-                  'User name',
+                  'Email',
                   style: GoogleFonts.montserratAlternates(
                     fontSize: 15,
                     color: AppColors().navy,
@@ -116,13 +118,13 @@ class _LoginFormState extends State<LoginForm> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: Colors.grey.withValues(alpha:
-                          0.5), // Light gray color with some transparency
+                      color: Colors.grey.withValues(
+                          alpha:
+                              0.5), // Light gray color with some transparency
                       width: 1.0, // Make the border barely visible
                     ),
                   ),
                 ),
-                validator: (value) => validateUserName(value!),
               ),
               const SizedBox(height: 20),
               Padding(
@@ -136,33 +138,33 @@ class _LoginFormState extends State<LoginForm> {
                 ),
               ),
               TextFormField(
-                  controller: _passwordController,
-                  obscureText: !_isVisible,
-                  decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _isVisible = !_isVisible;
-                        });
-                      },
-                      icon: Icon(_isVisible
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined),
-                    ),
-                    // No border when not focused
-                    border: InputBorder.none,
-                    // Light gray border when focused
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Colors.grey.withValues(alpha:
-                            0.5), // Light gray color with transparency
-                        width: 1.0, // Thin border to make it barely visible
-                      ),
+                controller: _passwordController,
+                obscureText: !_isVisible,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _isVisible = !_isVisible;
+                      });
+                    },
+                    icon: Icon(_isVisible
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined),
+                  ),
+                  // No border when not focused
+                  border: InputBorder.none,
+                  // Light gray border when focused
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: Colors.grey.withValues(
+                          alpha: 0.5), // Light gray color with transparency
+                      width: 1.0, // Thin border to make it barely visible
                     ),
                   ),
-                  validator: (value) => validatePassword(value!)),
+                ),
+              ),
               const SizedBox(height: 50),
               BlocConsumer<AuthCubit, AuthState>(
                 bloc: cubit,
@@ -174,11 +176,11 @@ class _LoginFormState extends State<LoginForm> {
                 listener: (context, state) async {
                   if (state is AuthSuccess) {
                     final user = await authServices.currentUser();
-
+                    final device = await getDeviceInfo();
                     FirestoreService.instance.logActivity(
                       uid: user!.uid,
                       action: "Admin logged in",
-                      device: "Test Device",
+                      device: device,
                     );
 
                     Navigator.pushReplacementNamed(
@@ -192,21 +194,18 @@ class _LoginFormState extends State<LoginForm> {
                     Navigator.pushReplacementNamed(
                         context, AppRoutes.emphomePage);
                   } else if (state is AuthFailure) {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                            title: const Text('Error'),
-                            content: Text(state.message),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: const Text('OK'),
-                              ),
-                            ]);
-                      },
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          state.message,
+                          style: GoogleFonts.montserratAlternates(
+                            fontSize: 16,
+                            color: AppColors().white,
+                          ),
+                        ),
+                        backgroundColor: Colors.red,
+                        duration: const Duration(seconds: 3),
+                      ),
                     );
                   }
                 },
@@ -285,5 +284,23 @@ class _LoginFormState extends State<LoginForm> {
         ),
       ),
     );
+  }
+}
+
+class PasswordEncryptionService {
+  final encrypt.Key _key = encrypt.Key.fromLength(32); // 256-bit key
+  final encrypt.IV _iv = encrypt.IV.fromLength(16); // 128-bit IV
+
+  String encryptPassword(String password) {
+    final encrypter = encrypt.Encrypter(encrypt.AES(_key));
+    final encrypted = encrypter.encrypt(password, iv: _iv);
+    return encrypted.base64;
+  }
+
+  String decryptPassword(String encryptedPassword) {
+    final encrypter = encrypt.Encrypter(encrypt.AES(_key));
+    final decrypted =
+        encrypter.decrypt(encrypt.Encrypted.fromBase64(encryptedPassword), iv: _iv);
+    return decrypted;
   }
 }
