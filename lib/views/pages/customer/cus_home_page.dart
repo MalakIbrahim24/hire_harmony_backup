@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/pages/customer/cus_notifications_page.dart';
+import 'package:hire_harmony/views/pages/customer/search_and_filter.dart';
+import 'package:hire_harmony/views/pages/customer/view_all_popular_services.dart';
 import 'package:hire_harmony/views/widgets/customer/best_worker.dart';
 import 'package:hire_harmony/views/widgets/customer/category_widget.dart';
 import 'package:hire_harmony/views/widgets/customer/custom_carousel_indicator.dart';
+import 'package:hire_harmony/views/widgets/customer/invite_link_dialog.dart';
 import 'package:hire_harmony/views/widgets/customer/populer_service.dart';
+import 'package:hire_harmony/views/widgets/customer/view_all_best_workers_page.dart';
+import 'package:hire_harmony/views/widgets/customer/view_all_categories.dart';
 
 class CusHomePage extends StatelessWidget {
   const CusHomePage({super.key});
@@ -16,6 +21,7 @@ class CusHomePage extends StatelessWidget {
       backgroundColor: AppColors().white,
       extendBody: true, // Allows content to extend behind the navigation bar
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         iconTheme: const IconThemeData(
           color: Colors.white, // Set the color of the menu icon
         ),
@@ -27,7 +33,7 @@ class CusHomePage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>const  CusNotificationsPage(),
+                  builder: (context) => const CusNotificationsPage(),
                 ),
               );
             },
@@ -46,8 +52,7 @@ class CusHomePage extends StatelessWidget {
                 ),
                 Text('Qalqiliya , palestine',
                     style: GoogleFonts.montserratAlternates(
-                      color: AppColors().white,
-                    )),
+                        color: AppColors().white, fontSize: 16)),
               ],
             ),
           ],
@@ -73,20 +78,32 @@ class CusHomePage extends StatelessWidget {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search for "Indoor Cleaning"',
-                        hintStyle: GoogleFonts.montserratAlternates(
-                          textStyle: TextStyle(
-                            fontSize: 16,
-                            color: AppColors().grey,
-                            fontWeight: FontWeight.w400,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SearchAndFilter()),
+                        );
+                      },
+                      child: AbsorbPointer(
+                        // Prevents the `TextField` from handling taps
+                        child: TextField(
+                          decoration: InputDecoration(
+                            hintText: 'Search for "Indoor Cleaning"',
+                            hintStyle: GoogleFonts.montserratAlternates(
+                              textStyle: TextStyle(
+                                fontSize: 16,
+                                color: AppColors().grey,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            border: InputBorder.none,
+                            prefixIcon: Icon(
+                              Icons.search,
+                              color: AppColors().grey,
+                            ),
                           ),
-                        ),
-                        border: InputBorder.none,
-                        prefixIcon: Icon(
-                          Icons.search,
-                          color: AppColors().grey,
                         ),
                       ),
                     ),
@@ -115,7 +132,14 @@ class CusHomePage extends StatelessWidget {
                       ),
                     ),
                     InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ViewAllCategoriesPage(),
+                          ),
+                        );
+                      },
                       child: Text(
                         'View all >',
                         style: GoogleFonts.montserratAlternates(
@@ -146,7 +170,15 @@ class CusHomePage extends StatelessWidget {
                       ),
                     ),
                     InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const ViewAllPopularServicesPage(),
+                          ),
+                        );
+                      },
                       child: Text(
                         'View all >',
                         style: GoogleFonts.montserratAlternates(
@@ -207,6 +239,16 @@ class CusHomePage extends StatelessWidget {
                               horizontal: 16, vertical: 10),
                         ),
                         onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return const InviteLinkDialog(
+                                link:
+                                    "https://your-invite-link.com", // رابط الدعوة
+                              );
+                            },
+                          );
+
                           // Add your button action here
                         },
                         child: Row(
@@ -249,7 +291,15 @@ class CusHomePage extends StatelessWidget {
                       ),
                     ),
                     InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const ViewAllBestWorkersPage(),
+                          ),
+                        );
+                      },
                       child: Text(
                         'View all >',
                         style: GoogleFonts.montserratAlternates(

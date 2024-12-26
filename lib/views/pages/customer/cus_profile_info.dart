@@ -4,8 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/pages/customer/cus_edit_profile_page.dart';
 
-class ProfileInfo extends StatelessWidget {
-  const ProfileInfo({super.key});
+class CusProfileInfo extends StatelessWidget {
+  const CusProfileInfo({super.key});
 
   // المعرف الثابت للمستند في Firestore
   final String documentId = 'tAkdNFqswzMaxOPRC239';
@@ -22,6 +22,7 @@ class ProfileInfo extends StatelessWidget {
       }
       return null;
     } catch (e) {
+      // ignore: avoid_print
       print('Error fetching profile data: $e');
       return null;
     }
@@ -98,8 +99,8 @@ class ProfileInfo extends StatelessWidget {
                 ),
               ),
               Text(
-               data['email'] ?? 'N/A',
-                 style: GoogleFonts.montserratAlternates(
+                data['email'] ?? 'N/A',
+                style: GoogleFonts.montserratAlternates(
                   textStyle: TextStyle(
                     fontSize: 14,
                     color: AppColors().grey,
@@ -125,7 +126,8 @@ class ProfileInfo extends StatelessWidget {
                       ),
                       const Divider(),
                       ListTile(
-                        leading: Icon(Icons.location_on, color: AppColors().orange),
+                        leading:
+                            Icon(Icons.location_on, color: AppColors().orange),
                         title: Text(data['location'] ?? 'N/A'),
                         subtitle: const Text('Location'),
                       ),

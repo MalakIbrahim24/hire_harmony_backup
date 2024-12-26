@@ -81,7 +81,18 @@ class _PhonePageState extends State<PhonePage> {
         verificationFailed: (FirebaseAuthException e) {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Verification failed: ${e.message}')),
+            SnackBar(
+              content: SnackBar(
+                backgroundColor: AppColors().red,
+                content: Text(
+                  'Verification failed: ${e.message}',
+                  style: GoogleFonts.montserratAlternates(
+                    color: AppColors().white,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+            ),
           );
         },
         codeSent: (String verId, int? resendToken) {
@@ -91,7 +102,16 @@ class _PhonePageState extends State<PhonePage> {
             isSmsSent = true; // Display the OTP input field
           });
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('OTP sent successfully!')),
+            SnackBar(
+              backgroundColor: AppColors().green,
+              content: Text(
+                'OTP sent successfully!',
+                style: GoogleFonts.montserratAlternates(
+                  color: AppColors().white,
+                  fontSize: 15,
+                ),
+              ),
+            ),
           );
         },
         codeAutoRetrievalTimeout: (String verId) {
@@ -104,7 +124,16 @@ class _PhonePageState extends State<PhonePage> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error sending OTP: $e')),
+        SnackBar(
+          backgroundColor: AppColors().red,
+          content: Text(
+            'Error sending OTP: $e',
+            style: GoogleFonts.montserratAlternates(
+              color: AppColors().white,
+              fontSize: 15,
+            ),
+          ),
+        ),
       );
     }
   }
@@ -127,42 +156,26 @@ class _PhonePageState extends State<PhonePage> {
 
       final User user = userCredential.user!;
 
-      // Link email/password to the phone-authenticated account
-      final emailCredential = EmailAuthProvider.credential(
-        email: formData['email']!,
-        password: formData['password']!,
-      );
-      await user.linkWithCredential(emailCredential);
-
-      // Unlink the phone provider to remove the phone number as an identifier
-      await user.unlink(PhoneAuthProvider.PROVIDER_ID);
-
-      // Update the user's email (optional but recommended)
-      await user.verifyBeforeUpdateEmail(formData['email']!);
-
-      // Update the user's display name
-      await user.updateDisplayName(formData['name']);
-
-      // Hash the password before storing in Firestore
-      String hashedPassword = _hashPassword(formData['password']!);
-
-      // Store user data in Firestore
-
-      // Navigate based on role
+      // If the role is 'customer', register immediately
       if (formData['role'] == 'customer') {
+        // Hash the password before storing in Firestore
+        String hashedPassword = _hashPassword(formData['password']!);
+
+        // Insert the customer details into Firestore
         await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
           'name': formData['name'],
           'email': formData['email'],
           'passwordHash': hashedPassword, // Store hashed password
           'phone':
               '+970${_phoneController.text.trim()}', // Add the phone number
-          'role': formData['role'], // Role (customer or employee)
+          'role': formData['role'], // Role (customer)
         });
+
         // Navigate to customer verification success page
         if (!mounted) return;
         Navigator.pushNamed(context, AppRoutes.cusVerificationSuccessPage);
       } else if (formData['role'] == 'employee') {
-        // Navigate to employee-specific signup page
+        // For employees, navigate without inserting into Firestore
         if (!mounted) return;
         Navigator.pushNamed(context, AppRoutes.empidverificationPage,
             arguments: {

@@ -19,6 +19,12 @@ class AppRoutes {
   static const String cusMessagesPage = '/cus-messages-page';
   static const String cusProfilePage = '/cus-profile-page';
   static const String cusNotificationsPage = '/cus-notifications-page';
+  static const String viewAllCategoriesPage = '/view-all-categories-page';
+  static const String viewAllPopularServicesPage = '/view-all-popular-services-page';
+  static const String viewAllBestWorkersPage = '/view-all-best-workers-page';
+
+
+
 
   static const String emphomePage = '/emp-home-page';
 

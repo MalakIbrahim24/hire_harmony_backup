@@ -16,6 +16,7 @@ import 'package:hire_harmony/views/pages/admin/deleted_acounts.dart';
 import 'package:hire_harmony/views/pages/admin/edit_services_page.dart';
 import 'package:hire_harmony/views/pages/admin/edited_services_page.dart';
 import 'package:hire_harmony/views/pages/admin/user_management_page.dart';
+import 'package:hire_harmony/views/pages/customer/view_all_popular_services.dart';
 import 'package:hire_harmony/views/pages/forms/emp_sign_up_form.dart';
 import 'package:hire_harmony/views/pages/signup/sign_up_page.dart';
 import 'package:hire_harmony/views/pages/customer/cus_verification_success_page.dart';
@@ -32,6 +33,8 @@ import 'package:hire_harmony/views/pages/employee/emp_phone_page.dart';
 import 'package:hire_harmony/views/pages/signup/phone_page.dart';
 import 'package:hire_harmony/views/pages/signup/sign_up_choice.dart';
 import 'package:hire_harmony/views/pages/welcome_page.dart';
+import 'package:hire_harmony/views/widgets/customer/view_all_best_workers_page.dart';
+import 'package:hire_harmony/views/widgets/customer/view_all_categories.dart';
 
 class AppRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -80,6 +83,21 @@ class AppRouter {
       case AppRoutes.customButtomNavbarPage:
         return MaterialPageRoute(
           builder: (_) => const CustomButtomNavbar(),
+          settings: settings,
+        );
+      case AppRoutes.viewAllCategoriesPage:
+        return MaterialPageRoute(
+          builder: (_) => const ViewAllCategoriesPage(),
+          settings: settings,
+        );
+        case AppRoutes.viewAllPopularServicesPage:
+        return MaterialPageRoute(
+          builder: (_) => const ViewAllPopularServicesPage(),
+          settings: settings,
+        );
+        case AppRoutes.viewAllBestWorkersPage:
+        return MaterialPageRoute(
+          builder: (_) => const ViewAllBestWorkersPage(),
           settings: settings,
         );
       case AppRoutes.emphomePage:

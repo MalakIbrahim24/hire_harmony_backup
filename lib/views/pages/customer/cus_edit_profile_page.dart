@@ -32,8 +32,9 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
         });
       }
     } catch (e) {
+      // ignore: avoid_print
       print('Error fetching data: $e');
-      if (!mounted) return;
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('فشل تحميل البيانات')),
       );
@@ -50,14 +51,18 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
         'location': locationController.text,
         'phone_number': mobileController.text,
       }, SetOptions(merge: true));
-      if (!mounted) return;
+
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تم تحديث البيانات بنجاح')),
       );
 
+      // ignore: use_build_context_synchronously
       Navigator.pop(context);
     } catch (e) {
+      // ignore: avoid_print
       print('Error updating data: $e');
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('فشل تحديث البيانات')),
       );

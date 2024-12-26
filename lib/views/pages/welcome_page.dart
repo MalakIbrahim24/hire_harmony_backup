@@ -40,7 +40,7 @@ class _WelcomePageState extends State<WelcomePage> {
       body: Stack(children: [
         Positioned.fill(
           child: Image.asset(
-            'lib/assets/images/welcome3.jpg',
+            'lib/assets/images/shose.jpg',
             fit: BoxFit.cover,
           ),
         ),

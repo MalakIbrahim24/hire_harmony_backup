@@ -19,34 +19,36 @@ class _CusProfilePageState extends State<CusProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors().white,
-      appBar: AppBar(
+    return SafeArea(
+      child: Scaffold(
         backgroundColor: AppColors().white,
-        elevation: 0,
-        title: Text(
-          'Profile',
-          style: TextStyle(color: AppColors().navy, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.edit, color: AppColors().orange),
-            onPressed: () {
-              _showEditProfileDialog(context);
-            },
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: AppColors().white,
+          elevation: 0,
+          title: Text(
+            'Profile',
+            style:
+                TextStyle(color: AppColors().navy, fontWeight: FontWeight.bold),
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: Icon(Icons.edit, color: AppColors().orange),
+              onPressed: () {
+                _showEditProfileDialog(context);
+              },
+            ),
+          ],
+        ),
+        body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 20),
             const CircleAvatar(
               radius: 50,
               backgroundImage: AssetImage(
-                  'assets/images/teacher.jpg'), // Replace with your image
+                  'lib/assets/images/teacher.jpg'), // Replace with your image
             ),
             const SizedBox(height: 10),
             Text(
@@ -82,7 +84,9 @@ class _CusProfilePageState extends State<CusProfilePage> {
               ),
             ),
             const SizedBox(height: 20),
-            const buildMenuContainer(),
+            const Expanded(
+              child: buildMenuContainer(),
+            ),
           ],
         ),
       ),

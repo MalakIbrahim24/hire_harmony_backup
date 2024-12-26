@@ -60,6 +60,8 @@ flutter:
     - lib/assets/images/chef.png
     - lib/assets/images/growth.png
     - lib/assets/images/office.jpg
+    - lib/assets/images/teacher.jpg
+    - lib/assets/images/shose.jpg
     - lib/assets/images/office2.jpg
     - lib/assets/images/ServManage.jpeg
     - lib/assets/images/ServManage.jpeg

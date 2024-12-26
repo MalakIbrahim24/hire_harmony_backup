@@ -18,6 +18,17 @@ class EmpIdVerificationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //   final Map<String, String>? formData =
+    //     ModalRoute.of(context)?.settings.arguments as Map<String, String>?;
+
+    // if (formData == null) {
+    //   return const Center(
+    //     child: Text(
+    //       'Error: No user data provided.',
+    //       style: TextStyle(fontSize: 18, color: Colors.red),
+    //     ),
+    //   );
+    // }
     return Scaffold(
       backgroundColor: AppColors().white,
       appBar: AppBar(
@@ -35,13 +46,6 @@ class EmpIdVerificationPage extends StatelessWidget {
               fontWeight: FontWeight.w500),
         ),
         backgroundColor: AppColors().white,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(25.0),
-          child: Divider(
-            thickness: 1,
-            color: AppColors().grey,
-          ),
-        ),
       ),
       body: Padding(
         padding:
@@ -58,8 +62,9 @@ class EmpIdVerificationPage extends StatelessWidget {
             const SizedBox(height: 60),
             CircleAvatar(
               radius: 70,
-              backgroundColor: AppColors().grey,
-              child: Icon(Icons.image, color: AppColors().white, size: 50),
+              backgroundColor: AppColors().greylight,
+              child: Icon(Icons.person_2_outlined,
+                  color: AppColors().grey, size: 50),
             ),
             const SizedBox(height: 60),
             if (!isDisplay)
@@ -123,7 +128,7 @@ class EmpIdVerificationPage extends StatelessWidget {
                       color: AppColors().orange,
                     ),
                     child: Icon(
-                      Icons.camera_alt,
+                      Icons.camera_alt_outlined,
                       color: AppColors().white,
                     ),
                   ),

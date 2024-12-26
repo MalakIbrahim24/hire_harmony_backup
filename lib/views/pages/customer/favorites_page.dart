@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/models/product.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
-
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
 

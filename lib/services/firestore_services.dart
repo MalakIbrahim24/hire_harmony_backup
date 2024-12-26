@@ -194,6 +194,39 @@ class FirestoreService {
     }
   }
 
+  Stream<List<Map<String, dynamic>>> getCategories({int limit = 10}) {
+    return firestore
+        .collection('categories')
+        .limit(limit)
+        .snapshots()
+        .map((snapshot) {
+      debugPrint("Documents fetched: ${snapshot.docs.length}");
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        debugPrint("Document ID: ${doc.id}, Data: $data");
+        return {
+          'id': doc.id,
+          'data': doc.data(),
+        };
+      }).toList();
+    });
+  }
+
+  Stream<List<Map<String, dynamic>>> getPopularServices({int limit = 10}) {
+    return FirebaseFirestore.instance
+        .collection('popularservices')
+        .limit(limit)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return {
+          'id': doc.id,
+          'data': doc.data(),
+        };
+      }).toList();
+    });
+  }
+
   // // Log Added Service
   // Future<void> logAddedService(String serviceName) async {
   //   try {

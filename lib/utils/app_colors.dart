@@ -15,12 +15,15 @@ class AppColors {
   final Color navy2 = const Color.fromARGB(255, 47, 60, 107);
   final Color blue = Colors.blue;
   final Color babyBlue = const Color.fromARGB(255, 164, 214, 255);
+  final Color bluey = const Color.fromARGB(255, 226, 241, 255);
 
   final Color teal = const Color.fromRGBO(40, 92, 92, 1);
   final Color green = Colors.green;
   final Color red = Colors.red;
 
   final Color orange = const Color.fromRGBO(255, 100, 4, 1.0);
+  final Color pearl = const Color.fromARGB(255, 254, 249, 241);
+
   final Color orangelight = const Color.fromARGB(255, 254, 229, 215);
   final Color orange2 = const Color.fromARGB(255, 164, 63, 0);
   final Color brown = const Color.fromARGB(253, 81, 37, 9);

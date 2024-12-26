@@ -5,6 +5,7 @@ import 'package:hire_harmony/views/pages/customer/cus_home_page.dart';
 import 'package:hire_harmony/views/pages/customer/cus_messages_page.dart';
 import 'package:hire_harmony/views/pages/customer/cus_profile_page.dart';
 import 'package:hire_harmony/views/pages/customer/favorites_page.dart';
+import 'package:hire_harmony/views/pages/customer/order_page.dart';
 
 class CustomButtomNavbar extends StatefulWidget {
   const CustomButtomNavbar({super.key});
@@ -14,7 +15,7 @@ class CustomButtomNavbar extends StatefulWidget {
 }
 
 class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
-  int currentPageIndex = 1;
+  int currentPageIndex = 2;
 
   @override
   Widget build(BuildContext context) {
@@ -50,11 +51,9 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                 Text(
                   'Good Afternoon, Haneen',
                   style: GoogleFonts.montserratAlternates(
-                    textStyle: TextStyle(
-                      fontSize: 18,
-                      color: AppColors().navy,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    fontSize: 18,
+                    color: AppColors().navy,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
@@ -99,6 +98,12 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                     label: 'Messages',
                   ),
                   NavigationDestination(
+                    selectedIcon: Icon(Icons.list, color: AppColors().white),
+                    icon:
+                        Icon(Icons.list_alt_outlined, color: AppColors().navy),
+                    label: 'My Order',
+                  ),
+                  NavigationDestination(
                     selectedIcon: Icon(
                       Icons.home,
                       color: AppColors().white,
@@ -136,6 +141,7 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
             ),
       body: const <Widget>[
         CusMessagesPage(),
+        OrderPage(),
         CusHomePage(),
         FavoritesPage(),
         CusProfilePage(),

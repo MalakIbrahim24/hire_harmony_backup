@@ -78,46 +78,33 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                     builder: (context) => AlertDialog(
                       content: Container(
                         decoration: const BoxDecoration(),
-                        child: Column(
-                          children: [
-                            Text(
-                              'Terms and Conditions',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.montserratAlternates(
-                                fontSize: 28,
-                                color: AppColors().navy,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              Text(
+                                'Terms and Conditions',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.montserratAlternates(
+                                  fontSize: 28,
+                                  color: AppColors().navy,
+                                ),
                               ),
-                            ),
-                            Text(
-                              'Our app aims to help people and we allow no inappropraite act, we are looking for the comfort and happiness of our customers.',
-                              style: GoogleFonts.montserratAlternates(
-                                fontSize: 14,
-                                color: AppColors().navy,
+                              Text(
+                                '1. Commitment to Privacy: We are dedicated to safeguarding your personal information while providing a seamless platform for reserving and managing services.\n2. Purpose of the App: Our app connects customers with freelancers and self-employed professionals, streamlining communication and transaction processes to enhance efficiency and trust.\n3. Customer Features:\n- Customers can view detailed profiles of service providers, including ratings, comments, and any complaints, ensuring transparency and informed decision-making.\n- Advanced search and filtering options help customers find the most suitable service providers quickly and efficiently based on specific criteria.\n4. Employee Verification:\n- Employees are required to provide important personal information, including ID verification and face recognition, to ensure trust and security on the platform.\n- These measures are implemented in strict compliance with privacy laws and regulations.\n',
+                                style: GoogleFonts.montserratAlternates(
+                                  fontSize: 14,
+                                  color: AppColors().navy,
+                                ),
                               ),
-                            ),
-                            Text(
-                              'Here are the following rules and regulation that you are kindly requested to follow: ',
-                              style: GoogleFonts.montserratAlternates(
-                                fontSize: 14,
-                                color: AppColors().navy,
+                              Text(
+                                '5. Data Security:\n- All personal data collected is protected using industry-standard security protocols to prevent unauthorized access, misuse, or breaches.\n- Sensitive information, such as verification documents and biometric data, is handled securely and only for verification purposes.\n6. Location-Based Services:\n- The app uses advanced AI algorithms to locate the closest service providers based on the customer’s location, eliminating geographic constraints and ensuring timely service delivery.\n7. Transparency and Trust:\n- By maintaining detailed provider profiles and requiring verification, we aim to foster a trustworthy environment for all users.\n- Customers and providers can rate and review each other to maintain high service standards and accountability.\n8. Compliance with Regulations: All data collection and processing are conducted in accordance with applicable privacy regulations to ensure user rights are protected.\n9. Support and Contact: If you have questions, concerns, or require assistance regarding your privacy or the app’s features, please contact us through the app’s support section.\n10. Continuous Improvement: We are constantly working to enhance our platform and its features while maintaining the highest standards of privacy and security.\nThis format ensures that each point starts on a new line when displayed in your app. Let me know if you need further refinements!',
+                                style: GoogleFonts.montserratAlternates(
+                                  fontSize: 14,
+                                  color: AppColors().navy,
+                                ),
                               ),
-                            ),
-                            Text(
-                              '1. No harmful threats or words/slangs are allowed\n 2. No scamming or refusing to pay, people that refuse to pay will be dealt with through the law, and they shall be punished the proper way.',
-                              style: GoogleFonts.montserratAlternates(
-                                fontSize: 14,
-                                color: AppColors().navy,
-                              ),
-                            ),
-                            Text(
-                              '3. Reciepts are always a must to keep to avoid any confliction and it will be used a evidence in the court of law',
-                              style: GoogleFonts.montserratAlternates(
-                                fontSize: 14,
-                                color: AppColors().navy,
-                              ),
-                            ),
-                            const Text('4.')
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),

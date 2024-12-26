@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hire_harmony/models/category.dart';
-import 'package:hire_harmony/models/product.dart';
+import 'package:hire_harmony/services/firestore_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 
 class CategoryWidget extends StatefulWidget {
@@ -12,79 +11,75 @@ class CategoryWidget extends StatefulWidget {
 }
 
 class _CategoryWidgetState extends State<CategoryWidget> {
-  late List<Product> filterProducts;
-  String? selectedCategoryId = '';
+  Stream<List<Map<String, dynamic>>> categoryStream =
+      FirestoreService.instance.getCategories(limit: 10);
+
+  bool isSelected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch up to 10 categories
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 100,
-      child: ListView.builder(
-        itemCount: Category.dummyCategories.length,
-        scrollDirection: Axis.horizontal,
-        itemBuilder: (context, index) {
-          final dummyCategory = Category.dummyCategories[index];
-          bool isSelected = selectedCategoryId == dummyCategory.id;
-          return InkWell(
-            onTap: () {
-              setState(() {
-                if (selectedCategoryId == dummyCategory.id &&
-                    selectedCategoryId != null) {
-                  selectedCategoryId = null;
-                  filterProducts = dummyProducts;
-                } else {
-                  selectedCategoryId = dummyCategory.id;
-                  filterProducts = dummyProducts
-                      .where((product) =>
-                          product.category.id == selectedCategoryId)
-                      .toList();
-                }
-              });
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                color: isSelected ? AppColors().orange : AppColors().white,
-                border: Border.all(
-                  color: isSelected
-                      ? Colors.transparent
-                      : AppColors().navy, // Navy border when not selected
-                  width: 1, // Border width
-                ),
-                borderRadius: BorderRadius.circular(8), // Card border radius
-              ),
-              margin: const EdgeInsets.symmetric(
-                  horizontal: 4), // Space between items
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      dummyCategory.imgUrl,
-                      width: 50,
-                      color: selectedCategoryId == dummyCategory.id
-                          ? AppColors().white
-                          : AppColors().navy,
+        height: 100,
+        child: StreamBuilder<List<Map<String, dynamic>>>(
+          stream: categoryStream,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('No categories found'));
+            }
+            final categories = snapshot.data!;
+            return ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: categories.length,
+              itemBuilder: (context, index) {
+                final category =
+                    categories[index]['data'] as Map<String, dynamic>;
+                final categoryTitle = category['name'] ?? 'Unknown Title';
+
+                return InkWell(
+                  onTap: () {
+                    debugPrint(
+                        'Selected Category ID: ${categories[index]['id']}');
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: AppColors().white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors().navy),
                     ),
-                    const SizedBox(height: 5),
-                    Text(
-                      dummyCategory.title,
-                      style: GoogleFonts.montserratAlternates(
-                        textStyle: TextStyle(
-                          fontSize: 13,
-                          color: selectedCategoryId == dummyCategory.id
-                              ? AppColors().white
-                              : AppColors().navy,
-                          fontWeight: FontWeight.w500,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          categoryTitle,
+                          style: GoogleFonts.montserratAlternates(
+                            textStyle: TextStyle(
+                              fontSize: 13,
+                              color: AppColors().navy,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
+                  ),
+                );
+              },
+            );
+          },
+        ));
   }
 }

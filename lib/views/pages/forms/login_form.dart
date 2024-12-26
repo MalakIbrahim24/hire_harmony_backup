@@ -30,26 +30,36 @@ class _LoginFormState extends State<LoginForm> {
   bool _isVisible = false;
   bool isLogin = true;
 
-
-
-
   Future<void> login() async {
     if (_formKey.currentState!.validate()) {
-      debugPrint('Email: ${_emailController.text}');
-      debugPrint('Password: ${_passwordController.text}');
+      final email = _emailController.text.trim();
+      final password = _passwordController.text.trim();
+
+      debugPrint('Email: $email');
+      debugPrint('Password: $password');
+
       await BlocProvider.of<AuthCubit>(context).signInWithEmailAndPassword(
-          _emailController.text, _passwordController.text); // Raw password
+        email, // Trimmed email
+        password, // Trimmed password
+      );
     }
   }
 
   Future<void> register() async {
     if (_formKey.currentState!.validate()) {
-      debugPrint('Email: ${_emailController.text}');
-      debugPrint('Password: ${_passwordController.text}');
+      final email = _emailController.text.trim();
+      final password = _passwordController.text.trim();
+      final role = _roleController.text.trim();
+
+      debugPrint('Email: $email');
+      debugPrint('Password: $password');
+      debugPrint('Role: $role');
+
       await BlocProvider.of<AuthCubit>(context).signUpWithEmailAndPassword(
-          _emailController.text,
-          _passwordController.text,
-          _roleController.text);
+        email, // Trimmed email
+        password, // Trimmed password
+        role, // Trimmed role
+      );
     }
   }
 
@@ -299,8 +309,8 @@ class PasswordEncryptionService {
 
   String decryptPassword(String encryptedPassword) {
     final encrypter = encrypt.Encrypter(encrypt.AES(_key));
-    final decrypted =
-        encrypter.decrypt(encrypt.Encrypted.fromBase64(encryptedPassword), iv: _iv);
+    final decrypted = encrypter
+        .decrypt(encrypt.Encrypted.fromBase64(encryptedPassword), iv: _iv);
     return decrypted;
   }
 }
