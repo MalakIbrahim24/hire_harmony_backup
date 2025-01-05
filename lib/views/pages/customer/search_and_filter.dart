@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/services/firestore_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
+import 'package:hire_harmony/views/pages/customer/view_emp_profile_page.dart';
 
 class SearchAndFilter extends StatefulWidget {
   const SearchAndFilter({super.key});
@@ -75,18 +76,14 @@ class _SearchAndFilterState extends State<SearchAndFilter> {
                                 searchQuery = '';
                               });
                             },
-                            child: Container(
+                            child: SizedBox(
                               width: 20,
-                              height: 22,
-                              decoration: BoxDecoration(
-                                color: AppColors().black,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Center(
+                              height: 25,
+                              child: Center(
                                 child: Text(
                                   "x",
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: AppColors().navy,
                                     fontSize: 16,
                                   ),
                                 ),
@@ -114,6 +111,8 @@ class _SearchAndFilterState extends State<SearchAndFilter> {
             'role': data['role'] ?? '',
             'availability': data['availability'] ?? 'Unavailable',
             'location': data['location'] ?? 'Unknown',
+            'rating': data['rating'] ?? 0,
+            'reviews': data['reviews'] ?? 0,
           },
           queryBuilder: (query) => query.where('role', isEqualTo: 'employee'),
         ),
@@ -173,6 +172,7 @@ class _SearchAndFilterState extends State<SearchAndFilter> {
               final employee = employees[index];
 
               return Card(
+                color: AppColors().white,
                 margin:
                     const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 child: Padding(
@@ -248,7 +248,25 @@ class _SearchAndFilterState extends State<SearchAndFilter> {
                               backgroundColor: AppColors().orange,
                             ),
                             onPressed: () {
-                              // Navigate to employee profile
+                              if (employee['id'] != null &&
+                                  employee['id'] is String) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ViewEmpProfilePage(
+                                      employeeId: employee[
+                                          'id'], // Pass the employee ID
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                // Show a dialog or message indicating that the ID is missing
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          'Employee ID is missing or invalid')),
+                                );
+                              }
                             },
                             child: const Text(
                               'View Profile',

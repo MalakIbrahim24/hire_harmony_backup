@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 class StatItem extends StatelessWidget {
   final String label;
   final String value;
@@ -10,16 +12,18 @@ class StatItem extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
-
       children: [
         Text(
           value,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: GoogleFonts.montserratAlternates(
+              fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
         Text(
           label,
-          style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+          textAlign: TextAlign.center,
+          style: GoogleFonts.montserratAlternates(
+              color: Colors.grey.shade600, fontSize: 12),
         ),
       ],
     );

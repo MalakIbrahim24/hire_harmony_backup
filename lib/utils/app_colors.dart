@@ -15,6 +15,7 @@ class AppColors {
   final Color navy2 = const Color.fromARGB(255, 47, 60, 107);
   final Color blue = Colors.blue;
   final Color babyBlue = const Color.fromARGB(255, 164, 214, 255);
+  final Color lightblue = const Color.fromARGB(255, 206, 229, 253);
   final Color bluey = const Color.fromARGB(255, 226, 241, 255);
 
   final Color teal = const Color.fromRGBO(40, 92, 92, 1);

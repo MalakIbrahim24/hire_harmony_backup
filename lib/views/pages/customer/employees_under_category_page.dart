@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
+import 'package:hire_harmony/views/pages/customer/view_emp_profile_page.dart';
 
 class EmployeesUnderCategoryPage extends StatelessWidget {
   final String categoryId;
@@ -16,7 +17,6 @@ class EmployeesUnderCategoryPage extends StatelessWidget {
 
     debugPrint("Selected categoryId: $categoryId");
 
-    // Iterate over each user and check their 'empcategories' subcollection
     for (final userDoc in userDocs.docs) {
       final empCategoriesCollection =
           userDoc.reference.collection('empcategories');
@@ -25,14 +25,9 @@ class EmployeesUnderCategoryPage extends StatelessWidget {
           .get();
 
       if (matchingCategory.exists) {
-        // Add full user details to the filtered list
         final userData = userDoc.data();
-        filteredUsers.add(userData); // Ensure non-nullable data
-        debugPrint("User matched: $userData");
-        debugPrint(
-            "Category in user's empcategories: ${matchingCategory.data()}");
-      } else {
-        debugPrint("No matching category for user: ${userDoc.data()}");
+        userData['uid'] = userDoc.id; // Add employee ID to the data
+        filteredUsers.add(userData);
       }
     }
 
@@ -76,6 +71,7 @@ class EmployeesUnderCategoryPage extends StatelessWidget {
               final employeeName = employee['name'] ?? 'Unknown Employee';
               final employeeEmail = employee['email'] ?? 'No Email';
               final employeeImg = employee['img'] ?? '';
+              final employeeId = employee['uid'];
 
               return ListTile(
                 leading: CircleAvatar(
@@ -97,6 +93,18 @@ class EmployeesUnderCategoryPage extends StatelessWidget {
                   ),
                 ),
                 subtitle: Text(employeeEmail),
+                onTap: () {
+                  if (employeeId != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ViewEmpProfilePage(
+                          employeeId: employeeId, // Pass the employee ID
+                        ),
+                      ),
+                    );
+                  }
+                },
               );
             },
           );

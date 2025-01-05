@@ -33,6 +33,7 @@ class ProfileDrawer extends StatelessWidget {
               style: const TextStyle(fontSize: 14),
             ),
           ),
+          const Spacer(),
           _buildMenuItem(Icons.lock, "Change Password", () {
             Navigator.push(
               context,
@@ -41,9 +42,6 @@ class ProfileDrawer extends StatelessWidget {
               ),
             );
             // Action for change password
-          }),
-          _buildMenuItem(Icons.favorite, "Favorite", () {
-            // Action for favorite
           }),
           _buildMenuItem(Icons.phone, "Contact Us", () {
             // Action for contact us

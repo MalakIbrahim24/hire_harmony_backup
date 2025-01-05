@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hire_harmony/views/pages/customer/view_emp_profile_page.dart';
 
 class ViewAllBestWorkersPage extends StatelessWidget {
   const ViewAllBestWorkersPage({super.key});
@@ -144,7 +145,15 @@ class ViewAllBestWorkersPage extends StatelessWidget {
                               ),
                             ),
                             onPressed: () {
-                              // Add view profile functionality here
+                              // Navigate to ViewEmpProfilePage
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ViewEmpProfilePage(
+                                    employeeId: bestWorkerId,
+                                  ),
+                                ),
+                              );
                             },
                             child: Text(
                               'View Profile',

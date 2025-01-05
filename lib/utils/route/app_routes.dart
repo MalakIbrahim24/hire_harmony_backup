@@ -1,32 +1,34 @@
 class AppRoutes {
   static const String loginPage = '/log-in-page';
   static const String forgotPasswordPage = '/forgot-Password-page';
-
   static const String signupChoicePage = '/sign-up-choice-page';
+
   static const String signUpPage = '/sign-up-page';
   static const String empSignupForm = '/emp-sign-up-from';
   static const String empphonePage = '/emp-phone-page';
-  static const String customButtomNavbarPage = '/custom-bottom-navbar-page';
+  static const String empidverificationPage = '/emp-id-verification-page';
+  static const String emphomePage = '/emp-home-page';
+  static const String empNavbar = '/emp-navbar';
+  static const String empNotificationsPage = '/emp-notifications-page';
+  static const String empProfileInfoPage = '/emp-profile-info-page';
+  static const String accountDeletionScreen = '/account-deletion-screen';
+  static const String contactUsPage = '/contact-us-page';
 
+  static const String customButtomNavbarPage = '/custom-bottom-navbar-page';
   static const String phonePage = '/phone-page';
   static const String cusVerificationSuccessPage =
       '/cusVerificationSuccess-page';
   static const String empVerificationSuccessPage =
       'empVerificationSuccess-Page';
-  static const String empidverificationPage = '/emp-id-verification-page';
-
   static const String cushomePage = '/cus-home-page';
   static const String cusMessagesPage = '/cus-messages-page';
   static const String cusProfilePage = '/cus-profile-page';
   static const String cusNotificationsPage = '/cus-notifications-page';
   static const String viewAllCategoriesPage = '/view-all-categories-page';
-  static const String viewAllPopularServicesPage = '/view-all-popular-services-page';
+  static const String viewAllPopularServicesPage =
+      '/view-all-popular-services-page';
   static const String viewAllBestWorkersPage = '/view-all-best-workers-page';
-
-
-
-
-  static const String emphomePage = '/emp-home-page';
+  static const String viewEmpProfilePage = '/view-emp-profile-page';
 
   static const String welcomePage = '/welcome-page';
 

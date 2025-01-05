@@ -16,7 +16,13 @@ import 'package:hire_harmony/views/pages/admin/deleted_acounts.dart';
 import 'package:hire_harmony/views/pages/admin/edit_services_page.dart';
 import 'package:hire_harmony/views/pages/admin/edited_services_page.dart';
 import 'package:hire_harmony/views/pages/admin/user_management_page.dart';
+import 'package:hire_harmony/views/pages/customer/account_deletion_page.dart';
 import 'package:hire_harmony/views/pages/customer/view_all_popular_services.dart';
+import 'package:hire_harmony/views/pages/customer/view_emp_profile_page.dart';
+import 'package:hire_harmony/views/pages/employee/contact_us_page.dart';
+import 'package:hire_harmony/views/pages/employee/emp_navbar.dart';
+import 'package:hire_harmony/views/pages/employee/emp_notifications_page.dart';
+import 'package:hire_harmony/views/pages/employee/emp_profile_info_page.dart';
 import 'package:hire_harmony/views/pages/forms/emp_sign_up_form.dart';
 import 'package:hire_harmony/views/pages/signup/sign_up_page.dart';
 import 'package:hire_harmony/views/pages/customer/cus_verification_success_page.dart';
@@ -65,6 +71,11 @@ class AppRouter {
           builder: (_) => const EmpSignupForm(),
           settings: settings,
         );
+      case AppRoutes.empNavbar:
+        return MaterialPageRoute(
+          builder: (_) => const EmpNavbar(),
+          settings: settings,
+        );
       case AppRoutes.cushomePage:
         return MaterialPageRoute(
           builder: (_) => const CusHomePage(),
@@ -90,19 +101,30 @@ class AppRouter {
           builder: (_) => const ViewAllCategoriesPage(),
           settings: settings,
         );
-        case AppRoutes.viewAllPopularServicesPage:
+      case AppRoutes.viewAllPopularServicesPage:
         return MaterialPageRoute(
           builder: (_) => const ViewAllPopularServicesPage(),
           settings: settings,
         );
-        case AppRoutes.viewAllBestWorkersPage:
+      case AppRoutes.viewAllBestWorkersPage:
         return MaterialPageRoute(
           builder: (_) => const ViewAllBestWorkersPage(),
+          settings: settings,
+        );
+      case AppRoutes.viewEmpProfilePage:
+        return MaterialPageRoute(
+          builder: (_) => ViewEmpProfilePage(
+              employeeId: FirebaseAuth.instance.currentUser!.uid),
           settings: settings,
         );
       case AppRoutes.emphomePage:
         return MaterialPageRoute(
           builder: (_) => const EmpHomePage(),
+          settings: settings,
+        );
+      case AppRoutes.empNotificationsPage:
+        return MaterialPageRoute(
+          builder: (_) => const EmpNotificationsPage(),
           settings: settings,
         );
       case AppRoutes.empphonePage:
@@ -124,6 +146,21 @@ class AppRouter {
           builder: (_) => const EmpIdVerificationPage(
             stepText: 'Please fill in the required information',
           ),
+          settings: settings,
+        );
+      case AppRoutes.empProfileInfoPage:
+        return MaterialPageRoute(
+          builder: (_) => const EmpProfileInfoPage(),
+          settings: settings,
+        );
+      case AppRoutes.accountDeletionScreen:
+        return MaterialPageRoute(
+          builder: (_) => const AccountDeletionScreen(),
+          settings: settings,
+        );
+      case AppRoutes.contactUsPage:
+        return MaterialPageRoute(
+          builder: (_) => const ContactUsPage(),
           settings: settings,
         );
       case AppRoutes.adnhomePage:

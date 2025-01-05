@@ -1,35 +1,85 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/pages/customer/cus_edit_profile_page.dart';
 
-class CusProfileInfo extends StatelessWidget {
+class CusProfileInfo extends StatefulWidget {
   const CusProfileInfo({super.key});
 
-  // المعرف الثابت للمستند في Firestore
-  final String documentId = 'tAkdNFqswzMaxOPRC239';
+  @override
+  // ignore: library_private_types_in_public_api
+  _CusProfileInfoState createState() => _CusProfileInfoState();
+}
 
-  Future<Map<String, dynamic>?> fetchProfileData() async {
+class _CusProfileInfoState extends State<CusProfileInfo> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Map<String, dynamic>? userData;
+  bool isLoading = true;
+  String? errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    final User? currentUser = _auth.currentUser;
+
+    if (currentUser == null) {
+      setState(() { 
+        isLoading = false;
+        errorMessage = "No user is currently logged in.";
+      });
+      return;
+    }
+
     try {
-      DocumentSnapshot doc = await FirebaseFirestore.instance
-          .collection('client')
-          .doc(documentId)
-          .get();
+      final DocumentSnapshot userDoc =
+          await _firestore.collection('users').doc(currentUser.uid).get();
 
-      if (doc.exists) {
-        return doc.data() as Map<String, dynamic>;
+      if (userDoc.exists) {
+        setState(() {
+          userData = userDoc.data() as Map<String, dynamic>;
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+          errorMessage = "User data not found.";
+        });
       }
-      return null;
     } catch (e) {
-      // ignore: avoid_print
-      print('Error fetching profile data: $e');
-      return null;
+      setState(() {
+        isLoading = false;
+        errorMessage = "Error fetching user data: $e";
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (errorMessage != null) {
+      return Scaffold(
+        body: Center(
+          child: Text(
+            errorMessage!,
+            style: const TextStyle(color: Colors.red, fontSize: 16),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -62,88 +112,80 @@ class CusProfileInfo extends StatelessWidget {
                   builder: (context) => const CusEditProfilePage(),
                 ),
               ).then((_) {
-                // إعادة بناء الصفحة عند العودة
-                // ignore: invalid_use_of_protected_member
-                (context as Element).reassemble();
+                _fetchUserData(); // Refresh the user data after editing
               });
             },
           ),
         ],
       ),
-      body: FutureBuilder<Map<String, dynamic>?>(
-        future: fetchProfileData(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError || !snapshot.hasData) {
-            return const Center(child: Text('Error loading data'));
-          }
-
-          final data = snapshot.data!;
-          return Column(
-            children: [
-              const SizedBox(height: 20),
-              const CircleAvatar(
-                radius: 50,
-                backgroundImage: AssetImage('assets/images/teacher.jpg'),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                data['name'] ?? 'N/A',
-                style: GoogleFonts.montserratAlternates(
-                  textStyle: TextStyle(
-                    fontSize: 20,
-                    color: AppColors().navy,
-                    fontWeight: FontWeight.bold,
-                  ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            CircleAvatar(
+              radius: 50,
+              backgroundImage: (userData?['img'] != null &&
+                      (userData!['img'] as String).isNotEmpty)
+                  ? NetworkImage(userData!['img'])
+                  : const AssetImage('lib/assets/images/customer.png')
+                      as ImageProvider,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              userData?['name'] ?? 'No Name Available',
+              style: GoogleFonts.montserratAlternates(
+                textStyle: TextStyle(
+                  fontSize: 20,
+                  color: AppColors().navy,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              Text(
-                data['email'] ?? 'N/A',
-                style: GoogleFonts.montserratAlternates(
-                  textStyle: TextStyle(
-                    fontSize: 14,
-                    color: AppColors().grey,
-                    fontWeight: FontWeight.bold,
-                  ),
+            ),
+            Text(
+              userData?['email'] ?? 'No Email Available',
+              style: GoogleFonts.montserratAlternates(
+                textStyle: TextStyle(
+                  fontSize: 14,
+                  color: AppColors().grey,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Card(
-                  color: AppColors().white,
-                  shadowColor: AppColors().orange,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Column(
-                    children: [
-                      ListTile(
-                        leading: Icon(Icons.person, color: AppColors().orange),
-                        title: Text(data['name'] ?? 'N/A'),
-                        subtitle: const Text('Full name'),
-                      ),
-                      const Divider(),
-                      ListTile(
-                        leading:
-                            Icon(Icons.location_on, color: AppColors().orange),
-                        title: Text(data['location'] ?? 'N/A'),
-                        subtitle: const Text('Location'),
-                      ),
-                      const Divider(),
-                      ListTile(
-                        leading: Icon(Icons.phone, color: AppColors().orange),
-                        title: Text(data['phone_number'] ?? 'N/A'),
-                        subtitle: const Text('Contact'),
-                      ),
-                    ],
-                  ),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Card(
+                color: AppColors().white,
+                shadowColor: AppColors().orange,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: Icon(Icons.person, color: AppColors().orange),
+                      title: Text(userData?['name'] ?? 'N/A'),
+                      subtitle: const Text('Full name'),
+                    ),
+                    const Divider(),
+                    ListTile(
+                      leading:
+                          Icon(Icons.location_on, color: AppColors().orange),
+                      title: Text(userData?['location'] ?? 'No Location'),
+                      subtitle: const Text('Location'),
+                    ),
+                    const Divider(),
+                    ListTile(
+                      leading: Icon(Icons.phone, color: AppColors().orange),
+                      title: Text(userData?['phone'] ?? 'No Contact Info'),
+                      subtitle: const Text('Contact'),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          );
-        },
+            ),
+          ],
+        ),
       ),
     );
   }

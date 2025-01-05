@@ -202,7 +202,7 @@ class _LoginFormState extends State<LoginForm> {
                         context, AppRoutes.customButtomNavbarPage);
                   } else if (state is AuthEmpSuccess) {
                     Navigator.pushReplacementNamed(
-                        context, AppRoutes.emphomePage);
+                        context, AppRoutes.empNavbar);
                   } else if (state is AuthFailure) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
@@ -11,72 +12,129 @@ class CusEditProfilePage extends StatefulWidget {
 }
 
 class _CusEditProfilePageState extends State<CusEditProfilePage> {
-  final String documentId = 'tAkdNFqswzMaxOPRC239';
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   TextEditingController nameController = TextEditingController();
   TextEditingController locationController = TextEditingController();
   TextEditingController mobileController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> fetchData() async {
-    try {
-      DocumentSnapshot doc = await FirebaseFirestore.instance
-          .collection('client')
-          .doc(documentId)
-          .get();
-
-      if (doc.exists) {
-        setState(() {
-          nameController.text = doc['name'] ?? '';
-          locationController.text = doc['location'] ?? '';
-          mobileController.text = doc['phone_number']?.toString() ?? '';
-        });
-      }
-    } catch (e) {
-      // ignore: avoid_print
-      print('Error fetching data: $e');
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('فشل تحميل البيانات')),
-      );
-    }
-  }
-
-  Future<void> updateData() async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('client')
-          .doc(documentId)
-          .set({
-        'name': nameController.text,
-        'location': locationController.text,
-        'phone_number': mobileController.text,
-      }, SetOptions(merge: true));
-
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم تحديث البيانات بنجاح')),
-      );
-
-      // ignore: use_build_context_synchronously
-      Navigator.pop(context);
-    } catch (e) {
-      // ignore: avoid_print
-      print('Error updating data: $e');
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('فشل تحديث البيانات')),
-      );
-    }
-  }
+  bool isLoading = true;
+  String? errorMessage;
+  String? imageUrl;
 
   @override
   void initState() {
     super.initState();
-    fetchData(); // تحميل البيانات عند فتح الصفحة
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    final User? currentUser = _auth.currentUser;
+
+    if (currentUser == null) {
+      setState(() {
+        isLoading = false;
+        errorMessage = "No user is currently logged in.";
+      });
+      return;
+    }
+    try {
+      final DocumentSnapshot userDoc =
+          await _firestore.collection('users').doc(currentUser.uid).get();
+
+      if (userDoc.exists) {
+        final data = userDoc.data() as Map<String, dynamic>;
+        setState(() {
+          nameController.text = data['name'] ?? '';
+          emailController.text = data['email'] ?? '';
+          locationController.text = data['location'] ?? '';
+          mobileController.text = data['phone'] ?? '';
+          imageUrl = data['img'] ?? '';
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+          errorMessage = "User data not found.";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        errorMessage = "Error fetching user data: $e";
+      });
+    }
+  }
+
+  Future<void> _updateField(String field, String value) async {
+    final User? currentUser = _auth.currentUser;
+
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("No user is currently logged in.")),
+      );
+      return;
+    }
+
+    try {
+      await _firestore.collection('users').doc(currentUser.uid).update({
+        field: value,
+      });
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Profile updated successfully.",
+            style: GoogleFonts.montserratAlternates(
+              textStyle: TextStyle(
+                color: AppColors().white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          backgroundColor: AppColors().green,
+        ),
+      );
+    } catch (e) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Error updating profile: $e",
+            style: GoogleFonts.montserratAlternates(
+              textStyle: TextStyle(
+                color: AppColors().white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          backgroundColor: AppColors().red,
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (errorMessage != null) {
+      return Scaffold(
+        body: Center(
+          child: Text(
+            errorMessage!,
+            style: const TextStyle(color: Colors.red, fontSize: 16),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors().white,
       appBar: AppBar(
@@ -99,42 +157,22 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
           ),
         ),
         centerTitle: true,
-        actions: [
-          TextButton(
-            onPressed: updateData,
-            child: Text(
-              'Done',
-              style: GoogleFonts.montserratAlternates(
-                textStyle: TextStyle(
-                  fontSize: 16,
-                  color: AppColors().orange,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 20),
-            const CircleAvatar(
+            CircleAvatar(
               radius: 50,
-              backgroundImage: AssetImage('assets/images/teacher.jpg'),
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: CircleAvatar(
-                  radius: 16,
-                  backgroundColor: Colors.white,
-                  child: Icon(Icons.camera_alt, color: Colors.black, size: 16),
-                ),
-              ),
+              backgroundImage: imageUrl != null && imageUrl!.isNotEmpty
+                  ? NetworkImage(imageUrl!)
+                  : const AssetImage('lib/assets/images/default_user.png')
+                      as ImageProvider,
             ),
             const SizedBox(height: 10),
             Text(
-              'Haneen',
+              nameController.text,
               style: GoogleFonts.montserratAlternates(
                 textStyle: TextStyle(
                   fontSize: 20,
@@ -144,7 +182,7 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
               ),
             ),
             Text(
-              'haneendaoud@gmail.com',
+              emailController.text,
               style: GoogleFonts.montserratAlternates(
                 textStyle: TextStyle(
                   fontSize: 14,
@@ -158,25 +196,29 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
-                  buildTextField(
-                      label: 'First Name',
-                      hintText: 'First Name',
-                      controller: nameController),
+                  buildEditableTile(
+                    label: 'Name',
+                    controller: nameController,
+                    onSave: (value) => _updateField('name', value),
+                  ),
                   const SizedBox(height: 10),
-                  buildTextField(
-                      label: 'Email',
-                      hintText: 'Email',
-                      controller: emailController),
+                  buildEditableTile(
+                    label: 'Email',
+                    controller: emailController,
+                    onSave: (value) => _updateField('email', value),
+                  ),
                   const SizedBox(height: 10),
-                  buildTextField(
-                      label: 'Location',
-                      hintText: 'Location',
-                      controller: locationController),
+                  buildEditableTile(
+                    label: 'Location',
+                    controller: locationController,
+                    onSave: (value) => _updateField('location', value),
+                  ),
                   const SizedBox(height: 10),
-                  buildTextField(
-                      label: 'Mobile Number',
-                      hintText: 'Mobile',
-                      controller: mobileController),
+                  buildEditableTile(
+                    label: 'Mobile Number',
+                    controller: mobileController,
+                    onSave: (value) => _updateField('phone', value),
+                  ),
                 ],
               ),
             ),
@@ -186,10 +228,10 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
     );
   }
 
-  Widget buildTextField({
+  Widget buildEditableTile({
     required String label,
-    required String hintText,
     required TextEditingController controller,
+    required Function(String) onSave,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -206,24 +248,34 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
           ),
         ),
         const SizedBox(height: 10),
-        TextFormField(
-          controller: controller,
-          decoration: InputDecoration(
-            hintText: hintText,
-            hintStyle: GoogleFonts.montserratAlternates(
-              textStyle: TextStyle(
-                fontSize: 13,
-                color: AppColors().grey,
-                fontWeight: FontWeight.bold,
+        Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                controller: controller,
+                decoration: InputDecoration(
+                  hintText: label,
+                  hintStyle: GoogleFonts.montserratAlternates(
+                    textStyle: TextStyle(
+                      fontSize: 13,
+                      color: AppColors().navy,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: AppColors().greylight,
+                ),
               ),
             ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide.none,
+            IconButton(
+              icon: Icon(Icons.save, color: AppColors().orange),
+              onPressed: () => onSave(controller.text),
             ),
-            filled: true,
-            fillColor: AppColors().grey3,
-          ),
+          ],
         ),
       ],
     );

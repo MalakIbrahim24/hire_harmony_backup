@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hire_harmony/views/pages/customer/view_emp_profile_page.dart';
 
 class ViewAllPopularServicesPage extends StatelessWidget {
   const ViewAllPopularServicesPage({super.key});
@@ -32,6 +33,7 @@ class ViewAllPopularServicesPage extends StatelessWidget {
             'service': serviceData,
             'serviceDetails': serviceInfo,
             'employee': userDoc.data(),
+            'employeeId': userDoc.id, // Add the employee ID
           });
         }
       }
@@ -69,6 +71,8 @@ class ViewAllPopularServicesPage extends StatelessWidget {
                   ['serviceDetails'] as Map<String, dynamic>;
               final employee = servicesWithEmployees[index]['employee']
                   as Map<String, dynamic>;
+              final employeeId =
+                  servicesWithEmployees[index]['employeeId'] as String;
 
               final serviceName = service['name'] ?? 'Unknown Service';
               final serviceImg = serviceDetails['img'] ?? '';
@@ -103,6 +107,17 @@ class ViewAllPopularServicesPage extends StatelessWidget {
                     ),
                   ),
                 ),
+                onTap: () {
+                  // Navigate to ViewEmpProfilePage with employeeId
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ViewEmpProfilePage(
+                        employeeId: employeeId,
+                      ),
+                    ),
+                  );
+                },
               );
             },
           );
