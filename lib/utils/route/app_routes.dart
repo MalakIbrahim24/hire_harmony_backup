@@ -2,6 +2,7 @@ class AppRoutes {
   static const String loginPage = '/log-in-page';
   static const String forgotPasswordPage = '/forgot-Password-page';
   static const String signupChoicePage = '/sign-up-choice-page';
+  static const String chat = '/chat-page';
 
   static const String signUpPage = '/sign-up-page';
   static const String empSignupForm = '/emp-sign-up-from';
