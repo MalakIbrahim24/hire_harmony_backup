@@ -16,6 +16,7 @@ import 'package:hire_harmony/views/pages/admin/deleted_acounts.dart';
 import 'package:hire_harmony/views/pages/admin/edit_services_page.dart';
 import 'package:hire_harmony/views/pages/admin/edited_services_page.dart';
 import 'package:hire_harmony/views/pages/admin/user_management_page.dart';
+import 'package:hire_harmony/views/pages/chat_page.dart';
 import 'package:hire_harmony/views/pages/customer/account_deletion_page.dart';
 import 'package:hire_harmony/views/pages/customer/view_all_popular_services.dart';
 import 'package:hire_harmony/views/pages/customer/view_emp_profile_page.dart';
@@ -257,7 +258,12 @@ class AppRouter {
           ),
           settings: settings,
         );
-
+case AppRoutes.chat:
+        return MaterialPageRoute(
+          builder: (_) => const ChatPage(),
+          settings: settings,
+        );
+        
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(
