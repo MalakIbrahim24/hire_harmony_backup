@@ -1,11 +1,14 @@
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/widgets/employee/photo_tab_view.dart';
 import 'package:hire_harmony/views/widgets/employee/reviews_tab_view.dart';
 
+
 class PrevWork extends StatelessWidget {
   const PrevWork({super.key});
+
 
   @override
   Widget build(BuildContext context) {
