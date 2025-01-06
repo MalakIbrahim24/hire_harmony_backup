@@ -425,22 +425,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.9.5"
-  firebase_ml_model_downloader:
-    dependency: "direct main"
-    description:
-      name: firebase_ml_model_downloader
-      sha256: "20b871511f8072f84862ec326922c5dfcac4ff39de704cb7e1c3ff1115fd0a8a"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.1+6"
-  firebase_ml_model_downloader_platform_interface:
-    dependency: transitive
-    description:
-      name: firebase_ml_model_downloader_platform_interface
-      sha256: da289019ed897168d2d9e1d1cb9ab0279627fd27e8092ca9c955e175d5ddf25d
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.4+45"
   fixnum:
     dependency: transitive
     description:

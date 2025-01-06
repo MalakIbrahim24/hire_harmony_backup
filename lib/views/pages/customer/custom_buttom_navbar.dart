@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hire_harmony/services/chat/cubit/chat_cubit.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
+import 'package:hire_harmony/views/pages/chat_page.dart';
 import 'package:hire_harmony/views/pages/customer/cus_home_page.dart';
-import 'package:hire_harmony/views/pages/customer/cus_messages_page.dart';
 import 'package:hire_harmony/views/pages/customer/cus_profile_page.dart';
 import 'package:hire_harmony/views/pages/customer/favorites_page.dart';
 import 'package:hire_harmony/views/pages/customer/order_page.dart';
-
 class CustomButtomNavbar extends StatefulWidget {
   const CustomButtomNavbar({super.key});
 
@@ -28,20 +29,18 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 16), // Add spacing at the top
+            const SizedBox(height: 16),
             Container(
-              width: 400, // Set desired width
-              height: 200, // Set desired height
+              width: 400,
+              height: 200,
               decoration: const BoxDecoration(
-                // Make the image circular
                 image: DecorationImage(
-                  image: AssetImage(
-                      'lib/assets/images/office2.jpg'), // Replace with your image asset path
-                  fit: BoxFit.cover, // Control how the image fits
+                  image: AssetImage('lib/assets/images/office2.jpg'),
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-            const SizedBox(height: 16), // Spacing between image and text
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -68,9 +67,9 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                 labelTextStyle: WidgetStateProperty.all(
                   GoogleFonts.montserratAlternates(
                     textStyle: TextStyle(
-                      fontSize: 12, // Customize font size
-                      fontWeight: FontWeight.w500, // Customize font weight
-                      color: AppColors().navy, // Customize font color
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors().navy,
                     ),
                   ),
                 ),
@@ -81,7 +80,7 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                     currentPageIndex = index;
                   });
                 },
-                backgroundColor: AppColors().white.withValues(alpha: 0.85),
+                backgroundColor: AppColors().white.withOpacity(0.85),
                 indicatorColor: AppColors().orange,
                 selectedIndex: currentPageIndex,
                 elevation: 0,
@@ -139,12 +138,19 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                 ],
               ),
             ),
-      body: const <Widget>[
-        CusMessagesPage(),
-        OrderPage(),
-        CusHomePage(),
-        FavoritesPage(),
-        CusProfilePage(),
+      body: <Widget>[
+        BlocProvider(
+          create: (context) {
+            final cubit = ChatCubit();
+            cubit.getMessages();
+            return cubit;
+          },
+          child: const ChatPage(),
+        ),
+        const OrderPage(),
+        const CusHomePage(),
+        const FavoritesPage(),
+        const CusProfilePage(),
       ][currentPageIndex],
     );
   }
