@@ -1,4 +1,4 @@
-import 'dart:math';
+//import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,7 +22,7 @@ class ChatCubit extends Cubit<ChatState> {
         id: DateTime.now().toIso8601String(),
         senderId: sender.id,
         senderName: sender.name,
-  senderPhotoUrl: sender.PhotoUrl.isNotEmpty ? sender.PhotoUrl : 'https://images.ctfassets.net/vztl6s0hp3ro/7zFqhZ00n4x5vnEpySo6QF/5af169fdf542ff9486e9380ec40cae9f/a-detailed-guide-on-creating-a-production-worker-job-description.webp', // Provide a fallback
+  senderPhotoUrl: sender.photoUrl.isNotEmpty ? sender.photoUrl : 'https://images.ctfassets.net/vztl6s0hp3ro/7zFqhZ00n4x5vnEpySo6QF/5af169fdf542ff9486e9380ec40cae9f/a-detailed-guide-on-creating-a-production-worker-job-description.webp', // Provide a fallback
         message: text,
         dateTime: DateTime.now(),
       );

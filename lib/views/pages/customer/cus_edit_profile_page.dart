@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 import 'package:hire_harmony/utils/app_colors.dart';
 
 class CusEditProfilePage extends StatefulWidget {
@@ -116,6 +119,110 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
     }
   }
 
+  Future<void> _pickAndUploadProfileImage() async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+      if (image != null) {
+        File imageFile = File(image.path);
+
+        // Ask for confirmation
+        // ignore: use_build_context_synchronously
+        final bool confirmed = await _showConfirmationDialog(context);
+        if (!confirmed) {
+          return; // Exit if the user does not confirm
+        }
+
+        // Generate a unique file name
+        String fileName =
+            '${DateTime.now().millisecondsSinceEpoch}_${image.name.replaceAll(" ", "_")}';
+
+        // Upload image to Supabase
+        try {
+          final String filePath = await supabase
+              .Supabase.instance.client.storage
+              .from('serviceImages')
+              .upload('profile/$fileName', imageFile);
+
+          // Get the public URL for the uploaded image
+          String publicUrl = supabase.Supabase.instance.client.storage
+              .from('serviceImages')
+              .getPublicUrl(filePath.replaceFirst('serviceImages/', ''));
+
+          debugPrint('Uploaded image URL: $publicUrl');
+
+          // Update Firebase with the new profile image URL
+          await _firestore
+              .collection('users')
+              .doc(_auth.currentUser!.uid)
+              .update({'img': publicUrl});
+
+          debugPrint('Profile image updated in Firebase.');
+
+          // Update local state
+          setState(() {
+            imageUrl = publicUrl;
+          });
+
+          // Show success message
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                "Profile picture updated successfully.",
+                style: GoogleFonts.montserratAlternates(
+                  textStyle: TextStyle(
+                    color: AppColors().white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              backgroundColor: AppColors().green,
+            ),
+          );
+        } catch (e) {
+          debugPrint('Error uploading image to Supabase: $e');
+        }
+      }
+    } catch (e) {
+      debugPrint('Error picking image: $e');
+    }
+  }
+
+  Future<bool> _showConfirmationDialog(BuildContext context) async {
+    bool result = false;
+    await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Image'),
+          content: const Text(
+              'Do you want to use this image as your profile picture?'),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(false); // User cancelled
+              },
+            ),
+            TextButton(
+              child: const Text('Confirm'),
+              onPressed: () {
+                Navigator.of(context).pop(true); // User confirmed
+              },
+            ),
+          ],
+        );
+      },
+    ).then((value) {
+      if (value != null) {
+        result = value;
+      }
+    });
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
@@ -163,64 +270,36 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 20),
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: imageUrl != null && imageUrl!.isNotEmpty
-                  ? NetworkImage(imageUrl!)
-                  : const AssetImage('lib/assets/images/default_user.png')
-                      as ImageProvider,
+            GestureDetector(
+              onTap: _pickAndUploadProfileImage, // Trigger image change
+              child: CircleAvatar(
+                radius: 50,
+                backgroundImage: imageUrl != null && imageUrl!.isNotEmpty
+                    ? NetworkImage(imageUrl!)
+                    : const AssetImage('lib/assets/images/default_user.png')
+                        as ImageProvider,
+              ),
             ),
             const SizedBox(height: 10),
-            Text(
-              nameController.text,
-              style: GoogleFonts.montserratAlternates(
-                textStyle: TextStyle(
-                  fontSize: 20,
-                  color: AppColors().navy,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            buildEditableTile(
+              label: 'Name',
+              controller: nameController,
+              onSave: (value) => _updateField('name', value),
             ),
-            Text(
-              emailController.text,
-              style: GoogleFonts.montserratAlternates(
-                textStyle: TextStyle(
-                  fontSize: 14,
-                  color: AppColors().grey,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            buildEditableTile(
+              label: 'Email',
+              controller: emailController,
+              onSave: (value) => _updateField('email', value),
             ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  buildEditableTile(
-                    label: 'Name',
-                    controller: nameController,
-                    onSave: (value) => _updateField('name', value),
-                  ),
-                  const SizedBox(height: 10),
-                  buildEditableTile(
-                    label: 'Email',
-                    controller: emailController,
-                    onSave: (value) => _updateField('email', value),
-                  ),
-                  const SizedBox(height: 10),
-                  buildEditableTile(
-                    label: 'Location',
-                    controller: locationController,
-                    onSave: (value) => _updateField('location', value),
-                  ),
-                  const SizedBox(height: 10),
-                  buildEditableTile(
-                    label: 'Mobile Number',
-                    controller: mobileController,
-                    onSave: (value) => _updateField('phone', value),
-                  ),
-                ],
-              ),
+            buildEditableTile(
+              label: 'Location',
+              controller: locationController,
+              onSave: (value) => _updateField('location', value),
+            ),
+            buildEditableTile(
+              label: 'Mobile Number',
+              controller: mobileController,
+              onSave: (value) => _updateField('phone', value),
             ),
           ],
         ),

@@ -3,7 +3,7 @@ class UserData {
   final String name;
   final String email;
   final String password;
-  final String PhotoUrl;
+  final String photoUrl;
   
 
   UserData({
@@ -11,7 +11,7 @@ class UserData {
     required this.name,
     required this.email,
     required this.password,
-    required this.PhotoUrl,
+    required this.photoUrl,
   });
 
   // Convert a Firestore document to a UserData object
@@ -21,7 +21,7 @@ class UserData {
       name: map['name'] ?? '',
       email: map['email'] ?? '',
       password: map['password'] ?? '',
-      PhotoUrl: map['img'] ?? 'https://t3.ftcdn.net/jpg/02/43/12/34/360_F_243123463_zTooub557xEWABDLk0jJklDyLSGl2jrr.jpg',
+      photoUrl: map['img'] ?? 'https://t3.ftcdn.net/jpg/02/43/12/34/360_F_243123463_zTooub557xEWABDLk0jJklDyLSGl2jrr.jpg',
     );
   }
   
@@ -33,7 +33,7 @@ class UserData {
     result.addAll({'name': name});
     result.addAll({'email': email});
     result.addAll({'password': password});
-    result.addAll({'PhotoUrl': PhotoUrl});
+    result.addAll({'PhotoUrl': photoUrl});
     return result;
   }
 }

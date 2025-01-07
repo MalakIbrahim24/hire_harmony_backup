@@ -1,124 +1,89 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
+import 'package:intl/intl.dart'; // For date formatting
 
 class ReviewsTapView extends StatelessWidget {
-  const ReviewsTapView({super.key});
+  final String employeeId;
+
+  const ReviewsTapView({super.key, required this.employeeId});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Title
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Reviews Summary',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors().navy,
-                ),
-              ),
-              
-               TextButton(
-                  child: Text(
-                    'See All',
-                    style: TextStyle(
-                      color: AppColors().orange,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  onPressed: () {
-                    // NAvigator to ReviewPage
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => const ReviewsPage()),
-                    // );
-                  },
-                ),
-              
-            ],
-          ),
-          const SizedBox(height: 10),
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(employeeId)
+          .collection('reviews')
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(
+            child: Text(
+              "No reviews available",
+              style: TextStyle(color: Colors.grey),
+            ),
+          );
+        }
 
-          // Star Rating Summary
-          Row(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: List.generate(5, (index) {
-                  return Row(
-                    children: [
-                      Text(
-                        '${5 - index}', 
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(width: 5),
-                      Container(
-                        width: 150,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: FractionallySizedBox(
-                          alignment: Alignment.centerLeft,
-                          widthFactor: (5 - index) * 0.2, // Adjust percentage
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: AppColors().orange,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                }),
+        final reviews = snapshot.data!.docs;
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(8.0),
+          itemCount: reviews.length,
+          itemBuilder: (context, index) {
+            final data = reviews[index].data() as Map<String, dynamic>;
+            final reviewerName = data['name'] ?? 'Anonymous';
+            final reviewText = data['review'] ?? '';
+            final double rating = (data['rating'] as num?)?.toDouble() ?? 0.0;
+
+            // Convert Timestamp to formatted String
+            final Timestamp? timestamp = data['date'] as Timestamp?;
+            final String formattedDate = timestamp != null
+                ? DateFormat('dd MMM, yyyy').format(timestamp.toDate())
+                : 'Unknown Date';
+
+            // Ensure all UI components are Widgets
+            return ListTile(
+              leading: CircleAvatar(
+                backgroundColor: AppColors().lightblue,
+                child: Text(
+                  reviewerName.isNotEmpty
+                      ? reviewerName[0].toUpperCase()
+                      : 'A', // Default to 'A' if name is empty
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
-              const Spacer(),
-              Column(
+              title: Text(reviewerName),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '4.0',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors().navy,
-                    ),
+                    formattedDate,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
-                  Row(
-                    children: List.generate(
-                      5,
-                      (index) => Icon(
-                        index < 4 ? Icons.star : Icons.star_border,
-                        color: AppColors().orange,
-                        size: 18,
-                      ),
-                    ),
-                  ),
-                  const Text(
-                    '(238 reviews)',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 12,
-                    ),
-                  ),
+                  const SizedBox(height: 5),
+                  Text(reviewText),
                 ],
-              )
-            ],
-          ),
-
-          const SizedBox(height: 20),
-        ],
-      ),
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(
+                  5,
+                  (starIndex) => Icon(
+                    starIndex < rating.round() ? Icons.star : Icons.star_border,
+                    color: AppColors().orange,
+                    size: 18,
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

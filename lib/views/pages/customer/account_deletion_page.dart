@@ -69,7 +69,7 @@ class _AccountDeletionBodyState extends State<AccountDeletionBody> {
           await _firestore.collection('users').doc(user.uid).get();
       if (doc.exists) {
         setState(() {
-          userImage = doc['image'] ??
+          userImage = doc['img'] ??
               'https://via.placeholder.com/150'; // Fallback to placeholder image
         });
       }

@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
-import 'package:hire_harmony/views/pages/employee/photos_videos_page.dart';
 import 'package:hire_harmony/views/widgets/employee/build_static_button.dart';
+import 'package:hire_harmony/views/widgets/employee/photo_tab_view.dart';
+import 'package:hire_harmony/views/widgets/employee/reviews_tab_view.dart';
 
 class EmpProfileInfoPage extends StatefulWidget {
   const EmpProfileInfoPage({super.key});
@@ -14,17 +17,81 @@ class EmpProfileInfoPage extends StatefulWidget {
 class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // Employee data fields
+  String? profileImageUrl;
+  String name = '';
+  String location = '';
+  String rating = '';
+  String aboutMe = '';
+  String id = '';
+  List<String> services = [];
+  num reviewsNum = 0;
+  List<Map<String, dynamic>> reviews = [];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _fetchEmployeeData();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  Future<void> _fetchEmployeeData() async {
+    try {
+      final User? user = _auth.currentUser; // Get logged-in user
+      if (user == null) return;
+
+      // Fetch employee document
+      final DocumentSnapshot employeeDoc =
+          await _firestore.collection('users').doc(user.uid).get();
+
+      if (employeeDoc.exists) {
+        final data = employeeDoc.data() as Map<String, dynamic>;
+
+        setState(() {
+          profileImageUrl = data['img'] ??
+              'https://via.placeholder.com/150'; // Default placeholder
+          name = data['name'] ?? 'Unknown Name';
+          location = data['location'] ?? 'Unknown Location';
+          rating = data['rating'] ?? '0.0';
+          aboutMe = data['about'] ?? 'No description available.';
+          services = List<String>.from(data['services'] ?? []);
+          reviewsNum = data['reviews'] ?? 0;
+          id = data['uid'] ?? 'User ID not found';
+        });
+      }
+
+      // Fetch employee reviews
+      final QuerySnapshot reviewsSnapshot = await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('reviews')
+          .get();
+
+      setState(() {
+        reviews = reviewsSnapshot.docs.map((doc) {
+          final reviewData = doc.data() as Map<String, dynamic>;
+          return {
+            'name': reviewData['name'] ?? 'Anonymous',
+            'rating': reviewData['rating'] ?? '0.0',
+            'date': reviewData['date'] ?? '',
+            'review': reviewData['review'] ?? 0,
+            'image': reviewData['image'] ??
+                'https://via.placeholder.com/50', // Default avatar
+          };
+        }).toList();
+      });
+    } catch (e) {
+      debugPrint('Error fetching employee data: $e');
+    }
   }
 
   @override
@@ -46,23 +113,34 @@ class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Profile Picture
                   Center(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.asset(
-                        'lib/assets/images/teacher.jpg',
-                        width: 160,
-                        height: 160,
-                        fit: BoxFit.cover,
-                      ),
+                      child: profileImageUrl != null
+                          ? Image.network(
+                              profileImageUrl!,
+                              width: 160,
+                              height: 160,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (context, child, progress) {
+                                if (progress == null) return child;
+                                return const CircularProgressIndicator();
+                              },
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.broken_image, size: 160),
+                            )
+                          : const CircularProgressIndicator(),
                     ),
                   ),
                   const SizedBox(height: 16),
+
+                  // Name, Location, and Rating
                   Center(
                     child: Column(
                       children: [
                         Text(
-                          'House Cleaning',
+                          name,
                           style: GoogleFonts.montserratAlternates(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
@@ -70,20 +148,13 @@ class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Text(
-                          'Jenny Wilson',
-                          style: GoogleFonts.montserratAlternates(
-                            fontSize: 16,
-                            color: Colors.grey,
-                          ),
-                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.star,
+                            Icon(Icons.location_on,
                                 color: AppColors().orange, size: 20),
                             const SizedBox(width: 4),
-                            Text('4.8 (4,479 reviews)',
+                            Text(location,
                                 style: GoogleFonts.montserratAlternates(
                                   fontSize: 14,
                                   color: Colors.grey,
@@ -93,10 +164,10 @@ class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.location_on,
+                            Icon(Icons.star,
                                 color: AppColors().orange, size: 20),
                             const SizedBox(width: 4),
-                            Text('255 Grand Park Avenue, New York',
+                            Text('$rating ($reviewsNum reviews)',
                                 style: GoogleFonts.montserratAlternates(
                                   fontSize: 14,
                                   color: Colors.grey,
@@ -118,7 +189,7 @@ class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim nisi ut aliquip. Read more.',
+                    aboutMe,
                     style: GoogleFonts.montserratAlternates(
                       fontSize: 14,
                       color: Colors.grey,
@@ -139,34 +210,24 @@ class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: [
-                        buildStaticButton('Cleaning house'),
-                        const SizedBox(width: 8),
-                        buildStaticButton('Cleaning'),
-                        const SizedBox(width: 8),
-                        buildStaticButton('House Cleaning'),
-                        const SizedBox(width: 8),
-                        buildStaticButton('Deep Cleaning'),
-                        const SizedBox(width: 8),
-                        buildStaticButton('Window Cleaning'),
-                        const SizedBox(width: 8),
-                        buildStaticButton('Furniture Cleaning'),
-                      ],
+                      children: services
+                          .map((service) => Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: buildStaticButton(service),
+                              ))
+                          .toList(),
                     ),
                   ),
                   const SizedBox(height: 24),
 
                   // Tabs Section
                   TabBar(
-                    // ignore: deprecated_member_use
-                    dividerColor: AppColors().grey.withOpacity(0.3),
                     controller: _tabController,
                     labelColor: AppColors().orange,
-                    // ignore: deprecated_member_use
                     unselectedLabelColor: Colors.grey,
                     indicatorColor: AppColors().orange,
                     tabs: const [
-                      Tab(text: 'Photos & Videos'),
+                      Tab(text: 'Photos'),
                       Tab(text: 'Review'),
                     ],
                   ),
@@ -176,288 +237,15 @@ class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
                       controller: _tabController,
                       children: [
                         // Photos & Videos Tab
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Photos & Videos',
-                                  style: GoogleFonts.montserratAlternates(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors().navy2),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              PhotosVideosPage()),
-                                    );
-                                  },
-                                  child: Text(
-                                    'See All',
-                                    style: GoogleFonts.montserratAlternates(
-                                      fontSize: 14,
-                                      color: AppColors().orange,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            GridView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 8,
-                                mainAxisSpacing: 8,
-                              ),
-                              itemCount: 2, // Number of photos/videos
-                              itemBuilder: (context, index) {
-                                return ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.asset(
-                                    'assets/images/teacher.jpg',
-                                    fit: BoxFit.cover,
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
+                        PhotoTabView(
+                          employeeId: id,
                         ),
 
-                        // Review Tab
-                        // داخل تبويب "Review" في الكود الأول (EmpProfileInfoPage)
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Review',
-                                  style: GoogleFonts.montserratAlternates(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors().navy2,
-                                  ),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    // Navigator.push(
-                                    //   context,
-                                    //   MaterialPageRoute(
-                                    //     builder: (context) =>
-                                    //         const ReviewsPage(), // استدعاء صفحة المراجعات الكاملة
-                                    //   ),
-                                    // );
-                                  },
-                                  child: Text(
-                                    'See All',
-                                    style: GoogleFonts.montserratAlternates(
-                                      fontSize: 14,
-                                      color: AppColors().orange,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            // استبدال ListTile بالقسم الجديد:
-                            ListView.separated(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount:
-                                  2, // عدد التقييمات الأولية التي ستظهر هنا
-                              itemBuilder: (context, index) {
-                                // قائمة التقييمات المصغرة
-                                final reviews = [
-                                  {
-                                    'image': 'assets/images/teacher.jpg',
-                                    'name': 'Miles Esther',
-                                    'date': '1 Feb, 2020',
-                                    'rating': '4.5',
-                                    'review':
-                                        'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.',
-                                  },
-                                  {
-                                    'image': 'assets/images/teacher.jpg',
-                                    'name': 'Henry Arthur',
-                                    'date': '21 Sep, 2020',
-                                    'rating': '4.0',
-                                    'review':
-                                        'Neque porro quisquam est qui dolorem ipsum quia dolor sit amet consectetur adipisci velit.',
-                                  },
-                                ];
-                                final review = reviews[index];
-
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8.0, horizontal: 16.0),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      CircleAvatar(
-                                        backgroundImage:
-                                            AssetImage(review['image']!),
-                                        radius: 25,
-                                      ),
-                                      const SizedBox(width: 16),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(
-                                                  review['name']!,
-                                                  style: GoogleFonts
-                                                      .montserratAlternates(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16,
-                                                  ),
-                                                ),
-                                                Container(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 8.0,
-                                                      vertical: 4.0),
-                                                  decoration: BoxDecoration(
-                                                    color: AppColors()
-                                                        .orange
-                                                        // ignore: deprecated_member_use
-                                                        .withOpacity(0.2),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            12),
-                                                  ),
-                                                  child: Row(
-                                                    children: [
-                                                      Icon(Icons.star,
-                                                          color: AppColors()
-                                                              .orange,
-                                                          size: 16),
-                                                      const SizedBox(width: 4),
-                                                      Text(
-                                                        review['rating']!,
-                                                        style: GoogleFonts
-                                                            .montserratAlternates(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 14,
-                                                          color: AppColors()
-                                                              .orange,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              review['date']!,
-                                              style: GoogleFonts
-                                                  .montserratAlternates(
-                                                fontSize: 12,
-                                                color: AppColors().grey,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 8),
-                                            if (review['review']!.isNotEmpty)
-                                              Text(
-                                                review['review']!,
-                                                style: GoogleFonts
-                                                    .montserratAlternates(
-                                                  fontSize: 12,
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                              separatorBuilder: (context, index) {
-                                return Divider(
-                                  thickness: 1,
-                                  // ignore: deprecated_member_use
-                                  color: AppColors().grey.withOpacity(0.2),
-                                  height: 16,
-                                );
-                              },
-                            ),
-                          ],
-                        ),
+                        // Reviews Tab
+                        ReviewsTapView(
+                          employeeId: id,
+                        )
                       ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              // ignore: deprecated_member_use
-              color: Colors.white.withOpacity(0.8), // خلفية بيضاء شفافة
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 40, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                    ),
-                    child: Text(
-                      'Message',
-                      style: GoogleFonts.montserratAlternates(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors().orange,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 40, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                    ),
-                    child: Text(
-                      'Book Now',
-                      style: GoogleFonts.montserratAlternates(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
                     ),
                   ),
                 ],

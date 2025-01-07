@@ -68,7 +68,7 @@ class _ChatPageState extends State<ChatPage> {
               TextField(
                 controller: _messageController,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   hintText: 'Type a message',
                   suffixIcon: BlocConsumer<ChatCubit,ChatState>(
                     bloc: cubit,

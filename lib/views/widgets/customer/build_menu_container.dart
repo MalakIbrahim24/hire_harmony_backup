@@ -1,8 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hire_harmony/services/auth_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
+import 'package:hire_harmony/utils/route/app_routes.dart';
+import 'package:hire_harmony/view_models/cubit/auth_cubit.dart';
 import 'package:hire_harmony/views/pages/customer/cus_profile_info.dart';
 import 'package:hire_harmony/views/pages/customer/account_deletion_page.dart';
+import 'package:hire_harmony/views/pages/employee/contact_us_page.dart';
+import 'package:hire_harmony/views/widgets/main_button.dart';
 
 // ignore: camel_case_types
 class buildMenuContainer extends StatefulWidget {
@@ -14,45 +19,72 @@ class buildMenuContainer extends StatefulWidget {
 
 // ignore: camel_case_types
 class _buildMenuContainerState extends State<buildMenuContainer> {
+  final AuthServices authServices = AuthServicesImpl();
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: AppColors().white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade300,
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+    final authCubit = BlocProvider.of<AuthCubit>(context);
+
+    return Center(
+      child: BlocConsumer<AuthCubit, AuthState>(
+        listenWhen: (previous, current) =>
+            current is AuthFailure || current is AuthInitial,
+        listener: (context, state) {
+          if (state is AuthFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: AppColors().red,
+              ),
+            );
+          } else if (state is AuthInitial) {
+            Navigator.of(context, rootNavigator: true)
+                .pushReplacementNamed(AppRoutes.loginPage);
+          }
+        },
+        buildWhen: (previous, current) =>
+            current is AuthLoading || current is AuthFailure,
+        builder: (context, state) {
+          if (state is AuthLoading) {
+            return const MainButton(
+              child: CircularProgressIndicator.adaptive(),
+            );
+          }
+          return SingleChildScrollView(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors().white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.shade300,
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  Column(
+                    children: _buildMenuItems(context, authCubit),
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Column(
-              children: _buildMenuItems(context),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  List<Widget> _buildMenuItems(BuildContext context) {
+  List<Widget> _buildMenuItems(BuildContext context, AuthCubit authCubit) {
     final menuItems = [
       {
         'icon': Icons.person,
         'text': 'Profile',
         'route': const CusProfileInfo(),
-      },
-      {
-        'icon': Icons.settings,
-        'text': 'Settings',
-        'route': null,
       },
       {
         'icon': Icons.info,
@@ -62,18 +94,15 @@ class _buildMenuContainerState extends State<buildMenuContainer> {
       {
         'icon': Icons.contact_page,
         'text': 'Contact us',
-        'route': null,
+        'route': const ContactUsPage(),
       },
       {
         'icon': Icons.logout,
         'text': 'Logout',
         'route': null,
         'action': () async {
-          await FirebaseAuth.instance.signOut();
-          // ignore: use_build_context_synchronously
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil('/log-in-page', (route) => false);
-        }, // Add logout action
+          await authCubit.signOut();
+        },
       },
     ];
 
