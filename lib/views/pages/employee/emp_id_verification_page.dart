@@ -1,40 +1,33 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
-import 'package:hire_harmony/utils/route/app_routes.dart';
+import 'package:hire_harmony/views/pages/employee/face_verification_page.dart';
 
 class EmpIdVerificationPage extends StatefulWidget {
-  final String stepText;
-  final bool isLastStep;
-  final bool isDisplay;
-  final bool isDone;
-
-  const EmpIdVerificationPage({
-    super.key,
-    required this.stepText,
-    this.isLastStep = false,
-    this.isDisplay = false,
-    this.isDone = false,
-  });
+  const EmpIdVerificationPage({super.key});
 
   @override
   State<EmpIdVerificationPage> createState() => _EmpIdVerificationPageState();
 }
 
 class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
-  File? selectedImage;
+  File? idImage;
+  File? selfieImage;
 
-  Future<void> _pickImage(ImageSource source) async {
+  Future<void> _pickImage(ImageSource source, bool isIdImage) async {
     try {
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(source: source);
 
       if (image != null) {
         setState(() {
-          selectedImage = File(image.path);
+          if (isIdImage) {
+            idImage = File(image.path);
+          } else {
+            selfieImage = File(image.path);
+          }
         });
       }
     } catch (e) {
@@ -70,7 +63,7 @@ class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              widget.stepText,
+              "Upload your ID and take a selfie for verification",
               style: GoogleFonts.montserratAlternates(
                 fontSize: 19,
                 color: AppColors().grey3,
@@ -78,131 +71,35 @@ class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 30),
-            selectedImage != null
-                ? CircleAvatar(
-                    radius: 70,
-                    backgroundImage: FileImage(selectedImage!),
-                  )
-                : CircleAvatar(
-                    radius: 70,
-                    backgroundColor: AppColors().greylight,
-                    child: Icon(Icons.person_2_outlined,
-                        color: AppColors().grey, size: 50),
-                  ),
+            _imagePickerWidget("Upload ID Picture", idImage, true),
             const SizedBox(height: 30),
-            if (!widget.isDisplay)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Text(
-                    "UPLOAD FROM DEVICE",
-                    style: GoogleFonts.montserratAlternates(
-                      fontSize: 14,
-                      color: AppColors().grey3,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  IconButton(
-                    icon: Container(
-                      width: 50.0,
-                      height: 50.0,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors().orange,
-                      ),
-                      child: Icon(
-                        Icons.upload_file,
-                        color: AppColors().white,
-                      ),
-                    ),
-                    onPressed: () => _pickImage(ImageSource.gallery),
-                  ),
-                ],
-              ),
-            if (widget.isDisplay)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20.0),
-                child: Text(
-                  "ENSURE YOUR FACE IS WELL-LIT, CLEARLY VISIBLE, AND WITHOUT ACCESSORIES. USE A PLAIN BACKGROUND",
-                  style: GoogleFonts.montserratAlternates(
-                    fontSize: 14,
-                    color: AppColors().grey3,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  "CAPTURE WITH CAMERA",
-                  style: GoogleFonts.montserratAlternates(
-                    fontSize: 14,
-                    color: AppColors().grey3,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                IconButton(
-                  icon: Container(
-                    width: 50.0,
-                    height: 50.0,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors().orange,
-                    ),
-                    child: Icon(
-                      Icons.camera_alt_outlined,
-                      color: AppColors().white,
-                    ),
-                  ),
-                  onPressed: () => _pickImage(ImageSource.camera),
-                ),
-              ],
-            ),
+            _imagePickerWidget("Upload Selfie", selfieImage, false),
             const Spacer(),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors().orange,
+                backgroundColor: (idImage != null && selfieImage != null)
+                    ? AppColors().orange
+                    : AppColors().grey,
                 padding: const EdgeInsets.symmetric(vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              onPressed: () {
-                if (widget.isLastStep) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EmpIdVerificationPage(
-                        stepText: "Step 3: Take a live selfie",
-                        isDisplay: true,
-                        isDone: true,
-                      ),
-                    ),
-                  );
-                } else if (widget.isDone) {
-                  // Handle submit logic
-                  Navigator.pushNamed(
-                    context,
-                    AppRoutes.empVerificationSuccessPage,
-                  );
-                } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EmpIdVerificationPage(
-                        stepText: "Step 2: Upload the back of your ID",
-                        isLastStep: true,
-                      ),
-                    ),
-                  );
-                }
-              },
+              onPressed: (idImage != null && selfieImage != null)
+                  ? () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FaceVerificationPage(
+                            idImagePath: idImage!.path,
+                            selfieImagePath: selfieImage!.path,
+                          ),
+                        ),
+                      );
+                    }
+                  : null,
               child: Text(
-                widget.isDisplay ? 'SUBMIT' : 'NEXT',
+                "SUBMIT",
                 style: GoogleFonts.montserratAlternates(
                   fontSize: 18,
                   color: AppColors().white,
@@ -213,6 +110,35 @@ class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _imagePickerWidget(String label, File? imageFile, bool isIdImage) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.montserratAlternates(
+            fontSize: 14,
+            color: AppColors().grey3,
+            fontWeight: FontWeight.w500,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 10),
+        GestureDetector(
+          onTap: () => _pickImage(ImageSource.gallery, isIdImage),
+          child: CircleAvatar(
+            radius: 70,
+            backgroundColor: AppColors().greylight,
+            backgroundImage: imageFile != null ? FileImage(imageFile) : null,
+            child: imageFile == null
+                ? Icon(Icons.upload_file, color: AppColors().grey, size: 50)
+                : null,
+          ),
+        ),
+      ],
     );
   }
 }

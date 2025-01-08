@@ -24,7 +24,7 @@ import 'package:hire_harmony/views/pages/employee/contact_us_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_navbar.dart';
 import 'package:hire_harmony/views/pages/employee/emp_notifications_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_profile_info_page.dart';
-import 'package:hire_harmony/views/pages/forms/emp_sign_up_form.dart';
+//import 'package:hire_harmony/views/pages/forms/emp_sign_up_form.dart';
 import 'package:hire_harmony/views/pages/signup/sign_up_page.dart';
 import 'package:hire_harmony/views/pages/customer/cus_verification_success_page.dart';
 import 'package:hire_harmony/views/pages/customer/cus_messages_page.dart';
@@ -67,11 +67,11 @@ class AppRouter {
           builder: (_) => const SignUpPage(),
           settings: settings,
         );
-      case AppRoutes.empSignupForm:
-        return MaterialPageRoute(
-          builder: (_) => const EmpSignupForm(),
-          settings: settings,
-        );
+      // case AppRoutes.empSignupForm:
+      //   return MaterialPageRoute(
+      //     builder: (_) => const EmpSignupForm(),
+      //     settings: settings,
+      //   );
       case AppRoutes.empNavbar:
         return MaterialPageRoute(
           builder: (_) => const EmpNavbar(),
@@ -144,9 +144,7 @@ class AppRouter {
 
       case AppRoutes.empidverificationPage:
         return MaterialPageRoute(
-          builder: (_) => const EmpIdVerificationPage(
-            stepText: 'Please fill in the required information',
-          ),
+          builder: (_) => const EmpIdVerificationPage(),
           settings: settings,
         );
       case AppRoutes.empProfileInfoPage:
@@ -258,12 +256,12 @@ class AppRouter {
           ),
           settings: settings,
         );
-case AppRoutes.chat:
+      case AppRoutes.chat:
         return MaterialPageRoute(
           builder: (_) => const ChatPage(),
           settings: settings,
         );
-        
+
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(

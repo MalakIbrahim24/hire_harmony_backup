@@ -156,26 +156,31 @@ class _PhonePageState extends State<PhonePage> {
 
       final User user = userCredential.user!;
 
-      // If the role is 'customer', register immediately
+      // Link email and password as additional providers
+      final emailCredential = EmailAuthProvider.credential(
+        email: formData['email']!,
+        password: formData['password']!, // Ensure a password is provided
+      );
+
+      await user.linkWithCredential(emailCredential);
+
+      // Store user details in Firestore
+      String hashedPassword = _hashPassword(formData['password']!);
+
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'name': formData['name'],
+        'email': formData['email'], // Save email as identifier
+        'passwordHash': hashedPassword,
+        'phone':
+            '+970${_phoneController.text.trim()}', // Save phone number as identifier
+        'role': formData['role'], // Save user role
+      });
+
+      // Navigate to the appropriate page based on the user's role
       if (formData['role'] == 'customer') {
-        // Hash the password before storing in Firestore
-        String hashedPassword = _hashPassword(formData['password']!);
-
-        // Insert the customer details into Firestore
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-          'name': formData['name'],
-          'email': formData['email'],
-          'passwordHash': hashedPassword, // Store hashed password
-          'phone':
-              '+970${_phoneController.text.trim()}', // Add the phone number
-          'role': formData['role'], // Role (customer)
-        });
-
-        // Navigate to customer verification success page
         if (!mounted) return;
         Navigator.pushNamed(context, AppRoutes.cusVerificationSuccessPage);
       } else if (formData['role'] == 'employee') {
-        // For employees, navigate without inserting into Firestore
         if (!mounted) return;
         Navigator.pushNamed(context, AppRoutes.empidverificationPage,
             arguments: {
@@ -186,7 +191,7 @@ class _PhonePageState extends State<PhonePage> {
             });
       }
     } catch (e) {
-      // Show error message if OTP verification fails or any other error occurs
+      // Handle errors
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
