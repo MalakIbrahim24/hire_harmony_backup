@@ -30,6 +30,7 @@ class _PhotoTabViewState extends State<PhotoTabView> {
 
       // Show a dialog to add a title and upload
       showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         builder: (context) {
           final TextEditingController titleController = TextEditingController();
@@ -84,8 +85,10 @@ class _PhotoTabViewState extends State<PhotoTabView> {
                         .collection('serviceImages')
                         .add({'url': imageUrl, 'title': title});
 
+                    // ignore: use_build_context_synchronously
                     Navigator.pop(context);
                   } else {
+                    // ignore: use_build_context_synchronously
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text("Failed to upload image."),
@@ -256,7 +259,7 @@ class WorkPhotoCard extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             child: Container(
               width: double.infinity,
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withValues(alpha: 0.6),
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Text(
                 title,

@@ -344,20 +344,44 @@ class _SignUpPageState extends State<SignUpPage> {
                                 text: "Next",
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
-                                    // final encryptedPassword = encryptPassword(
-                                    //     _passwordController.text);
+                                    if (role == 'employee') {
+                                      // Navigate to EmpIdVerificationPage for employees
+                                      print('Name: ${_nameController.text}');
+                                      print('Email: ${_emailController.text}');
+                                      print(
+                                          'Password: ${_passwordController.text}');
 
-                                    // Navigate to PhonePage with all data
-                                    Navigator.pushNamed(
-                                      context,
-                                      AppRoutes.phonePage,
-                                      arguments: {
+                                      Navigator.pushNamed(
+                                        context,
+                                        AppRoutes
+                                            .empidverificationPage, // Replace with your actual route name
+                                        arguments: {
+                                          'name': _nameController.text,
+                                          'email': _emailController.text,
+                                          'password': _passwordController.text,
+                                        },
+                                      );
+
+                                      print(
+                                          'Navigating to EmpIdVerificationPage with arguments: ${{
                                         'name': _nameController.text,
                                         'email': _emailController.text,
                                         'password': _passwordController.text,
-                                        'role': role, // Pass the role
-                                      },
-                                    );
+                                        'role': role,
+                                      }}');
+                                    } else {
+                                      // Navigate to PhonePage for customers
+                                      Navigator.pushNamed(
+                                        context,
+                                        AppRoutes.phonePage,
+                                        arguments: {
+                                          'name': _nameController.text,
+                                          'email': _emailController.text,
+                                          'password': _passwordController.text,
+                                          'role': role,
+                                        },
+                                      );
+                                    }
                                   }
                                 },
                               ),

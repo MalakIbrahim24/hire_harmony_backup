@@ -117,7 +117,11 @@ class _VerificationSuccessPageState extends State<CusVerificationSuccessPage> {
               child: Center(
                 child: Text(
                   '© 2024, Hire All rights reserved',
-                  style: TextStyle(color: AppColors().navy),
+                  style: GoogleFonts.montserratAlternates(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors().navy,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),

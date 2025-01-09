@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,10 +11,9 @@ import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:hire_harmony/views/widgets/back_icon_button.dart';
 import 'package:hire_harmony/views/widgets/main_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
 class PhonePage extends StatefulWidget {
-  // Add role as a parameter
-
   const PhonePage({super.key});
 
   @override
@@ -34,7 +33,6 @@ class _PhonePageState extends State<PhonePage> {
 
   // Validate phone number format (basic validation)
   bool isValidPhoneNumber(String phoneNumber) {
-    // Regex to match the required phone number format
     final phoneRegex =
         RegExp(r'^\+\d{12,15}$'); // Matches + followed by 10-15 digits
     return phoneRegex.hasMatch(phoneNumber);
@@ -62,7 +60,6 @@ class _PhonePageState extends State<PhonePage> {
       return;
     }
 
-    // Continue with sending OTP
     try {
       await _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
@@ -74,7 +71,6 @@ class _PhonePageState extends State<PhonePage> {
             const SnackBar(content: Text('Phone number verified!')),
           );
           setState(() {
-            if (!mounted) return;
             isVerifyButtonEnabled = true;
           });
         },
@@ -82,14 +78,12 @@ class _PhonePageState extends State<PhonePage> {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: SnackBar(
-                backgroundColor: AppColors().red,
-                content: Text(
-                  'Verification failed: ${e.message}',
-                  style: GoogleFonts.montserratAlternates(
-                    color: AppColors().white,
-                    fontSize: 15,
-                  ),
+              backgroundColor: AppColors().red,
+              content: Text(
+                'Verification failed: ${e.message}',
+                style: GoogleFonts.montserratAlternates(
+                  color: AppColors().white,
+                  fontSize: 15,
                 ),
               ),
             ),
@@ -99,7 +93,7 @@ class _PhonePageState extends State<PhonePage> {
           if (!mounted) return;
           setState(() {
             verificationId = verId;
-            isSmsSent = true; // Display the OTP input field
+            isSmsSent = true;
           });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -138,8 +132,26 @@ class _PhonePageState extends State<PhonePage> {
     }
   }
 
-// Verify OTP and register the user
-  Future<void> verifyOtpAndRegister(Map<String, String> formData) async {
+  // Function to upload images to Supabase
+  Future<String> _uploadToSupabase(File image, String fileName) async {
+    final supabasee = supabase.Supabase.instance.client;
+    try {
+      // Specify the path in the `auth_images` folder
+      String filePath = 'auth_images/$fileName';
+
+      // Attempt to upload the image
+      await supabasee.storage.from('serviceImages').upload(filePath, image);
+
+      // If successful, return the public URL
+      return supabasee.storage.from('serviceImages').getPublicUrl(filePath);
+    } catch (e) {
+      // Handle the exception and throw a custom error message
+      throw Exception('Failed to upload image: $e');
+    }
+  }
+
+  // Verify OTP and register the user
+  Future<void> verifyOtpAndRegister(Map<String, dynamic> formData) async {
     try {
       // Verify the OTP and sign in the user with the phone credential
       final PhoneAuthCredential credential = PhoneAuthProvider.credential(
@@ -159,7 +171,7 @@ class _PhonePageState extends State<PhonePage> {
       // Link email and password as additional providers
       final emailCredential = EmailAuthProvider.credential(
         email: formData['email']!,
-        password: formData['password']!, // Ensure a password is provided
+        password: formData['password']!,
       );
 
       await user.linkWithCredential(emailCredential);
@@ -167,29 +179,29 @@ class _PhonePageState extends State<PhonePage> {
       // Store user details in Firestore
       String hashedPassword = _hashPassword(formData['password']!);
 
+      // Upload images to Supabase
+      final idImage = formData['idImage'] as File;
+      final selfieImage = formData['selfieImage'] as File;
+
+      final idImageUrl = await _uploadToSupabase(
+          idImage, 'id_${DateTime.now().millisecondsSinceEpoch}.jpg');
+      final selfieImageUrl = await _uploadToSupabase(
+          selfieImage, 'selfie_${DateTime.now().millisecondsSinceEpoch}.jpg');
+
+      // Save data in Firestore
       await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
         'name': formData['name'],
-        'email': formData['email'], // Save email as identifier
+        'email': formData['email'],
         'passwordHash': hashedPassword,
-        'phone':
-            '+970${_phoneController.text.trim()}', // Save phone number as identifier
-        'role': formData['role'], // Save user role
+        'phone': '+970${_phoneController.text.trim()}',
+        'role': 'employee',
+        'idImageUrl': idImageUrl,
+        'selfieImageUrl': selfieImageUrl,
       });
 
-      // Navigate to the appropriate page based on the user's role
-      if (formData['role'] == 'customer') {
-        if (!mounted) return;
-        Navigator.pushNamed(context, AppRoutes.cusVerificationSuccessPage);
-      } else if (formData['role'] == 'employee') {
-        if (!mounted) return;
-        Navigator.pushNamed(context, AppRoutes.empidverificationPage,
-            arguments: {
-              'uid': user.uid,
-              'email': formData['email'],
-              'name': formData['name'],
-              'phone': '+970${_phoneController.text.trim()}',
-            });
-      }
+      // Navigate to the success page
+      if (!mounted) return;
+      Navigator.pushNamed(context, AppRoutes.empVerificationSuccessPage);
     } catch (e) {
       // Handle errors
       if (!mounted) return;
@@ -210,9 +222,10 @@ class _PhonePageState extends State<PhonePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Retrieve data passed from SignUpPage
-    final Map<String, String>? formData =
-        ModalRoute.of(context)?.settings.arguments as Map<String, String>?;
+    // Retrieve data passed from EmpIdVerificationPage
+    // Retrieve data passed from EmpIdVerificationPage
+    final Map<String, dynamic>? formData =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
 
     if (formData == null) {
       return const Center(
@@ -223,6 +236,8 @@ class _PhonePageState extends State<PhonePage> {
       );
     }
 
+    // Safely cast the values from `formData` when needed
+
     return Scaffold(
       backgroundColor: AppColors().white,
       body: SingleChildScrollView(
@@ -231,7 +246,6 @@ class _PhonePageState extends State<PhonePage> {
           child: SafeArea(
             child: Stack(
               children: [
-                // Back Button and Title inside a Positioned widget
                 Positioned(
                   top: 40,
                   left: 10,
@@ -253,117 +267,96 @@ class _PhonePageState extends State<PhonePage> {
                     ],
                   ),
                 ),
-                // Main content inside a Padding widget
                 Padding(
-                  padding: const EdgeInsets.only(
-                      top: 80), // Adjust top padding to avoid overlap
+                  padding: const EdgeInsets.only(top: 80),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Phone verification form
                       const SizedBox(height: 65),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment
-                                .start, // Aligns children to the start
-                            children: [
-                              const SizedBox(
-                                  height: 20), // Adds some space at the top
-                              Text(
-                                'Phone number',
-                                style: GoogleFonts.montserratAlternates(
-                                  fontSize: 15,
-                                  color: AppColors().navy,
-                                ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 20),
+                            Text(
+                              'Phone number',
+                              style: GoogleFonts.montserratAlternates(
+                                fontSize: 15,
+                                color: AppColors().navy,
                               ),
-                              const SizedBox(
-                                  height:
-                                      20), // Adds spacing between text and TextFormField
-                              TextFormField(
-                                controller: _phoneController,
-                                keyboardType: TextInputType.phone,
-                                decoration: InputDecoration(
-                                  prefixIcon:
-                                      const Icon(Icons.phone_android_outlined),
-                                  prefixText:
-                                      '+970 ', // Pre-fills the country code
-                                  prefixStyle: TextStyle(
-                                      color: AppColors().black, fontSize: 16),
-                                  border: InputBorder.none,
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      color: Colors.grey.withValues(
-                                          alpha: 0.5), // Light gray border
-                                      width: 1.0,
-                                    ),
+                            ),
+                            const SizedBox(height: 20),
+                            TextFormField(
+                              controller: _phoneController,
+                              keyboardType: TextInputType.phone,
+                              decoration: InputDecoration(
+                                prefixIcon:
+                                    const Icon(Icons.phone_android_outlined),
+                                prefixText: '+970 ',
+                                border: InputBorder.none,
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide(
+                                    color: AppColors().grey.withAlpha(128),
+                                    width: 1.0,
                                   ),
-                                  hintText: 'Enter your phone number',
                                 ),
+                                hintText: 'Enter your phone number',
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  isSendOtpButtonEnabled = isValidPhoneNumber(
+                                      '+970${_phoneController.text.trim()}');
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 60),
+                            if (isSmsSent)
+                              PinCodeTextField(
+                                appContext: context,
+                                controller: _otpController,
+                                length: 6,
                                 onChanged: (value) {
                                   setState(() {
-                                    // Automatically enable the "Send OTP" button if the input is valid
-                                    isSendOtpButtonEnabled = isValidPhoneNumber(
-                                        '+970${_phoneController.text.trim()}');
+                                    isVerifyButtonEnabled = value.length == 6;
                                   });
                                 },
-                              ),
-
-                              const SizedBox(height: 60),
-
-                              // OTP Field (visible only after sending OTP)
-                              if (isSmsSent)
-                                PinCodeTextField(
-                                  appContext: context,
-                                  controller: _otpController,
-                                  length: 6,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      isVerifyButtonEnabled = value.length == 6;
-                                    });
-                                  },
-                                  pinTheme: PinTheme(
-                                    shape: PinCodeFieldShape.underline,
-                                    fieldHeight: 50,
-                                    fieldWidth: 40,
-                                    inactiveColor: AppColors().grey,
-                                    activeColor: AppColors().orange,
-                                    selectedColor: AppColors().orange,
-                                  ),
+                                pinTheme: PinTheme(
+                                  shape: PinCodeFieldShape.underline,
+                                  fieldHeight: 50,
+                                  fieldWidth: 40,
+                                  inactiveColor: AppColors().grey,
+                                  activeColor: AppColors().orange,
+                                  selectedColor: AppColors().orange,
                                 ),
-                              const SizedBox(height: 20),
-
-                              // Send OTP Button
-                              MainButton(
-                                color: isSendOtpButtonEnabled
-                                    ? AppColors().white
-                                    : AppColors().grey,
-                                text: "Send OTP",
-                                bgColor: isSendOtpButtonEnabled
-                                    ? AppColors().orange
-                                    : AppColors().greylight,
-                                onPressed:
-                                    isSendOtpButtonEnabled ? sendOtp : null,
                               ),
-                              const SizedBox(height: 20),
-
-                              // Verify Button
-                              MainButton(
-                                color: isVerifyButtonEnabled
-                                    ? AppColors().white
-                                    : AppColors().grey,
-                                text: "Verify",
-                                bgColor: isVerifyButtonEnabled
-                                    ? AppColors().orange
-                                    : AppColors().greylight,
-                                onPressed: isVerifyButtonEnabled
-                                    ? () => verifyOtpAndRegister(formData)
-                                    : null,
-                              ),
-                            ],
-                          ),
+                            const SizedBox(height: 20),
+                            MainButton(
+                              color: isSendOtpButtonEnabled
+                                  ? AppColors().white
+                                  : AppColors().grey,
+                              text: "Send OTP",
+                              bgColor: isSendOtpButtonEnabled
+                                  ? AppColors().orange
+                                  : AppColors().greylight,
+                              onPressed:
+                                  isSendOtpButtonEnabled ? sendOtp : null,
+                            ),
+                            const SizedBox(height: 20),
+                            MainButton(
+                              color: isVerifyButtonEnabled
+                                  ? AppColors().white
+                                  : AppColors().grey,
+                              text: "Verify",
+                              bgColor: isVerifyButtonEnabled
+                                  ? AppColors().orange
+                                  : AppColors().greylight,
+                              onPressed: isVerifyButtonEnabled
+                                  ? () => verifyOtpAndRegister(formData)
+                                  : null,
+                            ),
+                          ],
                         ),
                       ),
                     ],
