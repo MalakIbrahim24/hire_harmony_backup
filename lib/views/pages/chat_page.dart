@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hire_harmony/services/chat/cubit/chat_cubit.dart';
 
 class ChatPage extends StatefulWidget {
+  final String reciverEmail;
+
   const ChatPage({
-    super.key,
+    super.key, required this.reciverEmail,
   });
 
   @override
@@ -19,7 +21,7 @@ class _ChatPageState extends State<ChatPage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Chat'),
+          title: Text(widget.reciverEmail),
         ),
         body: SafeArea(
           child: Column(

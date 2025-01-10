@@ -145,7 +145,7 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
             cubit.getMessages();
             return cubit;
           },
-          child: const ChatPage(),
+          child: const ChatPage(reciverEmail: 'moe@gmail.com',),
         ),
         const OrderPage(),
         const CusHomePage(),
