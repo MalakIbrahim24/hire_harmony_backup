@@ -110,7 +110,7 @@ class _VerificationSuccessPageState extends State<EmpVerificationSuccessPage> {
           const Spacer(),
           DecoratedBox(
             decoration: BoxDecoration(
-              color: AppColors().orange.withValues(alpha:0.3),
+              color: AppColors().babyBlue.withValues(alpha: 0.3),
             ),
             child: SizedBox(
               width: double.infinity,
@@ -118,7 +118,11 @@ class _VerificationSuccessPageState extends State<EmpVerificationSuccessPage> {
               child: Center(
                 child: Text(
                   '© 2024, Hire All rights reserved',
-                  style: TextStyle(color: AppColors().navy),
+                  style: GoogleFonts.montserratAlternates(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors().navy,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),
