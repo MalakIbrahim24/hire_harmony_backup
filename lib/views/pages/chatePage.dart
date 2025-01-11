@@ -48,6 +48,10 @@ class Chatepage extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.background,
         foregroundColor: Colors.grey,
         elevation: 0,
+
+
+
+        
       ),
       body: Container(
         decoration: const BoxDecoration(
