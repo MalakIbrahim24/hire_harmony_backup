@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/pages/chat_list_page.dart';
-import 'package:hire_harmony/views/pages/customer/cus_messages_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_home_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_order_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_profile_page.dart';
@@ -91,7 +90,7 @@ class _EmpNavbarState extends State<EmpNavbar> {
               ),
             ),
       body: <Widget>[
-         ChatListPage(),
+        ChatListPage(),
         const EmpHomePage(),
         const EmpOrderPage(),
         const EmpProfilePage(),

@@ -3,9 +3,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hire_harmony/utils/light_mode.dart';
 import 'package:hire_harmony/utils/route/app_router.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
+import 'package:hire_harmony/utils/theme_provider.dart';
 import 'package:hire_harmony/view_models/cubit/auth_cubit.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
 import 'firebase_options.dart';
@@ -26,7 +29,14 @@ void main() async {
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50cWd0ZmtpeWV2dHRsbHl5ZWNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYxNTQzNDIsImV4cCI6MjA1MTczMDM0Mn0.7APvbYoT5BpkmV1goMLIzJ7Ys2pehlns-hCO5f1oIFU',
   );
-  runApp(const MyApp());
+  runApp(
+  ChangeNotifierProvider(
+    create: (context) => ThemeProvider(),
+    child: const MyApp(),
+
+  )
+  
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -69,6 +79,7 @@ class MyApp extends StatelessWidget {
                 title: 'Hire Harmony',
                 initialRoute: initRoute,
                 onGenerateRoute: AppRouter.onGenerateRoute,
+                theme: Provider.of<ThemeProvider>(context).themeData,
               );
             },
           );

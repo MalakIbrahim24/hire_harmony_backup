@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hire_harmony/services/chat/cubit/chat_cubit.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
-import 'package:hire_harmony/views/pages/chat_page.dart';
+import 'package:hire_harmony/views/pages/chat_list_page.dart';
 import 'package:hire_harmony/views/pages/customer/cus_home_page.dart';
 import 'package:hire_harmony/views/pages/customer/cus_profile_page.dart';
 import 'package:hire_harmony/views/pages/customer/favorites_page.dart';
@@ -138,8 +136,9 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                 ],
               ),
             ),
-      body: <Widget>[
-        BlocProvider(
+      body:
+       <Widget>[
+      /*  BlocProvider(
           create: (context) {
             final cubit = ChatCubit();
             cubit.getMessages();
@@ -147,6 +146,8 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
           },
           child: const ChatPage(reciverEmail: 'moe@gmail.com',),
         ),
+        */
+        ChatListPage(),
         const OrderPage(),
         const CusHomePage(),
         const FavoritesPage(),

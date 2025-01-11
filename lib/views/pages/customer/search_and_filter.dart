@@ -254,7 +254,8 @@ class _SearchAndFilterState extends State<SearchAndFilter> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => ViewEmpProfilePage(
-                                      employeeId: employee['id'], // Pass the employee ID
+                                      employeeId: employee[
+                                          'id'], // Pass the employee ID
                                     ),
                                   ),
                                 );

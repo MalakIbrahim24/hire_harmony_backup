@@ -1,12 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hire_harmony/services/chat/cubit/chat_cubit.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
-import 'package:hire_harmony/views/pages/chat_list_page.dart';
-import 'package:hire_harmony/views/pages/chat_page.dart';
 import 'package:hire_harmony/views/pages/chatePage.dart';
 import 'package:hire_harmony/views/pages/employee/reviews_page.dart';
 import 'package:hire_harmony/views/widgets/customer/cus_photo_tab_view.dart';

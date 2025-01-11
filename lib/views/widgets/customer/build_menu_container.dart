@@ -7,6 +7,7 @@ import 'package:hire_harmony/view_models/cubit/auth_cubit.dart';
 import 'package:hire_harmony/views/pages/customer/cus_profile_info.dart';
 import 'package:hire_harmony/views/pages/customer/account_deletion_page.dart';
 import 'package:hire_harmony/views/pages/employee/contact_us_page.dart';
+import 'package:hire_harmony/views/pages/settings_page.dart';
 import 'package:hire_harmony/views/widgets/main_button.dart';
 
 // ignore: camel_case_types
@@ -95,6 +96,11 @@ class _buildMenuContainerState extends State<buildMenuContainer> {
         'icon': Icons.contact_page,
         'text': 'Contact us',
         'route': const ContactUsPage(),
+      },
+       {
+        'icon': Icons.settings,
+        'text': 'Settings',
+        'route': const SettingsPage(),
       },
       {
         'icon': Icons.logout,
