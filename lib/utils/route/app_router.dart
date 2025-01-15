@@ -265,7 +265,7 @@ class AppRouter {
         );
       case AppRoutes.chat:
         return MaterialPageRoute(
-          builder: (_) => const ChatPage(),
+          builder: (_) => const ChatPage(reciverEmail: 'moe@gmail.com',),
           settings: settings,
         );
 
