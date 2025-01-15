@@ -10,9 +10,24 @@ import 'package:intl/intl.dart';
 class EmpOrderPage extends StatelessWidget {
   const EmpOrderPage({super.key});
 
+  Future<String?> _fetchEmployeeState(String userId) async {
+    try {
+      final DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      if (userDoc.exists) {
+        return userDoc['state'] as String?;
+      }
+    } catch (e) {
+      debugPrint("Error fetching employee state: $e");
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Fetch the current user's UID
     final String? loggedInUserId = FirebaseAuth.instance.currentUser?.uid;
 
     if (loggedInUserId == null) {
@@ -33,74 +48,158 @@ class EmpOrderPage extends StatelessWidget {
       );
     }
 
-    // Reference to the 'orders' subcollection for the logged-in user
-    final Stream<List<Map<String, dynamic>>> ordersStream =
-        FirestoreService.instance.collectionStream(
-      path: 'users/$loggedInUserId/orders',
-      builder: (data, documentId) => {
-        ...data,
-        'orderID': documentId, // Include the document ID as orderID
-      },
-    );
+    return FutureBuilder<String?>(
+      future: _fetchEmployeeState(loggedInUserId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-    return Scaffold(
-      backgroundColor: AppColors().white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: Text(
-          'Orders',
-          style: GoogleFonts.montserratAlternates(
-            fontSize: 22,
-            color: AppColors().navy,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      body: StreamBuilder<List<Map<String, dynamic>>>(
-        stream: ordersStream,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+        if (snapshot.hasError || snapshot.data == null) {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: AppColors().transparent,
+            ),
+            extendBodyBehindAppBar: true,
+            body: Center(
+              child: Text(
+                'Error loading data. Please try again later.',
+                style: GoogleFonts.montserratAlternates(
+                  fontSize: 18,
+                  color: AppColors().navy,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          );
+        }
 
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
-                child: Text(
-              'No orders found.',
+        final String? employeeState = snapshot.data;
+
+        if (employeeState == 'pending') {
+          return Scaffold(
+            backgroundColor: AppColors().transparent,
+            extendBodyBehindAppBar: true,
+            body: Stack(
+              children: [
+                // Semi-transparent dark overlay
+
+                Container(
+                  color: Colors.black.withValues(alpha: 0.35), // Dark overlay
+                ),
+                // Lock icon and text in the center
+                Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.lock,
+                        size: 70,
+                        color: AppColors().white,
+                      ),
+                      const SizedBox(
+                        height: 80,
+                      ),
+                      Text(
+                        'Orders are locked for now',
+                        style: GoogleFonts.montserratAlternates(
+                          fontSize: 20,
+                          color: AppColors().white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'Please wait until we verify your identity.',
+                        style: GoogleFonts.montserratAlternates(
+                          fontSize: 16,
+                          color: Colors.white, // White text for contrast
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        final Stream<List<Map<String, dynamic>>> ordersStream =
+            FirestoreService.instance.collectionStream(
+          path: 'users/$loggedInUserId/orders',
+          builder: (data, documentId) => {
+            ...data,
+            'orderID': documentId,
+          },
+        );
+
+        return Scaffold(
+          backgroundColor: AppColors().white,
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            centerTitle: true,
+            title: Text(
+              'Orders',
               style: GoogleFonts.montserratAlternates(
-                fontSize: 18,
+                fontSize: 22,
                 color: AppColors().navy,
                 fontWeight: FontWeight.bold,
               ),
-            ));
-          }
+            ),
+          ),
+          body: StreamBuilder<List<Map<String, dynamic>>>(
+            stream: ordersStream,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-          final orders = snapshot.data!;
+              if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Center(
+                  child: Text(
+                    'No orders found.',
+                    style: GoogleFonts.montserratAlternates(
+                      fontSize: 18,
+                      color: AppColors().navy,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                );
+              }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(10),
-            itemCount: orders.length,
-            itemBuilder: (context, index) {
-              final order = orders[index];
-              final sentTime = order['sentTime'] as Timestamp;
-              final formattedTime = DateFormat.jm().format(sentTime.toDate());
-              final formattedDate =
-                  DateFormat.yMMMMd().format(sentTime.toDate());
+              final orders = snapshot.data!;
 
-              return OrderTile(
-                title: order['name'] as String? ?? 'No Title',
-                subtitle: 'Order ID: ${order['orderID'] as String? ?? 'N/A'}',
-                status: order['status'] as String? ?? 'Unknown',
-                statusColor: _getStatusColor(order['status'] as String? ?? ''),
-                sentTime: formattedTime,
-                sentDate: formattedDate,
+              return ListView.builder(
+                padding: const EdgeInsets.all(10),
+                itemCount: orders.length,
+                itemBuilder: (context, index) {
+                  final order = orders[index];
+                  final sentTime = order['sentTime'] as Timestamp;
+                  final formattedTime =
+                      DateFormat.jm().format(sentTime.toDate());
+                  final formattedDate =
+                      DateFormat.yMMMMd().format(sentTime.toDate());
+
+                  return OrderTile(
+                    title: order['name'] as String? ?? 'No Title',
+                    subtitle:
+                        'Order ID: ${order['orderID'] as String? ?? 'N/A'}',
+                    status: order['status'] as String? ?? 'Unknown',
+                    statusColor:
+                        _getStatusColor(order['status'] as String? ?? ''),
+                    sentTime: formattedTime,
+                    sentDate: formattedDate,
+                  );
+                },
               );
             },
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 

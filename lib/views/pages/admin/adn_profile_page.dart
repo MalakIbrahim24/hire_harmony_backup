@@ -99,30 +99,47 @@ class _AdnProfilePageState extends State<AdnProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  AdnProfileContainer(
-                    icon: Icons.person_outline,
-                    title: 'Personal Information',
-                    onTap: () {
-                      Navigator.pushNamed(
-                          context, AppRoutes.adnnpersonalinfoPage);
-                    },
-                  ),
-                  AdnProfileContainer(
-                    icon: Icons.settings_outlined,
-                    title: 'Settings and Privacy',
-                    onTap: () {
-                      Navigator.pushNamed(context, AppRoutes.adnsettingsPage);
-                    },
-                  ),
-                  AdnProfileContainer(
-                    icon: Icons.logout_outlined,
-                    title: 'Logout',
-                    onTap: () async {
-                      await authCubit.signOut();
-                    },
-                  ),
-                  const SizedBox(
-                    height: 80,
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          AdnProfileContainer(
+                            icon: Icons.person_outline,
+                            title: 'Personal Information',
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, AppRoutes.adnnpersonalinfoPage);
+                            },
+                          ),
+                          AdnProfileContainer(
+                            icon: Icons.account_tree_outlined,
+                            title: 'New Accounts requests',
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, AppRoutes.newaccountsrequestsPage);
+                            },
+                          ),
+                          AdnProfileContainer(
+                            icon: Icons.settings_outlined,
+                            title: 'Settings and Privacy',
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, AppRoutes.adnsettingsPage);
+                            },
+                          ),
+                          AdnProfileContainer(
+                            icon: Icons.logout_outlined,
+                            title: 'Logout',
+                            onTap: () async {
+                              await authCubit.signOut();
+                            },
+                          ),
+                          const SizedBox(
+                            height: 80,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),

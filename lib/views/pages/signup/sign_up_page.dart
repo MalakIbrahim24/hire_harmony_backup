@@ -359,6 +359,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                           'name': _nameController.text,
                                           'email': _emailController.text,
                                           'password': _passwordController.text,
+                                          'role' : role,
                                         },
                                       );
 

@@ -52,6 +52,7 @@ class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
         'password': userData['password']!,
         'idImage': idImage!,
         'selfieImage': selfieImage!,
+        'role': 'employee',
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
