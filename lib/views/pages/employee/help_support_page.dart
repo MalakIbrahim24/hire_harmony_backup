@@ -34,7 +34,7 @@ class HelpSupportPage extends StatelessWidget {
             Text(
               'What Went Wrong ?',
               style: TextStyle(
-                fontSize: 18.0,
+                fontSize: 20.0,
                 fontWeight: FontWeight.bold,
                 color: AppColors().white,
               ),

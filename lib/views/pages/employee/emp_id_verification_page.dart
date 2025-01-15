@@ -176,7 +176,7 @@ class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EmpIdVerificationPage(
+                      builder: (context) => const EmpIdVerificationPage(
                         stepText: "Step 3: Take a live selfie",
                         isDisplay: true,
                         isDone: true,
@@ -193,7 +193,7 @@ class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EmpIdVerificationPage(
+                      builder: (context) => const EmpIdVerificationPage(
                         stepText: "Step 2: Upload the back of your ID",
                         isLastStep: true,
                       ),

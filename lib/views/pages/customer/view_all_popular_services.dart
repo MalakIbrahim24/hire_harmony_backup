@@ -45,12 +45,41 @@ class ViewAllPopularServicesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'All Popular Services',
-          style: GoogleFonts.montserratAlternates(color: AppColors().white),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(70.0),
+        child: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: AppColors().orange,
+          elevation: 0,
+          flexibleSpace: SafeArea(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back, color: AppColors().white),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  Expanded(
+                    child: Text(
+                      'All Popular Services',
+                      style: GoogleFonts.montserratAlternates(
+                        color: AppColors().white,
+                        //fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(width: 40), // Spacer for symmetry
+                ],
+              ),
+            ),
+          ),
         ),
-        backgroundColor: AppColors().orange,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: fetchPopularServicesWithEmployees(),
@@ -78,46 +107,58 @@ class ViewAllPopularServicesPage extends StatelessWidget {
               final serviceImg = serviceDetails['img'] ?? '';
               final employeeName = employee['name'] ?? 'Unknown Employee';
 
-              return ListTile(
-                leading: CircleAvatar(
-                  radius: 20,
-                  backgroundImage:
-                      serviceImg.isNotEmpty ? NetworkImage(serviceImg) : null,
-                  backgroundColor: AppColors().navy,
-                  child: serviceImg.isEmpty
-                      ? const Icon(Icons.design_services, color: Colors.white)
-                      : null,
+              return Container(
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 10.0,
+                  vertical: 8.0,
                 ),
-                title: Text(
-                  serviceName,
-                  style: GoogleFonts.montserratAlternates(
-                    textStyle: TextStyle(
-                      fontSize: 14,
-                      color: AppColors().navy,
-                      fontWeight: FontWeight.w500,
-                    ),
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: AppColors().white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors().orange),
+                ),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    radius: 24,
+                    backgroundImage:
+                        serviceImg.isNotEmpty ? NetworkImage(serviceImg) : null,
+                    backgroundColor: AppColors().navy,
+                    child: serviceImg.isEmpty
+                        ? const Icon(Icons.design_services, color: Colors.white)
+                        : null,
                   ),
-                ),
-                subtitle: Text(
-                  'Offered by: $employeeName',
-                  style: GoogleFonts.montserratAlternates(
-                    textStyle: TextStyle(
-                      fontSize: 12,
-                      color: AppColors().grey,
-                    ),
-                  ),
-                ),
-                onTap: () {
-                  // Navigate to ViewEmpProfilePage with employeeId
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ViewEmpProfilePage(
-                        employeeId: employeeId,
+                  title: Text(
+                    serviceName,
+                    style: GoogleFonts.montserratAlternates(
+                      textStyle: TextStyle(
+                        fontSize: 18,
+                        color: AppColors().navy,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                  );
-                },
+                  ),
+                  subtitle: Text(
+                    'Offered by: $employeeName',
+                    style: GoogleFonts.montserratAlternates(
+                      textStyle: TextStyle(
+                        fontSize: 12,
+                        color: AppColors().grey2,
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    // Navigate to ViewEmpProfilePage with employeeId
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ViewEmpProfilePage(
+                          employeeId: employeeId,
+                        ),
+                      ),
+                    );
+                  },
+                ),
               );
             },
           );

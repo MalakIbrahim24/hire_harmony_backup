@@ -20,14 +20,41 @@ class _ViewAllCategoriesPageState extends State<ViewAllCategoriesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'All Categories',
-          style: GoogleFonts.montserratAlternates(
-            color: AppColors().white,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(70.0),
+        child: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: AppColors().orange,
+          elevation: 0,
+          flexibleSpace: SafeArea(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back, color: AppColors().white),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  Expanded(
+                    child: Text(
+                      'All categories',
+                      style: GoogleFonts.montserratAlternates(
+                        color: AppColors().white,
+                        //fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(width: 40), // Spacer for symmetry
+                ],
+              ),
+            ),
           ),
         ),
-        backgroundColor: AppColors().orange,
       ),
       body: Column(
         children: [
@@ -83,18 +110,40 @@ class _ViewAllCategoriesPageState extends State<ViewAllCategoriesPage> {
                         as Map<String, dynamic>;
                     final categoryId = filteredCategories[index]['id'];
 
-                    return ListTile(
-                      title: Text(category['name'] ?? 'Unknown Name'),
-                      onTap: () {
-                        // Navigate to the employees page with the selected category ID
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EmployeesUnderCategoryPage(
-                                categoryId: categoryId),
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 4.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: AppColors().white,
+                          border: Border.all(
+                            // ignore: deprecated_member_use
+                            color: AppColors().grey.withOpacity(0.6),
                           ),
-                        );
-                      },
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: ListTile(
+                          title: Text(
+                            category['name'] ?? 'Unknown Name',
+                            style: GoogleFonts.montserrat(
+                              fontSize: 16,
+                              color: AppColors().navy,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          onTap: () {
+                            // Navigate to the employees page with the selected category ID
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    EmployeesUnderCategoryPage(
+                                        categoryId: categoryId),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     );
                   },
                 );

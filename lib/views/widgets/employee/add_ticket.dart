@@ -1,15 +1,49 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
-import 'package:hire_harmony/views/pages/employee/tickets_page.dart';
 
 class AddTicket extends StatelessWidget {
-  const AddTicket({super.key});
+  final TextEditingController descriptionController = TextEditingController();
+
+  AddTicket({super.key});
+
+  Future<void> saveTicket() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      print('User not logged in');
+      return;
+    }
+
+    final String description = descriptionController.text.trim();
+
+    if (description.isEmpty) {
+      print('Description is required');
+      return;
+    }
+
+    try {
+      await FirebaseFirestore.instance.collection('send ticket').add({
+        'uid': user.uid, // إضافة UID الخاص بالمستخدم
+        'userName': user.displayName ?? 'Unknown User', // اسم المستخدم
+        'description': description,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      // تفريغ الحقول عند الحفظ بنجاح
+      descriptionController.clear();
+
+      print('Ticket saved successfully!');
+    } catch (e) {
+      print('Error saving ticket: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:AppColors().navy,
-
+      backgroundColor: AppColors().navy,
       appBar: AppBar(
         title: Text(
           'Add Ticket',
@@ -22,7 +56,7 @@ class AddTicket extends StatelessWidget {
         backgroundColor: AppColors().white,
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors().white),
+          icon: Icon(Icons.arrow_back, color: AppColors().navy),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -35,80 +69,20 @@ class AddTicket extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 8.0),
-            const Text(
-              'Add Your Ticket',
-              style: TextStyle(color: Colors.white70),
-            ),
-             
+              const Text(
+                'Add Your Ticket',
+                style: TextStyle(color: Colors.white70),
+              ),
               const SizedBox(height: 16.0),
               TextField(
-                style: TextStyle(color: AppColors().white),
-                decoration: const InputDecoration(
-                  labelText: 'Your Name',
-                  labelStyle: TextStyle(color: Colors.white70),
-                  filled: true,
-                  fillColor: Colors.white24,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              const TextField(
-                style: TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: 'Category Name',
-                  labelStyle: TextStyle(color: Colors.white70),
-                  filled: true,
-                  fillColor: Colors.white24,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              const Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        labelText: 'Start Date',
-                        labelStyle: TextStyle(color: Colors.white70),
-                        filled: true,
-                        fillColor: Colors.white24,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8.0),
-                  Expanded(
-                    child: TextField(
-                      style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        labelText: 'End Date',
-                        labelStyle: TextStyle(color: Colors.white70),
-                        filled: true,
-                        fillColor: Colors.white24,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16.0),
-              const TextField(
+                controller: descriptionController,
                 maxLines: 4,
-                style: TextStyle(color: Colors.white70),
-                decoration: InputDecoration(
+                style: const TextStyle(color: Colors.white70),
+                decoration: const InputDecoration(
                   labelText: 'Problem Description',
                   labelStyle: TextStyle(color: Colors.white70),
                   filled: true,
-                        fillColor: Colors.white24,
+                  fillColor: Colors.white24,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(8.0)),
                   ),
@@ -123,9 +97,7 @@ class AddTicket extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                onPressed: saveTicket,
                 child: Text(
                   'Save',
                   style: TextStyle(
@@ -133,28 +105,6 @@ class AddTicket extends StatelessWidget {
                     color: AppColors().white,
                     fontWeight: FontWeight.bold,
                   ),
-                ),
-              ),
-              const SizedBox(height: 8.0),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors().white,
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const TicketsPage(),
-                    ),
-                  );
-                },
-                child: Text(
-                  'Show All Tickets',
-                  style: TextStyle(color: AppColors().navy),
                 ),
               ),
             ],

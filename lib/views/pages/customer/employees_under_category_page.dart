@@ -73,38 +73,94 @@ class EmployeesUnderCategoryPage extends StatelessWidget {
               final employeeImg = employee['img'] ?? '';
               final employeeId = employee['uid'];
 
-              return ListTile(
-                leading: CircleAvatar(
-                  backgroundImage:
-                      employeeImg.isNotEmpty ? NetworkImage(employeeImg) : null,
-                  backgroundColor: AppColors().navy,
-                  child: employeeImg.isEmpty
-                      ? const Icon(Icons.person, color: Colors.white)
-                      : null,
+              return Card(
+                margin: const EdgeInsets.symmetric(
+                    vertical: 8.0, horizontal: 12.0), // تقليل المسافات الخارجية
+                elevation: 3, // إضافة ظل خفيف للكارد
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(10), // زوايا دائرية للكارد
                 ),
-                title: Text(
-                  employeeName,
-                  style: GoogleFonts.montserratAlternates(
-                    textStyle: TextStyle(
-                      fontSize: 14,
-                      color: AppColors().navy,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                subtitle: Text(employeeEmail),
-                onTap: () {
-                  if (employeeId != null) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ViewEmpProfilePage(
-                          employeeId: employeeId, // Pass the employee ID
+                child: Padding(
+                  padding:
+                      const EdgeInsets.all(12.0), // تقليل المسافات داخل الكارد
+                  child: Row(
+                    children: [
+                      // صورة أو أيقونة العامل
+                      CircleAvatar(
+                        radius: 30, // حجم الصورة
+                        backgroundImage: employeeImg.isNotEmpty
+                            ? NetworkImage(employeeImg)
+                            : null,
+                        backgroundColor: AppColors().navy,
+                        child: employeeImg.isEmpty
+                            ? const Icon(Icons.person, color: Colors.white)
+                            : null,
+                      ),
+                      const SizedBox(width: 12), // مسافة بين الصورة والنصوص
+                      // النصوص
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              employeeName,
+                              style: GoogleFonts.montserratAlternates(
+                                textStyle: TextStyle(
+                                  fontSize: 16,
+                                  color: AppColors().navy,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Email: $employeeEmail', // نص يعرض البريد الإلكتروني
+                              style: GoogleFonts.montserratAlternates(
+                                textStyle: TextStyle(
+                                  fontSize: 10,
+                                  color: AppColors().grey2,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    );
-                  }
-                },
+                      // زر عرض الملف الشخصي
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors().orange,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8),
+                        ),
+                        onPressed: () {
+                          if (employeeId != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ViewEmpProfilePage(
+                                  employeeId: employeeId, // تمرير معرف العامل
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        child: Text(
+                          'View Profile',
+                          style: GoogleFonts.montserratAlternates(
+                            textStyle: TextStyle(
+                              fontSize: 14,
+                              color: AppColors().white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               );
             },
           );

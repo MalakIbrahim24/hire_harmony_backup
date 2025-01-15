@@ -20,10 +20,10 @@ class ViewAllBestWorkersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100.0),
+        preferredSize: const Size.fromHeight(70.0),
         child: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors().orange,
           elevation: 0,
           flexibleSpace: SafeArea(
             child: Padding(
@@ -32,7 +32,7 @@ class ViewAllBestWorkersPage extends StatelessWidget {
               child: Row(
                 children: [
                   IconButton(
-                    icon: Icon(Icons.arrow_back, color: AppColors().navy),
+                    icon: Icon(Icons.arrow_back, color: AppColors().white),
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -41,9 +41,9 @@ class ViewAllBestWorkersPage extends StatelessWidget {
                     child: Text(
                       'All Best Workers',
                       style: GoogleFonts.montserratAlternates(
-                        color: AppColors().navy,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                        color: AppColors().white,
+                        //fontWeight: FontWeight.bold,
+                        fontSize: 24,
                       ),
                       textAlign: TextAlign.center,
                     ),
