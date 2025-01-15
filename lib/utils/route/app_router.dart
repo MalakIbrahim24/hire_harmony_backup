@@ -15,6 +15,7 @@ import 'package:hire_harmony/views/pages/admin/category_management_page.dart';
 import 'package:hire_harmony/views/pages/admin/deleted_acounts.dart';
 import 'package:hire_harmony/views/pages/admin/edit_services_page.dart';
 import 'package:hire_harmony/views/pages/admin/edited_services_page.dart';
+import 'package:hire_harmony/views/pages/admin/new_accounts_requests_page.dart';
 import 'package:hire_harmony/views/pages/admin/user_management_page.dart';
 import 'package:hire_harmony/views/pages/chat_page.dart';
 import 'package:hire_harmony/views/pages/customer/account_deletion_page.dart';
@@ -24,7 +25,7 @@ import 'package:hire_harmony/views/pages/employee/contact_us_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_navbar.dart';
 import 'package:hire_harmony/views/pages/employee/emp_notifications_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_profile_info_page.dart';
-import 'package:hire_harmony/views/pages/forms/emp_sign_up_form.dart';
+//import 'package:hire_harmony/views/pages/forms/emp_sign_up_form.dart';
 import 'package:hire_harmony/views/pages/signup/sign_up_page.dart';
 import 'package:hire_harmony/views/pages/customer/cus_verification_success_page.dart';
 import 'package:hire_harmony/views/pages/customer/cus_messages_page.dart';
@@ -36,7 +37,7 @@ import 'package:hire_harmony/views/pages/employee/emp_home_page.dart';
 import 'package:hire_harmony/views/pages/signup/forgot_password_page.dart';
 import 'package:hire_harmony/views/pages/login/login_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_id_verification_page.dart';
-import 'package:hire_harmony/views/pages/employee/emp_phone_page.dart';
+//import 'package:hire_harmony/views/pages/employee/emp_phone_page.dart';
 import 'package:hire_harmony/views/pages/signup/phone_page.dart';
 import 'package:hire_harmony/views/pages/signup/sign_up_choice.dart';
 import 'package:hire_harmony/views/pages/welcome_page.dart';
@@ -67,11 +68,11 @@ class AppRouter {
           builder: (_) => const SignUpPage(),
           settings: settings,
         );
-      case AppRoutes.empSignupForm:
-        return MaterialPageRoute(
-          builder: (_) => const EmpSignupForm(),
-          settings: settings,
-        );
+      // case AppRoutes.empSignupForm:
+      //   return MaterialPageRoute(
+      //     builder: (_) => const EmpSignupForm(),
+      //     settings: settings,
+      //   );
       case AppRoutes.empNavbar:
         return MaterialPageRoute(
           builder: (_) => const EmpNavbar(),
@@ -128,11 +129,11 @@ class AppRouter {
           builder: (_) => const EmpNotificationsPage(),
           settings: settings,
         );
-      case AppRoutes.empphonePage:
-        return MaterialPageRoute(
-          builder: (_) => const EmpPhonePage(),
-          settings: settings,
-        );
+      // case AppRoutes.empphonePage:
+      //   return MaterialPageRoute(
+      //     builder: (_) => const EmpPhonePage(),
+      //     settings: settings,
+      //   );
       case AppRoutes.empVerificationSuccessPage:
         return MaterialPageRoute(
           builder: (_) => const EmpVerificationSuccessPage(
@@ -144,11 +145,10 @@ class AppRouter {
 
       case AppRoutes.empidverificationPage:
         return MaterialPageRoute(
-          builder: (_) => const EmpIdVerificationPage(
-            stepText: 'Please fill in the required information',
-          ),
+          builder: (_) => const EmpIdVerificationPage(),
           settings: settings,
         );
+
       case AppRoutes.empProfileInfoPage:
         return MaterialPageRoute(
           builder: (_) => const EmpProfileInfoPage(),
@@ -205,6 +205,11 @@ class AppRouter {
           builder: (_) => const SignUpChoice(),
           settings: settings,
         );
+        case AppRoutes.newaccountsrequestsPage:
+        return MaterialPageRoute(
+          builder: (_) => const NewAccountsRequestsPage(),
+          settings: settings,
+        );
       case AppRoutes.adnsettingsPage:
         return MaterialPageRoute(
           builder: (_) => const AdminSettingsPage(),
@@ -258,12 +263,12 @@ class AppRouter {
           ),
           settings: settings,
         );
-case AppRoutes.chat:
+      case AppRoutes.chat:
         return MaterialPageRoute(
-          builder: (_) => const ChatPage(),
+          builder: (_) => const ChatPage(reciverEmail: 'moe@gmail.com',),
           settings: settings,
         );
-        
+
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(

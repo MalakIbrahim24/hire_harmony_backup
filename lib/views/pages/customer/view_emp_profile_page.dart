@@ -3,8 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
+import 'package:hire_harmony/views/pages/chatePage.dart';
 import 'package:hire_harmony/views/pages/employee/reviews_page.dart';
-import 'package:hire_harmony/views/widgets/employee/photo_tab_view.dart';
+import 'package:hire_harmony/views/widgets/customer/cus_photo_tab_view.dart';
 
 class ViewEmpProfilePage extends StatefulWidget {
   final String employeeId;
@@ -230,7 +231,7 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                     child: TabBarView(
                       controller: _tabController,
                       children: [
-                        PhotoTabView(
+                        CusPhotoTabView(
                           employeeId: widget.employeeId,
                         ),
                         ReviewsPage(
@@ -267,6 +268,19 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                   ElevatedButton(
                     onPressed: () {
                       // Add message button functionality here
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              Chatepage(
+                                reciverEmail: employeeData!["email"],
+                                reciverID: employeeData!["uid"],
+                                ),
+                          /*builder: (context) => BlocProvider(
+      create: (context) => ChatCubit(), // تأكد من تهيئة الكيوبت هنا
+      child: ChatPage(reciverEmail: employeeData!["email"]),*/
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orange,

@@ -47,7 +47,10 @@ class _CusProfilePageState extends State<CusProfilePage> {
     
     return SafeArea(
       child: Scaffold(
-        backgroundColor: AppColors().white,
+       /* backgroundColor: AppColors().white,*/
+      backgroundColor: Theme.of(context).colorScheme.surface,
+
+
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: AppColors().white,
@@ -55,7 +58,8 @@ class _CusProfilePageState extends State<CusProfilePage> {
           title: Text(
             'Profile',
             style:
-                TextStyle(color: AppColors().navy, fontWeight: FontWeight.bold),
+                TextStyle(      color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
         ),

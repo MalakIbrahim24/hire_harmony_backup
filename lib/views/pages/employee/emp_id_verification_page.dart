@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,161 +6,205 @@ import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
 
 class EmpIdVerificationPage extends StatefulWidget {
-  final String stepText;
-  final bool isLastStep;
-  final bool isDisplay;
-  final bool isDone;
-
-  const EmpIdVerificationPage({
-    super.key,
-    required this.stepText,
-    this.isLastStep = false,
-    this.isDisplay = false,
-    this.isDone = false,
-  });
+  const EmpIdVerificationPage({super.key});
 
   @override
   State<EmpIdVerificationPage> createState() => _EmpIdVerificationPageState();
 }
 
 class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
-  File? selectedImage;
+  File? idImage;
+  File? selfieImage;
+  bool isProcessing = false;
 
-  Future<void> _pickImage(ImageSource source) async {
+  // Function to pick an image from the gallery
+  Future<void> _pickImage(ImageSource source, bool isIdImage) async {
+    final picker = ImagePicker();
+    final image = await picker.pickImage(source: source);
+
+    if (image != null) {
+      setState(() {
+        if (isIdImage) {
+          idImage = File(image.path);
+        } else {
+          selfieImage = File(image.path);
+        }
+      });
+    }
+  }
+
+  // Function to navigate to PhonePage
+  Future<void> _navigateToPhonePage(Map<String, String> userData) async {
+    if (idImage == null || selfieImage == null) return;
+
+    setState(() {
+      isProcessing = true;
+    });
+
     try {
-      final ImagePicker picker = ImagePicker();
-      final XFile? image = await picker.pickImage(source: source);
+      // Upload ID and Selfie images to Supabase
 
-      if (image != null) {
-        setState(() {
-          selectedImage = File(image.path);
-        });
-      }
+      // Navigate to PhonePage with user data and image URLs
+      if (!mounted) return;
+      Navigator.pushNamed(context, AppRoutes.phonePage, arguments: {
+        'name': userData['name']!,
+        'email': userData['email']!,
+        'password': userData['password']!,
+        'idImage': idImage!,
+        'selfieImage': selfieImage!,
+        'role': 'employee',
+      });
     } catch (e) {
-      debugPrint('Error picking image: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error uploading images: $e')),
+      );
+    } finally {
+      setState(() {
+        isProcessing = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Retrieve arguments passed from SignUpPage
+    final Map<String, String>? formData =
+        ModalRoute.of(context)?.settings.arguments as Map<String, String>?;
+
+    if (formData == null) {
+      return const Center(
+        child: Text(
+          'Error: No user data provided.',
+          style: TextStyle(fontSize: 18, color: Colors.red),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors().white,
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors().navy),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
         title: Text(
-          "Verify Your Identity",
+          "Upload ID & Selfie",
           style: GoogleFonts.montserratAlternates(
-            fontSize: 20,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
             color: AppColors().navy,
-            fontWeight: FontWeight.w500,
           ),
         ),
         backgroundColor: AppColors().white,
+        iconTheme: IconThemeData(color: AppColors().navy),
       ),
-      body: Padding(
-        padding:
-            const EdgeInsets.only(left: 20.0, right: 20, top: 50, bottom: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              widget.stepText,
-              style: GoogleFonts.montserratAlternates(
-                fontSize: 19,
-                color: AppColors().grey3,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 30),
-            selectedImage != null
-                ? CircleAvatar(
-                    radius: 70,
-                    backgroundImage: FileImage(selectedImage!),
-                  )
-                : CircleAvatar(
-                    radius: 70,
-                    backgroundColor: AppColors().greylight,
-                    child: Icon(Icons.person_2_outlined,
-                        color: AppColors().grey, size: 50),
-                  ),
-            const SizedBox(height: 30),
-            if (!widget.isDisplay)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Text(
-                    "UPLOAD FROM DEVICE",
-                    style: GoogleFonts.montserratAlternates(
-                      fontSize: 14,
-                      color: AppColors().grey3,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  IconButton(
-                    icon: Container(
-                      width: 50.0,
-                      height: 50.0,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors().orange,
-                      ),
-                      child: Icon(
-                        Icons.upload_file,
-                        color: AppColors().white,
-                      ),
-                    ),
-                    onPressed: () => _pickImage(ImageSource.gallery),
-                  ),
-                ],
-              ),
-            if (widget.isDisplay)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20.0),
-                child: Text(
-                  "ENSURE YOUR FACE IS WELL-LIT, CLEARLY VISIBLE, AND WITHOUT ACCESSORIES. USE A PLAIN BACKGROUND",
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Status message
+                const SizedBox(
+                  height: 50,
+                ),
+                Text(
+                  "Upload your ID and a selfie for verification.",
                   style: GoogleFonts.montserratAlternates(
-                    fontSize: 14,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
                     color: AppColors().grey3,
-                    fontWeight: FontWeight.w500,
                   ),
                   textAlign: TextAlign.center,
                 ),
-              ),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  "CAPTURE WITH CAMERA",
-                  style: GoogleFonts.montserratAlternates(
-                    fontSize: 14,
-                    color: AppColors().grey3,
-                    fontWeight: FontWeight.w500,
+                const SizedBox(height: 50),
+
+                // ID Image Picker
+                GestureDetector(
+                  onTap: () => _pickImage(ImageSource.gallery, true),
+                  child: CircleAvatar(
+                    radius: 60,
+                    backgroundImage:
+                        idImage != null ? FileImage(idImage!) : null,
+                    backgroundColor: idImage == null
+                        ? AppColors().orangelight
+                        : Colors
+                            .transparent, // Set orange background when no image
+                    child: idImage == null
+                        ? Icon(Icons.insert_drive_file,
+                            size: 40, color: AppColors().grey)
+                        : null,
                   ),
                 ),
-                IconButton(
-                  icon: Container(
-                    width: 50.0,
-                    height: 50.0,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors().orange,
-                    ),
-                    child: Icon(
-                      Icons.camera_alt_outlined,
-                      color: AppColors().white,
+                const SizedBox(height: 20),
+                Text(
+                  "Upload ID Picture",
+                  style: GoogleFonts.montserratAlternates(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors().navy,
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                // Selfie Image Picker
+                GestureDetector(
+                  onTap: () => _pickImage(ImageSource.camera, false),
+                  child: CircleAvatar(
+                    radius: 60,
+                    backgroundImage:
+                        selfieImage != null ? FileImage(selfieImage!) : null,
+                    backgroundColor: idImage == null
+                        ? AppColors().orangelight
+                        : Colors
+                            .transparent, // Set orange background when no image
+                    child: selfieImage == null
+                        ? Icon(Icons.add_a_photo,
+                            size: 40, color: AppColors().grey)
+                        : null,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  "Upload Selfie",
+                  style: GoogleFonts.montserratAlternates(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors().navy,
+                  ),
+                ),
+
+                const Spacer(),
+
+                // Upload Button
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: (idImage != null && selfieImage != null)
+                        ? AppColors().orange
+                        : AppColors().grey,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  onPressed: () => _pickImage(ImageSource.camera),
+                  onPressed:
+                      (idImage != null && selfieImage != null && !isProcessing)
+                          ? () => _navigateToPhonePage(formData)
+                          : null,
+                  child: isProcessing
+                      ? const CircularProgressIndicator()
+                      : Text(
+                          "Next",
+                          style: GoogleFonts.montserratAlternates(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors().navy,
+                          ),
+                        ),
                 ),
               ],
             ),
+<<<<<<< HEAD
             const Spacer(),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -211,6 +254,9 @@ class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
               ),
             ),
           ],
+=======
+          ),
+>>>>>>> c259c4a2a6e428ace9059d98fb68afdf00b732ce
         ),
       ),
     );

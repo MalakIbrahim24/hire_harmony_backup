@@ -6,7 +6,9 @@ class AppTheme {
   static ThemeData lightTheme() {
     return ThemeData(
       colorScheme: ColorScheme.fromSwatch().copyWith(
-        surface: AppColors().orange, // Set your desired background color here
+        surface: AppColors().orange,
+         // Set your desired background color here
+         
       ),
       useMaterial3: true,
       inputDecorationTheme: InputDecorationTheme(
