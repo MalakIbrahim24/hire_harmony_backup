@@ -12,8 +12,6 @@ class ContactUsPage extends StatefulWidget {
 }
 
 class _ContactUsPageState extends State<ContactUsPage> {
-  int? selectedIndex;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +20,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
         title: Text(
           "About App",
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 17,
             color: AppColors().navy,
             fontWeight: FontWeight.bold,
           ),
@@ -36,47 +34,44 @@ class _ContactUsPageState extends State<ContactUsPage> {
         ),
       ),
       body: Container(
-        color: AppColors().orange,
+        color: AppColors().white, // تغيير الخلفية إلى الأبيض
         child: Column(
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: 18),
             const Text(
               "Developers",
               style: TextStyle(
-                fontSize: 28,
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: Colors.black,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 7),
             const Text(
               "Teams",
               style: TextStyle(
-                fontSize: 18,
-                color: Colors.white70,
+                fontSize: 16,
+                color: Colors.black54,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 18),
             Expanded(
               child: ListView(
                 children: [
                   buildDeveloperCard(
                     context,
-                    index: 0,
                     name: "Raghad Ammar",
                     role: "UI-UX Designer",
                     image: 'assets/images/woman.png',
                   ),
                   buildDeveloperCard(
                     context,
-                    index: 1,
                     name: "Haneen Yousif",
                     role: "Frontend Developer",
                     image: 'assets/images/gamer.png',
                   ),
                   buildDeveloperCard(
                     context,
-                    index: 2,
                     name: "Malak Ibraheem",
                     role: "Backend Developer",
                     image: 'assets/images/woman.png',
@@ -85,13 +80,13 @@ class _ContactUsPageState extends State<ContactUsPage> {
               ),
             ),
             const Padding(
-              padding: EdgeInsets.all(20.0),
+              padding: EdgeInsets.all(18.0),
               child: Text(
                 "This program was developed by the developers of Orchida Soft Software Company",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
+                  color: Colors.black,
+                  fontSize: 13,
                 ),
               ),
             ),
@@ -102,98 +97,87 @@ class _ContactUsPageState extends State<ContactUsPage> {
   }
 
   Widget buildDeveloperCard(BuildContext context,
-      {required int index,
-      required String name,
-      required String role,
-      required String image}) {
-    bool isSelected = selectedIndex == index;
-
+      {required String name, required String role, required String image}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.symmetric(
+          horizontal: 14.0, vertical: 8.0), // تقليل المسافات الخارجية قليلًا
       child: Container(
-        height: 150,
+        height: 140, // حجم متوسط للصندوق
         decoration: BoxDecoration(
-          color: isSelected ? AppColors().white : AppColors().orange.withAlpha(240),
+          color: AppColors().orange, // خلفية الصندوق برتقالية
           border: Border.all(color: AppColors().orangelight, width: 1),
-          borderRadius: BorderRadius.circular(16.0),
+          borderRadius: BorderRadius.circular(14.0),
         ),
         child: Column(
+          mainAxisAlignment:
+              MainAxisAlignment.center, // توسيط المحتوى داخل الصندوق
           children: [
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  selectedIndex = index;
-                });
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundImage: AssetImage(image),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          name,
-                          style: GoogleFonts.montserratAlternates(
-                            textStyle: TextStyle(
-                              fontSize: 18,
-                              color:
-                                  isSelected ? AppColors().orange : AppColors().white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 35, // حجم متوسط للصورة
+                  backgroundImage: AssetImage(image),
+                ),
+                const SizedBox(width: 14), // تقليل المسافة بين الصورة والنصوص
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: GoogleFonts.montserratAlternates(
+                        textStyle: TextStyle(
+                          fontSize: 17, // حجم نص متوسط
+                          color: AppColors().white,
+                          fontWeight: FontWeight.bold,
                         ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          role,
-                          style: GoogleFonts.montserratAlternates(
-                            textStyle: TextStyle(
-                              fontSize: 14,
-                              color:
-                                  isSelected ? AppColors().orange : AppColors().navy,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (isSelected)
-              Padding(
-                padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors().orange,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HelpSupportPage(),
                       ),
-                    );
-                  },
-                  child: const Text(
-                    "Send",
-                    style: TextStyle(color: Colors.white),
-                  ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      role,
+                      style: GoogleFonts.montserratAlternates(
+                        textStyle: TextStyle(
+                          fontSize: 13, // حجم نص متوسط
+                          color: AppColors().white,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors().white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14.0,
+                  vertical: 8.0, // حجم مناسب للزر
                 ),
               ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HelpSupportPage(),
+                  ),
+                );
+              },
+              child: const Text(
+                "Send",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 13, // حجم نص متوسط للزر
+                ),
+              ),
+            ),
           ],
         ),
       ),
