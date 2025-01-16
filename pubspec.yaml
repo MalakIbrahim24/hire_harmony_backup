@@ -43,6 +43,7 @@ dependencies:
   pin_code_fields: ^8.0.1
   provider: ^6.1.2
   supabase_flutter: ^2.8.3
+  flutter_local_notifications: ^18.0.1
 
 dev_dependencies:
   flutter_lints: ^4.0.0

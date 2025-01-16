@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
+import 'package:hire_harmony/views/pages/customer/view_emp_profile_page.dart';
 
 class BestWorker extends StatelessWidget {
   const BestWorker({super.key});
@@ -67,60 +68,76 @@ class BestWorker extends StatelessWidget {
                   final workerImg = userInfo['img'] ?? '';
                   final workerServNum = bestWorker['data']['servNum'] ?? '0';
 
-                  return Container(
-                    width: 200,
-                    margin: const EdgeInsets.symmetric(horizontal: 8),
-                    decoration: BoxDecoration(
-                      color: AppColors().white,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors().navy),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                            radius: 50, // Adjust the radius for size
-                            backgroundImage: workerImg.isNotEmpty
-                                ? NetworkImage(workerImg)
-                                : null, // Load image if URL is provided
-                            backgroundColor:
-                                AppColors().navy, // Background color
-                            onBackgroundImageError: (error, stackTrace) {
-                              // Handle image load errors
-                            },
-                            child: workerImg.isEmpty
-                                ? Icon(
-                                    Icons.person, // Fallback icon
-                                    size: 50,
-                                    color: AppColors().white,
-                                  )
-                                : null,
+                  return InkWell(
+                    onTap: () {
+                      // Navigate to ViewEmpProfilePage
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ViewEmpProfilePage(
+                            employeeId: bestWorkerId,
                           ),
-                          const SizedBox(height: 10),
-                          Text(
-                            workerName,
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.montserratAlternates(
-                              textStyle: TextStyle(
-                                fontSize: 14,
-                                color: AppColors().navy,
-                                fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(
+                        8), // Match the container's border radius
+                    child: Container(
+                      width: 200,
+                      margin: const EdgeInsets.symmetric(horizontal: 8),
+                      decoration: BoxDecoration(
+                        color: AppColors().white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColors().navy),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircleAvatar(
+                              radius: 50, // Adjust the radius for size
+                              backgroundImage: workerImg.isNotEmpty
+                                  ? NetworkImage(workerImg)
+                                  : null, // Load image if URL is provided
+                              backgroundColor:
+                                  AppColors().navy, // Background color
+                              onBackgroundImageError: (error, stackTrace) {
+                                // Handle image load errors
+                                print('Image load error: $error');
+                              },
+                              child: workerImg.isEmpty
+                                  ? Icon(
+                                      Icons.person, // Fallback icon
+                                      size: 50,
+                                      color: AppColors().white,
+                                    )
+                                  : null,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              workerName,
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.montserratAlternates(
+                                textStyle: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors().navy,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            'Services: $workerServNum',
-                            style: GoogleFonts.montserratAlternates(
-                              textStyle: TextStyle(
-                                fontSize: 12,
-                                color: AppColors().grey,
+                            const SizedBox(height: 5),
+                            Text(
+                              'Services: $workerServNum',
+                              style: GoogleFonts.montserratAlternates(
+                                textStyle: TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors().grey,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   );

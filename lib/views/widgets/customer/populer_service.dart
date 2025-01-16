@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
+import 'package:hire_harmony/views/pages/customer/view_emp_profile_page.dart';
 
 class PopulerService extends StatefulWidget {
   const PopulerService({super.key});
@@ -37,6 +38,7 @@ class _PopulerServiceState extends State<PopulerService> {
             'service': serviceData,
             'serviceDetails': serviceInfo,
             'employee': userDoc.data(),
+            'employeeId': userDoc.id, // Add employeeId
           });
         }
       }
@@ -69,6 +71,8 @@ class _PopulerServiceState extends State<PopulerService> {
                   ['serviceDetails'] as Map<String, dynamic>;
               final employee = popularServicesWithEmployees[index]['employee']
                   as Map<String, dynamic>;
+              final employeeId =
+                  popularServicesWithEmployees[index]['employeeId'] as String;
 
               final serviceName = service['name'] ?? 'Unknown Service';
               final serviceImg = serviceDetails['img'] ?? '';
@@ -76,7 +80,15 @@ class _PopulerServiceState extends State<PopulerService> {
 
               return InkWell(
                 onTap: () {
-                  debugPrint('Selected Service: $serviceName by $employeeName');
+                  // Navigate to ViewEmpProfilePage with employeeId
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ViewEmpProfilePage(
+                        employeeId: employeeId,
+                      ),
+                    ),
+                  );
                 },
                 child: Container(
                   width: 200,

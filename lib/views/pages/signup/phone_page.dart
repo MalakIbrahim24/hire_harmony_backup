@@ -152,6 +152,9 @@ class _PhonePageState extends State<PhonePage> {
 
   // Verify OTP and register the user
   Future<void> verifyOtpAndRegister(Map<String, dynamic> formData) async {
+    const state = 'pending';
+    const img = 'lib/assets/images/employee.png';
+
     try {
       // Verify the OTP and sign in the user with the phone credential
       final PhoneAuthCredential credential = PhoneAuthProvider.credential(
@@ -180,6 +183,7 @@ class _PhonePageState extends State<PhonePage> {
       String hashedPassword = _hashPassword(formData['password']!);
 
       // Upload images to Supabase
+
       final idImage = formData['idImage'] as File;
       final selfieImage = formData['selfieImage'] as File;
 
@@ -197,6 +201,70 @@ class _PhonePageState extends State<PhonePage> {
         'role': 'employee',
         'idImageUrl': idImageUrl,
         'selfieImageUrl': selfieImageUrl,
+        'state': state,
+        'uid': user.uid,
+        'img': img,
+      });
+
+      // Navigate to the success page
+      if (!mounted) return;
+      Navigator.pushNamed(context, AppRoutes.empVerificationSuccessPage);
+    } catch (e) {
+      // Handle errors
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: AppColors().red,
+          content: Text(
+            'Invalid OTP or Error: $e',
+            style: GoogleFonts.montserratAlternates(
+              color: AppColors().white,
+              fontSize: 15,
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> verifyOtpAndRegisterCus(Map<String, dynamic> formData) async {
+    try {
+      // Verify the OTP and sign in the user with the phone credential
+      final PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: _otpController.text,
+      );
+
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+
+      if (userCredential.user == null) {
+        throw Exception('User creation failed.');
+      }
+
+      final User user = userCredential.user!;
+
+      // Link email and password as additional providers
+      final emailCredential = EmailAuthProvider.credential(
+        email: formData['email']!,
+        password: formData['password']!,
+      );
+
+      await user.linkWithCredential(emailCredential);
+
+      // Store user details in Firestore
+      String hashedPassword = _hashPassword(formData['password']!);
+
+      // Upload images to Supabase
+
+      // Save data in Firestore
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'name': formData['name'],
+        'email': formData['email'],
+        'passwordHash': hashedPassword,
+        'phone': '+970${_phoneController.text.trim()}',
+        'role': 'employee',
+        'uid': user.uid,
       });
 
       // Navigate to the success page
@@ -223,7 +291,7 @@ class _PhonePageState extends State<PhonePage> {
   @override
   Widget build(BuildContext context) {
     // Retrieve data passed from EmpIdVerificationPage
-    // Retrieve data passed from EmpIdVerificationPage
+
     final Map<String, dynamic>? formData =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
 
@@ -231,6 +299,18 @@ class _PhonePageState extends State<PhonePage> {
       return const Center(
         child: Text(
           'Error: No user data provided.',
+          style: TextStyle(fontSize: 18, color: Colors.red),
+        ),
+      );
+    }
+
+// Validate and extract the role
+    final String? role = formData['role'];
+
+    if (role == null) {
+      return const Center(
+        child: Text(
+          'Error: Role not provided.',
           style: TextStyle(fontSize: 18, color: Colors.red),
         ),
       );
@@ -353,7 +433,24 @@ class _PhonePageState extends State<PhonePage> {
                                   ? AppColors().orange
                                   : AppColors().greylight,
                               onPressed: isVerifyButtonEnabled
-                                  ? () => verifyOtpAndRegister(formData)
+                                  ? () async {
+                                      if (role == 'employee') {
+                                        await verifyOtpAndRegister(formData);
+                                      } else if (role == 'customer') {
+                                        await verifyOtpAndRegisterCus(formData);
+                                      } else {
+                                        if (!mounted) return;
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            backgroundColor: AppColors().red,
+                                            content: const Text(
+                                              'Invalid role. Please contact support.',
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    }
                                   : null,
                             ),
                           ],

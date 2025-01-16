@@ -7,7 +7,11 @@ import 'package:hire_harmony/view_models/cubit/auth_cubit.dart';
 import 'package:hire_harmony/views/pages/customer/cus_profile_info.dart';
 import 'package:hire_harmony/views/pages/customer/account_deletion_page.dart';
 import 'package:hire_harmony/views/pages/employee/contact_us_page.dart';
+<<<<<<< HEAD
+import 'package:hire_harmony/views/pages/employee/tickets_page.dart';
+=======
 import 'package:hire_harmony/views/pages/settings_page.dart';
+>>>>>>> c259c4a2a6e428ace9059d98fb68afdf00b732ce
 import 'package:hire_harmony/views/widgets/main_button.dart';
 
 // ignore: camel_case_types
@@ -82,6 +86,39 @@ class _buildMenuContainerState extends State<buildMenuContainer> {
   }
 
   List<Widget> _buildMenuItems(BuildContext context, AuthCubit authCubit) {
+<<<<<<< HEAD
+   final menuItems = [
+  {
+    'icon': Icons.person,
+    'text': 'Profile',
+    'route': const CusProfileInfo(),
+  },
+  {
+    'icon': Icons.info,
+    'text': 'Delete Account',
+    'route': const AccountDeletionScreen(),
+  },
+  {
+    'icon': Icons.contact_page,
+    'text': 'Contact us',
+    'route': const ContactUsPage(),
+  },
+  {
+    'icon': Icons.support,
+    'text': 'Send Ticket',
+    'route': const TicketsPage(), // الربط مع الصفحة الجديدة
+  },
+  {
+    'icon': Icons.logout,
+    'text': 'Logout',
+    'route': null,
+    'action': () async {
+      await authCubit.signOut();
+    },
+  },
+];
+
+=======
     final menuItems = [
       {
         'icon': Icons.person,
@@ -112,6 +149,7 @@ class _buildMenuContainerState extends State<buildMenuContainer> {
         },
       },
     ];
+>>>>>>> c259c4a2a6e428ace9059d98fb68afdf00b732ce
 
     return menuItems
         .map(
