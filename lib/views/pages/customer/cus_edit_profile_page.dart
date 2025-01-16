@@ -243,12 +243,13 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors().white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: AppColors().white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: AppColors().navy),
+          icon: Icon(Icons.arrow_back_ios,
+              color: Theme.of(context).colorScheme.primary),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -258,7 +259,7 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
           style: GoogleFonts.montserratAlternates(
             textStyle: TextStyle(
               fontSize: 18,
-              color: AppColors().navy,
+              color: Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -312,51 +313,61 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
     required TextEditingController controller,
     required Function(String) onSave,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 10),
-        Text(
-          label,
-          style: GoogleFonts.montserratAlternates(
-            textStyle: TextStyle(
-              fontSize: 18,
-              color: AppColors().navy,
-              fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 10),
+          Text(
+            label,
+            style: GoogleFonts.montserratAlternates(
+              textStyle: TextStyle(
+                fontSize: 18,
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                controller: controller,
-                decoration: InputDecoration(
-                  hintText: label,
-                  hintStyle: GoogleFonts.montserratAlternates(
-                    textStyle: TextStyle(
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  controller: controller,
+                  style: GoogleFonts.montserratAlternates(
+                    textStyle: const TextStyle(
                       fontSize: 13,
-                      color: AppColors().navy,
+                      color: Colors.black, 
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide.none,
+                  decoration: InputDecoration(
+                    hintText: label,
+                    hintStyle: GoogleFonts.montserratAlternates(
+                      textStyle: TextStyle(
+                        fontSize: 13,
+                        color: AppColors().navy,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: AppColors().greylight,
                   ),
-                  filled: true,
-                  fillColor: AppColors().greylight,
                 ),
               ),
-            ),
-            IconButton(
-              icon: Icon(Icons.save, color: AppColors().orange),
-              onPressed: () => onSave(controller.text),
-            ),
-          ],
-        ),
-      ],
+              IconButton(
+                icon: Icon(Icons.save, color: AppColors().orange),
+                onPressed: () => onSave(controller.text),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

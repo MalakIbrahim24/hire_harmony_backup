@@ -3,7 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hire_harmony/utils/light_mode.dart';
 import 'package:hire_harmony/utils/route/app_router.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:hire_harmony/utils/theme_provider.dart';
@@ -76,6 +75,7 @@ class MyApp extends StatelessWidget {
                 log(initRoute);
               }
               return MaterialApp(
+                 debugShowCheckedModeBanner: false,
                 title: 'Hire Harmony',
                 initialRoute: initRoute,
                 onGenerateRoute: AppRouter.onGenerateRoute,

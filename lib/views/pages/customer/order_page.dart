@@ -44,16 +44,16 @@ class OrderPage extends StatelessWidget {
     );
 
     return Scaffold(
-      backgroundColor: AppColors().white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         centerTitle: true,
         title: Text(
           'Orders',
           style: GoogleFonts.montserratAlternates(
             fontSize: 22,
-            color: AppColors().navy,
+            color: Theme.of(context).colorScheme.primary,
             fontWeight: FontWeight.bold,
           ),
         ),

@@ -20,7 +20,7 @@ class _CusPhotoTabViewState extends State<CusPhotoTabView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors().white,
+      backgroundColor:Theme.of(context).colorScheme.surface,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(

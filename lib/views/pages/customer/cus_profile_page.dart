@@ -44,22 +44,18 @@ class _CusProfilePageState extends State<CusProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    
     return SafeArea(
       child: Scaffold(
-       /* backgroundColor: AppColors().white,*/
-      backgroundColor: Theme.of(context).colorScheme.surface,
-
-
+        backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: AppColors().white,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           elevation: 0,
           title: Text(
             'Profile',
-            style:
-                TextStyle(      color: Theme.of(context).colorScheme.primary,
-            fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
         ),
@@ -91,7 +87,7 @@ class _CusProfilePageState extends State<CusProfilePage> {
                     margin: const EdgeInsets.symmetric(horizontal: 20),
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: AppColors().white,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(

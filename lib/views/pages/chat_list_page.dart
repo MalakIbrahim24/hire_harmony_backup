@@ -5,7 +5,7 @@ import 'package:hire_harmony/services/chat/chat_services.dart';
 import 'package:hire_harmony/views/pages/chatePage.dart';
 
 class ChatListPage extends StatefulWidget {
-  const ChatListPage({Key? key}) : super(key: key);
+  const ChatListPage({super.key});
 
   @override
   _ChatListPageState createState() => _ChatListPageState();

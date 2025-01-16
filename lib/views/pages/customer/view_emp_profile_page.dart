@@ -118,7 +118,7 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.grey),
@@ -159,7 +159,7 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                           style: GoogleFonts.montserratAlternates(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: AppColors().navy2,
+                            color: Theme.of(context).colorScheme.inversePrimary,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -192,7 +192,7 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                         style: GoogleFonts.montserratAlternates(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: AppColors().navy2,
+                          color: Theme.of(context).colorScheme.inversePrimary,
                         ),
                       ),
                       IconButton(
@@ -253,7 +253,7 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
             child: Container(
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.1),
@@ -271,11 +271,10 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              Chatepage(
-                                reciverEmail: employeeData!["email"],
-                                reciverID: employeeData!["uid"],
-                                ),
+                          builder: (context) => Chatepage(
+                            reciverEmail: employeeData!["email"],
+                            reciverID: employeeData!["uid"],
+                          ),
                           /*builder: (context) => BlocProvider(
       create: (context) => ChatCubit(), // تأكد من تهيئة الكيوبت هنا
       child: ChatPage(reciverEmail: employeeData!["email"]),*/

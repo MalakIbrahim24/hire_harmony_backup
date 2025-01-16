@@ -51,17 +51,17 @@ class _FavoritesPageState extends State<FavoritesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors().white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true, // Center the title
         title: Text(
           'Favorites',
           style: GoogleFonts.montserratAlternates(
-            color: AppColors().navy,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
-        backgroundColor: AppColors().white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         iconTheme: IconThemeData(color: AppColors().navy),
       ),
@@ -82,7 +82,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
               child: Text(
                 'No favorites added yet!',
                 style: GoogleFonts.montserratAlternates(
-                  color: AppColors().navy,
+                color: Theme.of(context).colorScheme.primary,
+
                 ),
               ),
             );

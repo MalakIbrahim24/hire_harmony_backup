@@ -164,6 +164,7 @@ class _WelcomePageState extends State<WelcomePage> {
                                 context, AppRoutes.signupChoicePage);
                           },
                           style: ElevatedButton.styleFrom(
+                            
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 40, vertical: 15),
                             shape: RoundedRectangleBorder(

@@ -56,7 +56,7 @@ class _buildMenuContainerState extends State<buildMenuContainer> {
               margin: const EdgeInsets.symmetric(horizontal: 20),
               padding: const EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
-                color: AppColors().white,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
@@ -67,6 +67,7 @@ class _buildMenuContainerState extends State<buildMenuContainer> {
                 ],
               ),
               child: Column(
+                
                 children: [
                   Column(
                     children: _buildMenuItems(context, authCubit),
@@ -97,7 +98,7 @@ class _buildMenuContainerState extends State<buildMenuContainer> {
         'text': 'Contact us',
         'route': const ContactUsPage(),
       },
-       {
+      {
         'icon': Icons.settings,
         'text': 'Settings',
         'route': const SettingsPage(),

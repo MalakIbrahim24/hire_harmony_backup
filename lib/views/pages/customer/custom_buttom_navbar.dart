@@ -147,7 +147,7 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
           child: const ChatPage(reciverEmail: 'moe@gmail.com',),
         ),
         */
-        ChatListPage(),
+        const ChatListPage(),
         const OrderPage(),
         const CusHomePage(),
         const FavoritesPage(),

@@ -11,15 +11,20 @@ ThemeData darkMode = ThemeData(
   ),
 );*/
 import 'package:flutter/material.dart';
+import 'package:hire_harmony/utils/app_colors.dart';
 
 ThemeData darkMode = ThemeData(
   colorScheme: ColorScheme.dark(
-    // ignore: deprecated_member_use
-    background: Colors.grey.shade900,
-    primary: Colors.grey.shade600,
+    surface: Colors.grey.shade900,
+    primary: AppColors().white,
     inversePrimary: Colors.grey.shade300,
     secondary: Colors.grey.shade700,
     tertiary: Colors.grey.shade800,
+        error: AppColors().red, // لون الأخطاء
+            onPrimary: AppColors().grey3, // لون النص على العناصر الأساسية
+
+    onSecondary: AppColors().greylight, 
+   // لون النص على العناصر الثانوية
   ),
   textTheme: const TextTheme(
     bodyLarge: TextStyle(color: Colors.white), // النص الأساسي

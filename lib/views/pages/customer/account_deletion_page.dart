@@ -12,12 +12,12 @@ class AccountDeletionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: AppBar(
-          backgroundColor: AppColors().white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
           elevation: 0,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: AppColors().navy),
+            icon: Icon(Icons.arrow_back_ios, color: Theme.of(context).colorScheme.primary),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -27,7 +27,7 @@ class AccountDeletionScreen extends StatelessWidget {
             style: GoogleFonts.montserratAlternates(
               textStyle: TextStyle(
                 fontSize: 18,
-                color: AppColors().navy,
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -83,8 +83,8 @@ class _AccountDeletionBodyState extends State<AccountDeletionBody> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: AppColors().white,
-          shadowColor: AppColors().grey,
+          backgroundColor:Theme.of(context).colorScheme.surface,
+          shadowColor: Theme.of(context).colorScheme.tertiary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -103,7 +103,7 @@ class _AccountDeletionBodyState extends State<AccountDeletionBody> {
                 style: GoogleFonts.montserratAlternates(
                   textStyle: TextStyle(
                     fontSize: 18,
-                    color: AppColors().navy,
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -115,7 +115,7 @@ class _AccountDeletionBodyState extends State<AccountDeletionBody> {
                 style: GoogleFonts.montserratAlternates(
                   textStyle: TextStyle(
                     fontSize: 14,
-                    color: AppColors().grey,
+                    color: Theme.of(context).colorScheme.tertiary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -137,7 +137,7 @@ class _AccountDeletionBodyState extends State<AccountDeletionBody> {
                   style: GoogleFonts.montserratAlternates(
                     textStyle: TextStyle(
                       fontSize: 15,
-                      color: AppColors().orange,
+                      color: Theme.of(context).colorScheme.secondary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -152,7 +152,7 @@ class _AccountDeletionBodyState extends State<AccountDeletionBody> {
                   style: GoogleFonts.montserratAlternates(
                     textStyle: TextStyle(
                       fontSize: 15,
-                      color: AppColors().navy,
+                      color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.w400,
                     ),
                   ),

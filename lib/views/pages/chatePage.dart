@@ -45,19 +45,15 @@ class Chatepage extends StatelessWidget {
           reciverEmail,
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Colors.grey,
         elevation: 0,
-
-
-
-        
       ),
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: NetworkImage(
-                "https://e0.pxfuel.com/wallpapers/722/149/desktop-wallpaper-message-background-whatsapp-message-background.jpg"),
+            "https://e0.pxfuel.com/wallpapers/722/149/desktop-wallpaper-message-background-whatsapp-message-background.jpg"),
             fit: BoxFit.cover,
           ),
         ),

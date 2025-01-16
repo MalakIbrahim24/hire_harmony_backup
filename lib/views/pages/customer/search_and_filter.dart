@@ -18,12 +18,12 @@ class _SearchAndFilterState extends State<SearchAndFilter> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors().white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(100.0),
         child: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           elevation: 0,
           flexibleSpace: SafeArea(
             child: Padding(
@@ -32,7 +32,10 @@ class _SearchAndFilterState extends State<SearchAndFilter> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: Icon(Icons.arrow_back, color: AppColors().navy),
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -42,7 +45,7 @@ class _SearchAndFilterState extends State<SearchAndFilter> {
                       height: 50,
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
-                        color: AppColors().white,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(25),
                         border: Border.all(color: AppColors().grey3, width: 1),
                       ),
@@ -83,7 +86,8 @@ class _SearchAndFilterState extends State<SearchAndFilter> {
                                 child: Text(
                                   "x",
                                   style: TextStyle(
-                                    color: AppColors().navy,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                     fontSize: 16,
                                   ),
                                 ),
@@ -172,7 +176,7 @@ class _SearchAndFilterState extends State<SearchAndFilter> {
               final employee = employees[index];
 
               return Card(
-                color: AppColors().white,
+                color: Theme.of(context).colorScheme.surface,
                 margin:
                     const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 child: Padding(
@@ -189,8 +193,9 @@ class _SearchAndFilterState extends State<SearchAndFilter> {
                                 radius: 25,
                                 backgroundImage: employee['img'] != null
                                     ? NetworkImage(employee['img'])
-                                    : null,
-                                backgroundColor: AppColors().navy,
+                                    : const NetworkImage(
+                                        'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'),
+                                backgroundColor: AppColors().grey,
                                 child: employee['img'] == null
                                     ? const Icon(Icons.person,
                                         color: Colors.white)
@@ -213,7 +218,10 @@ class _SearchAndFilterState extends State<SearchAndFilter> {
                               const SizedBox(width: 8),
                               Text(
                                 '${employee['rating'] ?? 0} (${employee['reviews'] ?? 0})',
-                                style: const TextStyle(fontSize: 13),
+                                style:  TextStyle(
+                                  fontSize: 13,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                               ),
                             ],
                           ),

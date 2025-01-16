@@ -90,7 +90,7 @@ class _EmpNavbarState extends State<EmpNavbar> {
               ),
             ),
       body: <Widget>[
-        ChatListPage(),
+        const ChatListPage(),
         const EmpHomePage(),
         const EmpOrderPage(),
         const EmpProfilePage(),

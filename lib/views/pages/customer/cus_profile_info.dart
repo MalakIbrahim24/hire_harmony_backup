@@ -31,7 +31,7 @@ class _CusProfileInfoState extends State<CusProfileInfo> {
     final User? currentUser = _auth.currentUser;
 
     if (currentUser == null) {
-      setState(() { 
+      setState(() {
         isLoading = false;
         errorMessage = "No user is currently logged in.";
       });
@@ -81,12 +81,15 @@ class _CusProfileInfoState extends State<CusProfileInfo> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: AppColors().white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: AppColors().navy),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -96,7 +99,7 @@ class _CusProfileInfoState extends State<CusProfileInfo> {
           style: GoogleFonts.montserratAlternates(
             textStyle: TextStyle(
               fontSize: 18,
-              color: AppColors().navy,
+              color: Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -136,7 +139,7 @@ class _CusProfileInfoState extends State<CusProfileInfo> {
               style: GoogleFonts.montserratAlternates(
                 textStyle: TextStyle(
                   fontSize: 20,
-                  color: AppColors().navy,
+                  color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -146,7 +149,7 @@ class _CusProfileInfoState extends State<CusProfileInfo> {
               style: GoogleFonts.montserratAlternates(
                 textStyle: TextStyle(
                   fontSize: 14,
-                  color: AppColors().grey,
+                  color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -154,33 +157,72 @@ class _CusProfileInfoState extends State<CusProfileInfo> {
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Card(
-                color: AppColors().white,
-                shadowColor: AppColors().orange,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.person, color: AppColors().orange),
-                      title: Text(userData?['name'] ?? 'N/A'),
-                      subtitle: const Text('Full name'),
+              child: Container(
+               decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors().grey,
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    const Divider(),
-                    ListTile(
-                      leading:
-                          Icon(Icons.location_on, color: AppColors().orange),
-                      title: Text(userData?['location'] ?? 'No Location'),
-                      subtitle: const Text('Location'),
-                    ),
-                    const Divider(),
-                    ListTile(
-                      leading: Icon(Icons.phone, color: AppColors().orange),
-                      title: Text(userData?['phone'] ?? 'No Contact Info'),
-                      subtitle: const Text('Contact'),
-                    ),
-                  ],
+                child: Card(
+                  color: Theme.of(context).colorScheme.surface,
+                  shadowColor: Theme.of(context).colorScheme.tertiary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: Icon(Icons.person,
+                            color: Theme.of(context).colorScheme.secondary),
+                        title: Text(
+                          userData?['name'] ?? 'N/A',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary),
+                        ),
+                        subtitle: Text(
+                          'Full name',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary),
+                        ),
+                      ),
+                      const Divider(),
+                      ListTile(
+                        leading: Icon(Icons.location_on,
+                            color: Theme.of(context).colorScheme.secondary),
+                        title: Text(
+                          userData?['location'] ?? 'No Location',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary),
+                        ),
+                        subtitle: Text(
+                          'Location',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary),
+                        ),
+                      ),
+                      const Divider(),
+                      ListTile(
+                        leading: Icon(Icons.phone,
+                            color: Theme.of(context).colorScheme.secondary),
+                        title: Text(
+                          userData?['phone'] ?? 'No Contact Info',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary),
+                        ),
+                        subtitle: Text(
+                          'Contact',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

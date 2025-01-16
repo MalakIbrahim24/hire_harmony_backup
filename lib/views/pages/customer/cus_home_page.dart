@@ -18,7 +18,7 @@ class CusHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors().white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       extendBody: true, // Allows content to extend behind the navigation bar
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -75,7 +75,7 @@ class CusHomePage extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                       color: Theme.of(context).colorScheme.surface,      
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: GestureDetector(
@@ -126,7 +126,7 @@ class CusHomePage extends StatelessWidget {
                       style: GoogleFonts.montserratAlternates(
                         textStyle: TextStyle(
                           fontSize: 15,
-                          color: AppColors().navy,
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -164,7 +164,7 @@ class CusHomePage extends StatelessWidget {
                       style: GoogleFonts.montserratAlternates(
                         textStyle: TextStyle(
                           fontSize: 14,
-                          color: AppColors().navy,
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -285,7 +285,7 @@ class CusHomePage extends StatelessWidget {
                       style: GoogleFonts.montserratAlternates(
                         textStyle: TextStyle(
                           fontSize: 14,
-                          color: AppColors().navy,
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
