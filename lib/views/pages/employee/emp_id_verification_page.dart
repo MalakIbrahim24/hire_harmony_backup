@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
+import 'package:flutter_face_api/flutter_face_api.dart';
 
 class EmpIdVerificationPage extends StatefulWidget {
   const EmpIdVerificationPage({super.key});
@@ -16,6 +18,26 @@ class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
   File? idImage;
   File? selfieImage;
   bool isProcessing = false;
+  Future<bool> initializeFaceSdk() async {
+    var faceSdk = FaceSDK.instance;
+    var license = await rootBundle.load('assets/regula.license');
+    var config = InitConfig(license.buffer.asUint8List() as ByteData);
+    var (success, error) = await faceSdk.initialize(config: config);
+    if (!success) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Face SDK initialization failed: ${error?.message}')),
+      );
+    }
+    return success;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initializeFaceSdk();
+  }
 
   // Function to pick an image from the gallery
   Future<void> _pickImage(ImageSource source, bool isIdImage) async {
@@ -42,21 +64,56 @@ class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
     });
 
     try {
-      // Upload ID and Selfie images to Supabase
+      // Convert images to bytes
+      var idImageBytes = idImage!.readAsBytesSync();
+      var selfieImageBytes = selfieImage!.readAsBytesSync();
 
-      // Navigate to PhonePage with user data and image URLs
-      if (!mounted) return;
-      Navigator.pushNamed(context, AppRoutes.phonePage, arguments: {
-        'name': userData['name']!,
-        'email': userData['email']!,
-        'password': userData['password']!,
-        'idImage': idImage!,
-        'selfieImage': selfieImage!,
-        'role': 'employee',
-      });
+      // Create MatchFacesImage instances
+      var idMatchImage = MatchFacesImage(idImageBytes, ImageType.PRINTED);
+      var selfieMatchImage = MatchFacesImage(selfieImageBytes, ImageType.LIVE);
+
+      // Match faces
+      var faceSdk = FaceSDK.instance;
+      var request = MatchFacesRequest([idMatchImage, selfieMatchImage]);
+      var response = await faceSdk.matchFaces(request);
+
+      // Get similarity result
+      var matchedFaces =
+          await faceSdk.splitComparedFaces(response.results, 0.75);
+      if (matchedFaces.matchedFaces.isNotEmpty) {
+        var similarity = matchedFaces.matchedFaces[0].similarity * 100;
+
+        if (similarity > 75) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    'Match Successful! Similarity: ${similarity.toStringAsFixed(2)}%')),
+          );
+
+          // Navigate to the next page
+          Navigator.pushNamed(context, AppRoutes.phonePage, arguments: {
+            'name': userData['name']!,
+            'email': userData['email']!,
+            'password': userData['password']!,
+            'idImage': idImage!,
+            'selfieImage': selfieImage!,
+            'role': 'employee',
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    'Match Failed! Similarity: ${similarity.toStringAsFixed(2)}%')),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No match found.')),
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error uploading images: $e')),
+        SnackBar(content: Text('Error during face matching: $e')),
       );
     } finally {
       setState(() {

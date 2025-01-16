@@ -57,7 +57,7 @@ class EmpOrderPage extends StatelessWidget {
           );
         }
 
-        if (snapshot.hasError || snapshot.data == null) {
+        if (snapshot.hasError) {
           return Scaffold(
             appBar: AppBar(
               backgroundColor: AppColors().transparent,
@@ -66,6 +66,24 @@ class EmpOrderPage extends StatelessWidget {
             body: Center(
               child: Text(
                 'Error loading data. Please try again later.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.montserratAlternates(
+                  fontSize: 18,
+                  color: AppColors().navy,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          );
+        } else if (snapshot.data == null) {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: AppColors().transparent,
+            ),
+            extendBodyBehindAppBar: true,
+            body: Center(
+              child: Text(
+                'No orders found.',
                 style: GoogleFonts.montserratAlternates(
                   fontSize: 18,
                   color: AppColors().navy,

@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
-import 'package:hire_harmony/views/pages/chatePage.dart';
+//import 'package:hire_harmony/views/pages/chatePage.dart';
 import 'package:hire_harmony/views/pages/employee/reviews_page.dart';
 import 'package:hire_harmony/views/widgets/customer/cus_photo_tab_view.dart';
 
@@ -265,55 +265,173 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      // Add message button functionality here
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              Chatepage(
-                                reciverEmail: employeeData!["email"],
-                                reciverID: employeeData!["uid"],
-                                ),
-                          /*builder: (context) => BlocProvider(
-      create: (context) => ChatCubit(), // تأكد من تهيئة الكيوبت هنا
-      child: ChatPage(reciverEmail: employeeData!["email"]),*/
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 40, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                    ),
-                    child: Text(
-                      'Message',
-                      style: GoogleFonts.montserratAlternates(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                  //             ElevatedButton(
+                  //               onPressed: () {
+                  //                 // Add message button functionality here
+                  //                 Navigator.push(
+                  //                   context,
+                  //                   MaterialPageRoute(
+                  //                     builder: (context) => Chatepage(
+                  //                       reciverEmail: employeeData!["email"],
+                  //                       reciverID: employeeData!["uid"],
+                  //                     ),
+                  //                     /*builder: (context) => BlocProvider(
+                  // create: (context) => ChatCubit(), // تأكد من تهيئة الكيوبت هنا
+                  // child: ChatPage(reciverEmail: employeeData!["email"]),*/
+                  //                   ),
+                  //                 );
+                  //               },
+                  //               style: ElevatedButton.styleFrom(
+                  //                 backgroundColor: Colors.orange,
+                  //                 padding: const EdgeInsets.symmetric(
+                  //                     horizontal: 40, vertical: 12),
+                  //                 shape: RoundedRectangleBorder(
+                  //                   borderRadius: BorderRadius.circular(6),
+                  //                 ),
+                  //               ),
+                  //               child: Text(
+                  //                 'Message',
+                  //                 style: GoogleFonts.montserratAlternates(
+                  //                   fontSize: 14,
+                  //                   fontWeight: FontWeight.bold,
+                  //                   color: Colors.white,
+                  //                 ),
+                  //               ),
+                  //             ),
                   const SizedBox(width: 16),
                   ElevatedButton(
                     onPressed: () {
-                      // Add book now button functionality here
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          TextEditingController descriptionController =
+                              TextEditingController();
+                          TextEditingController titleController =
+                              TextEditingController();
+
+                          return AlertDialog(
+                            title: Text(
+                              'Send Request',
+                              style: GoogleFonts.montserratAlternates(
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Enter a description for your request:',
+                                  style: GoogleFonts.montserratAlternates(
+                                      fontSize: 14),
+                                ),
+                                const SizedBox(height: 8),
+                                TextField(
+                                  controller: titleController,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Enter the title here',
+                                  ),
+                                  maxLines: 3,
+                                ),
+                                const SizedBox(height: 8),
+                                TextField(
+                                  controller: descriptionController,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Enter your description here',
+                                  ),
+                                  maxLines: 3,
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text(
+                                  'Cancel',
+                                  style: GoogleFonts.montserratAlternates(
+                                      color: Colors.red),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  if (loggedInUserId == null) {
+                                    debugPrint(
+                                        'No user is currently signed in.');
+                                    Navigator.pop(context);
+                                    return;
+                                  }
+
+                                  String description =
+                                      descriptionController.text.trim();
+
+                                  if (description.isEmpty) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Description cannot be empty.')),
+                                    );
+                                    return;
+                                  }
+
+                                  try {
+                                    // Define the request data
+                                    final requestData = {
+                                      'senderId': loggedInUserId,
+                                      'receiverId': widget.employeeId,
+                                      'description': description,
+                                      'timestamp': FieldValue.serverTimestamp(),
+                                      'pendingRequests': 'pending',
+                                    };
+
+                                    // Save to both users' sentRequests collections
+                                    final userSentRequests = _firestore
+                                        .collection('users')
+                                        .doc(loggedInUserId)
+                                        .collection('sentRequests');
+                                    final employeeSentRequests = _firestore
+                                        .collection('users')
+                                        .doc(widget.employeeId)
+                                        .collection('recievedRequests');
+
+                                    await userSentRequests.add(requestData);
+                                    await employeeSentRequests.add(requestData);
+
+                                    // ignore: use_build_context_synchronously
+                                    Navigator.pop(context); // Close the dialog
+                                    // ignore: use_build_context_synchronously
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Request sent successfully!')),
+                                    );
+                                  } catch (e) {
+                                    debugPrint('Error sending request: $e');
+                                    // ignore: use_build_context_synchronously
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content:
+                                              Text('Failed to send request.')),
+                                    );
+                                  }
+                                },
+                                child: Text(
+                                  'Confirm',
+                                  style: GoogleFonts.montserratAlternates(
+                                      color: AppColors().orange),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors().orange,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40, vertical: 12),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
+                          borderRadius: BorderRadius.circular(24)),
                     ),
                     child: Text(
-                      'Book Now',
+                      'Send request',
                       style: GoogleFonts.montserratAlternates(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,

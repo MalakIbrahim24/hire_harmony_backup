@@ -1,3 +1,4 @@
+// ignore: file_names
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hire_harmony/component/chat_bubble.dart';
@@ -45,7 +46,7 @@ class Chatepage extends StatelessWidget {
           reciverEmail,
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Colors.grey,
         elevation: 0,
 
@@ -141,7 +142,7 @@ class Chatepage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(25.0),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 5.0,
                     offset: const Offset(0, 2),
                   ),
@@ -163,7 +164,7 @@ class Chatepage extends StatelessWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors().orange.withOpacity(0.4),
+                  color: AppColors().orange.withValues(alpha: 0.4),
                   blurRadius: 6.0,
                   offset: const Offset(0, 3),
                 ),
