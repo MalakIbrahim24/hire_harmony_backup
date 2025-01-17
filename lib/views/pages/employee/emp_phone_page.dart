@@ -15,7 +15,7 @@ class _EmpPhonePageState extends State<EmpPhonePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors().white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -40,7 +40,8 @@ class _EmpPhonePageState extends State<EmpPhonePage> {
                         'Phone number verification',
                         style: GoogleFonts.montserratAlternates(
                           fontSize: 20,
-                          color: AppColors().navy,
+                          color: Theme.of(context).colorScheme.primary,
+
                           fontWeight: FontWeight.w500,
                         ),
                       ),

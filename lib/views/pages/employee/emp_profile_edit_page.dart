@@ -181,9 +181,14 @@ class _EmpProfileEditPageState extends State<EmpProfileEditPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.surface,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: AppColors().white),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -193,12 +198,11 @@ class _EmpProfileEditPageState extends State<EmpProfileEditPage> {
           style: GoogleFonts.montserratAlternates(
             textStyle: TextStyle(
               fontSize: 15,
-              color: AppColors().white,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           textAlign: TextAlign.center,
         ),
-        backgroundColor: AppColors().navy,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

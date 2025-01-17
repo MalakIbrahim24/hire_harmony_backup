@@ -51,7 +51,7 @@ class _PrevWorkState extends State<PrevWork> {
             style: GoogleFonts.montserratAlternates(
               textStyle: TextStyle(
                 fontSize: 15,
-                color: AppColors().navy,
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+/*import 'package:flutter_local_notifications/flutter_local_notifications.dart';*/
 import 'package:hire_harmony/api/notification_screen.dart';
 import 'package:hire_harmony/main.dart';
 
@@ -12,7 +12,7 @@ Future<void> handleBackgroundMessage(RemoteMessage message) async {
 }
 
 
-
+/*
 class FirebaseApi {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
@@ -122,4 +122,4 @@ class FirebaseApi {
     await initPushNotifications();
     await initLocalNotifications();
   }
-}
+}*/

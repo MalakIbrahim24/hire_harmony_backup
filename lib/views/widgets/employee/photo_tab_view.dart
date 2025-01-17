@@ -136,93 +136,104 @@ class _PhotoTabViewState extends State<PhotoTabView> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors().white,
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addPhoto,
-        backgroundColor: AppColors().orange,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Theme.of(context).colorScheme.surface,
+    body: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 15),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Previous Work Photos',
+                style: GoogleFonts.montserratAlternates(
+                  textStyle: TextStyle(
+                    fontSize: 14,
+                    color: AppColors().grey,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Expanded(
+            child: Stack(
               children: [
-                Text(
-                  'Previous Work Photos',
-                  style: GoogleFonts.montserratAlternates(
-                    textStyle: TextStyle(
-                      fontSize: 14,
-                      color: AppColors().grey,
-                      fontWeight: FontWeight.bold,
-                    ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(widget.employeeId) // Use the employee's ID
+                        .collection('serviceImages')
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return const Padding(
+                          padding:
+                              EdgeInsets.symmetric(vertical: 70.0, horizontal: 100),
+                          child: Center(
+                            child: Text(
+                              "No photos added yet",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                        );
+                      }
+
+                      return Row(
+                        children: snapshot.data!.docs.map((doc) {
+                          Map<String, dynamic>? data =
+                              doc.data() as Map<String, dynamic>?;
+
+                          String imageUrl = data?['url'] ?? '';
+                          String imageTitle = data?['title'] ?? 'Untitled';
+
+                          return WorkPhotoCard(
+                            image: Image.network(
+                              imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Center(
+                                  child: Text(
+                                    "Image not found",
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                );
+                              },
+                            ),
+                            title: imageTitle,
+                          );
+                        }).toList(),
+                      );
+                    },
+                  ),
+                ),
+                Positioned(
+                  bottom: 140,
+                  right: 10,
+                  child: FloatingActionButton(
+                    onPressed: _addPhoto,
+                    backgroundColor: AppColors().orange,
+                    child: const Icon(Icons.add, color: Colors.white),
                   ),
                 ),
               ],
             ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(widget.employeeId) // Use the employee's ID
-                    .collection('serviceImages')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 70.0, horizontal: 100),
-                      child: Center(
-                        child: Text(
-                          "No photos added yet",
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      ),
-                    );
-                  }
-
-                  return Row(
-                    children: snapshot.data!.docs.map((doc) {
-                      Map<String, dynamic>? data =
-                          doc.data() as Map<String, dynamic>?;
-
-                      String imageUrl = data?['url'] ?? '';
-                      String imageTitle = data?['title'] ?? 'Untitled';
-
-                      return WorkPhotoCard(
-                        image: Image.network(
-                          imageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Center(
-                              child: Text(
-                                "Image not found",
-                                style: TextStyle(color: Colors.red),
-                              ),
-                            );
-                          },
-                        ),
-                        title: imageTitle,
-                      );
-                    }).toList(),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 // WorkPhotoCard widget

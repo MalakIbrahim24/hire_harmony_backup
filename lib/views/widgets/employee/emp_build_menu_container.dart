@@ -21,10 +21,10 @@ class EmpBuildMenuContainer extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 20.0),
         margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -40,13 +40,14 @@ class EmpBuildMenuContainer extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(icon, color: AppColors().navy, size: 26),
+                Icon(icon,color: Theme.of(context).colorScheme.primary,size: 26),
                 const SizedBox(width: 15),
                 Text(
                   title,
                   style: GoogleFonts.montserratAlternates(
                     fontSize: 16,
-                    color: AppColors().navy,
+                    color: Theme.of(context).colorScheme.primary,
+
                     fontWeight: FontWeight.w500,
                   ),
                 ),

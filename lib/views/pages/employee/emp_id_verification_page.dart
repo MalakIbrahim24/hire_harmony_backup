@@ -204,59 +204,7 @@ class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
                 ),
               ],
             ),
-<<<<<<< HEAD
-            const Spacer(),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors().orange,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              onPressed: () {
-                if (widget.isLastStep) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const EmpIdVerificationPage(
-                        stepText: "Step 3: Take a live selfie",
-                        isDisplay: true,
-                        isDone: true,
-                      ),
-                    ),
-                  );
-                } else if (widget.isDone) {
-                  // Handle submit logic
-                  Navigator.pushNamed(
-                    context,
-                    AppRoutes.empVerificationSuccessPage,
-                  );
-                } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const EmpIdVerificationPage(
-                        stepText: "Step 2: Upload the back of your ID",
-                        isLastStep: true,
-                      ),
-                    ),
-                  );
-                }
-              },
-              child: Text(
-                widget.isDisplay ? 'SUBMIT' : 'NEXT',
-                style: GoogleFonts.montserratAlternates(
-                  fontSize: 18,
-                  color: AppColors().white,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
-=======
           ),
->>>>>>> c259c4a2a6e428ace9059d98fb68afdf00b732ce
         ),
       ),
     );

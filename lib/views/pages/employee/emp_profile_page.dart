@@ -7,6 +7,7 @@ import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:hire_harmony/view_models/cubit/auth_cubit.dart';
 import 'package:hire_harmony/views/pages/employee/emp_profile_edit_page.dart';
+import 'package:hire_harmony/views/pages/settings_page.dart';
 import 'package:hire_harmony/views/widgets/customer/state_item.dart';
 import 'package:hire_harmony/views/widgets/employee/emp_build_menu_container.dart';
 import 'package:hire_harmony/views/widgets/main_button.dart';
@@ -85,10 +86,10 @@ class _EmpProfilePageState extends State<EmpProfilePage> {
         }
         return SafeArea(
           child: Scaffold(
-            backgroundColor: AppColors().white,
+          backgroundColor:Theme.of(context).colorScheme.surface,
             appBar: AppBar(
               automaticallyImplyLeading: false,
-              backgroundColor: AppColors().white,
+          backgroundColor:Theme.of(context).colorScheme.surface,
               elevation: 0,
               centerTitle: true,
               actions: [
@@ -132,7 +133,7 @@ class _EmpProfilePageState extends State<EmpProfilePage> {
                   margin: const EdgeInsets.symmetric(horizontal: 20),
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: AppColors().white,
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
@@ -153,40 +154,55 @@ class _EmpProfilePageState extends State<EmpProfilePage> {
                 ),
                 const SizedBox(height: 20),
                 Expanded(
-                  child: Column(children: [
-                    EmpBuildMenuContainer(
-                      title: 'Profile',
-                      icon: Icons.person,
-                      onTap: () {
-                        Navigator.pushNamed(
-                            context,
-                            AppRoutes
-                                .empProfileInfoPage); // Refresh data on return
-                      },
-                    ),
-                    EmpBuildMenuContainer(
-                      title: 'Contact us',
-                      icon: Icons.contact_page,
-                      onTap: () {
-                        Navigator.pushNamed(context, AppRoutes.contactUsPage);
-                      },
-                    ),
-                    EmpBuildMenuContainer(
-                      title: 'Delete Account',
-                      icon: Icons.info,
-                      onTap: () {
-                        Navigator.pushNamed(
-                            context, AppRoutes.accountDeletionScreen);
-                      },
-                    ),
-                    EmpBuildMenuContainer(
-                      title: 'Logout',
-                      icon: Icons.logout,
-                      onTap: () async {
-                        await authCubit.signOut();
-                      },
-                    ),
-                  ]),
+                  
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                      EmpBuildMenuContainer(
+                        title: 'Profile',
+                        icon: Icons.person,
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context,
+                              AppRoutes.empProfileInfoPage); // Refresh data on return
+                        },
+                      ),
+                      EmpBuildMenuContainer(
+                        title: 'Contact us',
+                        icon: Icons.contact_page,
+                        onTap: () {
+                          Navigator.pushNamed(context, AppRoutes.contactUsPage);
+                        },
+                      ),
+                      EmpBuildMenuContainer(
+                        title: 'Delete Account',
+                        icon: Icons.info,
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, AppRoutes.accountDeletionScreen);
+                        },
+                      ),
+                      EmpBuildMenuContainer(
+                        title: 'Setting',
+                        icon: Icons.settings,
+                        onTap: () {
+                           Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const SettingsPage(),
+                                    ),
+                                  );
+                        },
+                      ),
+                      EmpBuildMenuContainer(
+                        title: 'Logout',
+                        icon: Icons.logout,
+                        onTap: () async {
+                          await authCubit.signOut();
+                        },
+                      ),
+                    ]),
+                  ),
                 ),
               ],
             ),

@@ -43,12 +43,13 @@ class _EmpNotificationsPageState extends State<EmpNotificationsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor: AppColors().white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: AppColors().transparent,
+      backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: AppColors().navy),
+          icon: Icon(Icons.arrow_back_ios,color: Theme.of(context).colorScheme.primary,
+),
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -58,7 +59,7 @@ class _EmpNotificationsPageState extends State<EmpNotificationsPage> {
           style: GoogleFonts.montserratAlternates(
             textStyle: TextStyle(
               fontSize: 18,
-              color: AppColors().navy,
+              color: Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.bold,
             ),
           ),

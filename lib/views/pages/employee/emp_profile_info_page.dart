@@ -97,6 +97,7 @@ class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -144,7 +145,7 @@ class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
                           style: GoogleFonts.montserratAlternates(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: AppColors().navy2,
+                                    color: Theme.of(context).colorScheme.inversePrimary,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -185,7 +186,7 @@ class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
                     style: GoogleFonts.montserratAlternates(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: AppColors().navy2),
+                      color: Theme.of(context).colorScheme.inversePrimary,),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -203,7 +204,8 @@ class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
                     style: GoogleFonts.montserratAlternates(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: AppColors().navy2,
+                      color: Theme.of(context).colorScheme.inversePrimary,
+
                     ),
                   ),
                   const SizedBox(height: 8),

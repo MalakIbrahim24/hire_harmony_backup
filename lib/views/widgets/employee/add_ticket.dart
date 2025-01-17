@@ -50,13 +50,16 @@ class AddTicket extends StatelessWidget {
           style: TextStyle(
             fontSize: 20.0,
             fontWeight: FontWeight.bold,
-            color: AppColors().navy,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
-        backgroundColor: AppColors().white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors().navy),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           onPressed: () {
             Navigator.pop(context);
           },

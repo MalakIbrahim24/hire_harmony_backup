@@ -32,14 +32,16 @@ class EmpOrderPage extends StatelessWidget {
 
     if (loggedInUserId == null) {
       return Scaffold(
-        backgroundColor: AppColors().orange,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           elevation: 0,
           centerTitle: true,
           title: Text(
             'Orders',
-            style: TextStyle(color: AppColors().navy),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
         ),
         body: const Center(
@@ -60,15 +62,15 @@ class EmpOrderPage extends StatelessWidget {
         if (snapshot.hasError || snapshot.data == null) {
           return Scaffold(
             appBar: AppBar(
-              backgroundColor: AppColors().transparent,
+          backgroundColor: Theme.of(context).colorScheme.surface,
             ),
             extendBodyBehindAppBar: true,
             body: Center(
               child: Text(
                 'Error loading data. Please try again later.',
                 style: GoogleFonts.montserratAlternates(
-                  fontSize: 18,
-                  color: AppColors().navy,
+                  fontSize: 14,
+                  color: AppColors().grey,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -80,7 +82,7 @@ class EmpOrderPage extends StatelessWidget {
 
         if (employeeState == 'pending') {
           return Scaffold(
-            backgroundColor: AppColors().transparent,
+            backgroundColor: Theme.of(context).colorScheme.surface,
             extendBodyBehindAppBar: true,
             body: Stack(
               children: [
@@ -137,16 +139,16 @@ class EmpOrderPage extends StatelessWidget {
         );
 
         return Scaffold(
-          backgroundColor: AppColors().white,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           appBar: AppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: Theme.of(context).colorScheme.surface,
             elevation: 0,
             centerTitle: true,
             title: Text(
               'Orders',
               style: GoogleFonts.montserratAlternates(
                 fontSize: 22,
-                color: AppColors().navy,
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -164,7 +166,7 @@ class EmpOrderPage extends StatelessWidget {
                     'No orders found.',
                     style: GoogleFonts.montserratAlternates(
                       fontSize: 18,
-                      color: AppColors().navy,
+                      color: AppColors().grey,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

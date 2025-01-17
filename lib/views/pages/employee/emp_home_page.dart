@@ -52,7 +52,7 @@ class _EmpHomePageState extends State<EmpHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(100),
         child: Container(
@@ -128,7 +128,7 @@ class _EmpHomePageState extends State<EmpHomePage> {
                   style: GoogleFonts.montserratAlternates(
                     textStyle: TextStyle(
                       fontSize: 15,
-                      color: AppColors().navy,
+                      color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -169,7 +169,7 @@ class _EmpHomePageState extends State<EmpHomePage> {
                       iconColor: AppColors().navy,
                     ),
                     OverviewCard(
-                      title: 'Help and Support',
+                      title: 'Help and Support ',
                       icon: Icons.support_agent,
                       onTap: () {
                         Navigator.push(
@@ -242,7 +242,10 @@ class OverviewCard extends StatelessWidget {
             const SizedBox(height: 5),
             Text(title,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.montserratAlternates(fontSize: 14)),
+                style: GoogleFonts.montserratAlternates(
+                  fontSize: 14,
+                  color: AppColors().navy,
+                )),
           ],
         ),
       ),

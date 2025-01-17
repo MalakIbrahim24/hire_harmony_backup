@@ -25,7 +25,7 @@ class _VerificationSuccessPageState extends State<EmpVerificationSuccessPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor: AppColors().white,
+          backgroundColor: Theme.of(context).colorScheme.surface,
       body: Column(
         children: [
           /*
@@ -56,7 +56,7 @@ class _VerificationSuccessPageState extends State<EmpVerificationSuccessPage> {
                       style: GoogleFonts.montserratAlternates(
                         fontSize: 34,
                         fontWeight: FontWeight.bold,
-                        color: AppColors().navy,
+                                    color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ],
@@ -75,7 +75,7 @@ class _VerificationSuccessPageState extends State<EmpVerificationSuccessPage> {
                       style: GoogleFonts.montserratAlternates(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: AppColors().navy,
+                                    color: Theme.of(context).colorScheme.primary,
                       ),
                       textAlign: TextAlign.left,
                     ),
@@ -121,7 +121,7 @@ class _VerificationSuccessPageState extends State<EmpVerificationSuccessPage> {
                   style: GoogleFonts.montserratAlternates(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: AppColors().navy,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   textAlign: TextAlign.center,
                 ),

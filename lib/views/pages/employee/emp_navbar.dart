@@ -31,7 +31,8 @@ class _EmpNavbarState extends State<EmpNavbar> {
                     textStyle: TextStyle(
                       fontSize: 12, // Customize font size
                       fontWeight: FontWeight.w500, // Customize font weight
-                      color: AppColors().navy, // Customize font color
+                      color: Theme.of(context).colorScheme.primary,
+// Customize font color
                     ),
                   ),
                 ),
@@ -42,7 +43,7 @@ class _EmpNavbarState extends State<EmpNavbar> {
                     currentPageIndex = index;
                   });
                 },
-                backgroundColor: AppColors().white.withValues(alpha: 0.85),
+                backgroundColor: Theme.of(context).colorScheme.surface,
                 indicatorColor: AppColors().orange,
                 selectedIndex: currentPageIndex,
                 elevation: 0,
@@ -54,7 +55,7 @@ class _EmpNavbarState extends State<EmpNavbar> {
                     ),
                     icon: Icon(
                       Icons.message_outlined,
-                      color: AppColors().navy,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     label: 'Messages',
                   ),
@@ -65,14 +66,16 @@ class _EmpNavbarState extends State<EmpNavbar> {
                     ),
                     icon: Icon(
                       Icons.home_outlined,
-                      color: AppColors().navy,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     label: 'Home',
                   ),
                   NavigationDestination(
                     selectedIcon: Icon(Icons.list, color: AppColors().white),
-                    icon:
-                        Icon(Icons.list_alt_outlined, color: AppColors().navy),
+                    icon: Icon(
+                      Icons.list_alt_outlined,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                     label: 'Orders',
                   ),
                   NavigationDestination(
@@ -82,7 +85,7 @@ class _EmpNavbarState extends State<EmpNavbar> {
                     ),
                     icon: Icon(
                       Icons.person_2_outlined,
-                      color: AppColors().navy,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     label: 'Profile',
                   ),

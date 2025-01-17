@@ -3,12 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-<<<<<<< HEAD
-import 'package:hire_harmony/api/firebase_api.dart';
 import 'package:hire_harmony/api/notification_screen.dart';
-=======
 import 'package:hire_harmony/utils/light_mode.dart';
->>>>>>> c259c4a2a6e428ace9059d98fb68afdf00b732ce
 import 'package:hire_harmony/utils/route/app_router.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:hire_harmony/utils/theme_provider.dart';
@@ -36,10 +32,6 @@ void main() async {
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50cWd0ZmtpeWV2dHRsbHl5ZWNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYxNTQzNDIsImV4cCI6MjA1MTczMDM0Mn0.7APvbYoT5BpkmV1goMLIzJ7Ys2pehlns-hCO5f1oIFU',
   );
-<<<<<<< HEAD
-  await FirebaseApi().initNotifications();
-  runApp(const MyApp());
-=======
   runApp(
   ChangeNotifierProvider(
     create: (context) => ThemeProvider(),
@@ -48,7 +40,6 @@ void main() async {
   )
   
   );
->>>>>>> c259c4a2a6e428ace9059d98fb68afdf00b732ce
 }
 
 class MyApp extends StatelessWidget {
@@ -90,11 +81,8 @@ class MyApp extends StatelessWidget {
               return MaterialApp(
                  debugShowCheckedModeBanner: false,
                 title: 'Hire Harmony',
-                theme: ThemeData(
-                    primarySwatch: Colors.blue,
-                    textTheme: const TextTheme(
-                      bodyMedium: TextStyle(fontSize: 40),
-                    )),
+              
+              
                 navigatorKey: navigatorKey,
                 routes: {
                   NotificationScreen.route: (context) =>
