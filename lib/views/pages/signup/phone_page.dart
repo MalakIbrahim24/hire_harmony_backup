@@ -152,7 +152,7 @@ class _PhonePageState extends State<PhonePage> {
 
   // Verify OTP and register the user
   Future<void> verifyOtpAndRegister(Map<String, dynamic> formData) async {
-    const state = 'pending';
+    const availability = 'available';
     const img = 'lib/assets/images/employee.png';
 
     try {
@@ -201,9 +201,9 @@ class _PhonePageState extends State<PhonePage> {
         'role': 'employee',
         'idImageUrl': idImageUrl,
         'selfieImageUrl': selfieImageUrl,
-        'state': state,
         'uid': user.uid,
         'img': img,
+        'availability': availability,
       });
 
       // Navigate to the success page

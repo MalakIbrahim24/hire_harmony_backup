@@ -6,6 +6,7 @@ import 'package:hire_harmony/views/pages/customer/cus_home_page.dart';
 import 'package:hire_harmony/views/pages/customer/cus_profile_page.dart';
 import 'package:hire_harmony/views/pages/customer/favorites_page.dart';
 import 'package:hire_harmony/views/pages/customer/order_page.dart';
+
 class CustomButtomNavbar extends StatefulWidget {
   const CustomButtomNavbar({super.key});
 
@@ -136,9 +137,8 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                 ],
               ),
             ),
-      body:
-       <Widget>[
-      /*  BlocProvider(
+      body: <Widget>[
+        /*  BlocProvider(
           create: (context) {
             final cubit = ChatCubit();
             cubit.getMessages();

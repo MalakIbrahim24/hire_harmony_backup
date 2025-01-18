@@ -57,29 +57,40 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                   );
                 },
                 child: Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                  ),
-                  padding: const EdgeInsets.all(8.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 8 , vertical: 8 ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  width: 160, // زيادة العرض قليلاً لتحسين تناسق النصوص
                   decoration: BoxDecoration(
                     color: AppColors().white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors().navy),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        categoryTitle,
-                        style: GoogleFonts.montserratAlternates(
-                          textStyle: TextStyle(
-                            fontSize: 13,
-                            color: AppColors().navy,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                    borderRadius:
+                        BorderRadius.circular(16), // جعل الحواف أكثر نعومة
+                   
+
+                   
+                    boxShadow: [
+                      BoxShadow(
+                        color:
+                            AppColors().navy.withAlpha(230), // إضافة ظل خفيف
+                        blurRadius: 6, // تقليل التمويه لإبقاء الظل ناعمًا
+                        offset: const Offset(0, 4), // تحديد اتجاه الظل
                       ),
                     ],
+                  ),
+                  child: Center(
+                    child: Text(
+                      categoryTitle,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.montserrat(
+                        textStyle: TextStyle(
+                          fontSize: 13, // زيادة حجم النص قليلاً
+                          color: AppColors().navy,
+                          fontWeight: FontWeight.w600, // جعل النص أكثر سماكة
+                          letterSpacing:
+                              0.5, // إضافة مسافة بين الحروف لتحسين القراءة
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               );
