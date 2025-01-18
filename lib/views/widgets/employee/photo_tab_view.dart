@@ -219,7 +219,7 @@ Widget build(BuildContext context) {
                 ),
                 Positioned(
                   bottom: 140,
-                  right: 10,
+                  right: 0,
                   child: FloatingActionButton(
                     onPressed: _addPhoto,
                     backgroundColor: AppColors().orange,

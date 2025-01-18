@@ -8,12 +8,15 @@ import 'package:hire_harmony/utils/app_colors.dart';
 class Chatepage extends StatelessWidget {
   final String reciverEmail;
   final String reciverID;
+    final String? reciverName;
+
+
   final ChatServices _chatServices = ChatServices();
   final AuthServices _authServices = AuthServicesImpl();
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController(); // ScrollController
 
-  Chatepage({super.key, required this.reciverEmail, required this.reciverID});
+  Chatepage({super.key, required this.reciverEmail, required this.reciverID ,  this.reciverName});
 
   void sendMessage() async {
     if (_messageController.text.isNotEmpty) {
@@ -43,7 +46,7 @@ class Chatepage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          reciverEmail,
+          reciverName?? 'unkown',
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,

@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/pages/employee/advertisement_screen.dart';
 import 'package:hire_harmony/views/pages/employee/booking_screen.dart';
+import 'package:hire_harmony/views/pages/employee/contact_us_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_notifications_page.dart';
 import 'package:hire_harmony/views/pages/employee/help_support_page.dart';
 import 'package:hire_harmony/views/pages/employee/tickets_page.dart';
@@ -169,13 +170,13 @@ class _EmpHomePageState extends State<EmpHomePage> {
                       iconColor: AppColors().navy,
                     ),
                     OverviewCard(
-                      title: 'Help and Support ',
+                      title: 'Contact Us ',
                       icon: Icons.support_agent,
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const HelpSupportPage(),
+                            builder: (context) => const ContactUsPage(),
                           ),
                         );
                       },

@@ -27,7 +27,9 @@ class _ChatListPageState extends State<ChatListPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        title: const Text('Message'),
+        title: const Center(child: Text('Message')),
+          automaticallyImplyLeading: false,
+
       ),
       body: _buildUserList(),
     );
@@ -118,6 +120,7 @@ class _ChatListPageState extends State<ChatListPage> {
                 builder: (context) => Chatepage(
                   reciverEmail: userData['email'],
                   reciverID: otherUserID,
+                  reciverName:userData['name']
                 ),
               ),
             );

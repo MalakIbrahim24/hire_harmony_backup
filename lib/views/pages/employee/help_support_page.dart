@@ -6,8 +6,8 @@ class HelpSupportPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var _messageController;
     return Scaffold(
-      
       appBar: AppBar(
         title: Text(
           'Help & Support',
@@ -42,24 +42,35 @@ class HelpSupportPage extends StatelessWidget {
             ),
             const SizedBox(height: 16.0),
             Container(
-              padding: const EdgeInsets.all(12.0),
+              height: 200.0, // ارتفاع ثابت للصندوق (5-6 أسطر تقريبًا)
+              width: double.infinity,
               decoration: BoxDecoration(
-                color: AppColors().orange.withAlpha(240),
-                borderRadius: BorderRadius.circular(16.0),
+                color: AppColors().orangelight,
+                // لون خلفية الحاوية
+                borderRadius: BorderRadius.circular(15.0), // زاوية منحنية
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black, // لون الظل مع شفافية
+                    blurRadius: 6.0, // مدى انتشار الظل
+                    offset: Offset(0, 3), // موقع الظل
+                  ),
+                ],
               ),
               child: TextField(
-                maxLines: 5,
-                style: TextStyle(
-                  color: AppColors().white,
-                  fontSize: 16.0,
-                ),
+                controller: _messageController,
+                maxLines: 7, // عدد الأسطر المطلوب عرضه
+                minLines: 1, // أقل عدد من الأسطر عند التقلص
                 decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 15.0, vertical: 10.0),
+                  border: InputBorder.none, // إزالة الإطار الافتراضي
                   hintText: 'You Can Write Your Problem Here',
                   hintStyle: TextStyle(
-                    color: AppColors().white,
+                    color: AppColors().grey3,
+                    fontSize: 14,
                   ),
-                  border: InputBorder.none,
                 ),
+                style: const TextStyle(color: Colors.black), // لون النص
               ),
             ),
             const SizedBox(height: 16.0),

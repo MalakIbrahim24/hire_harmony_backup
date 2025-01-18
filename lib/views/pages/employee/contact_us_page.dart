@@ -16,42 +16,45 @@ class _ContactUsPageState extends State<ContactUsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors().white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(
           "About App",
           style: TextStyle(
             fontSize: 17,
-            color: AppColors().navy,
+            color: Theme.of(context).colorScheme.primary,
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors().navy),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
       ),
       body: Container(
-        color: AppColors().white, // تغيير الخلفية إلى الأبيض
+        color: Theme.of(context).colorScheme.surface,
         child: Column(
           children: [
             const SizedBox(height: 18),
-            const Text(
+            Text(
               "Developers",
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             const SizedBox(height: 7),
-            const Text(
+            Text(
               "Teams",
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.black54,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             const SizedBox(height: 18),
@@ -72,20 +75,20 @@ class _ContactUsPageState extends State<ContactUsPage> {
                   ),
                   buildDeveloperCard(
                     context,
-                    name: "Malak Ibraheem",
+                    name: "Malak Ibrahem",
                     role: "Backend Developer",
                     image: 'assets/images/woman.png',
                   ),
                 ],
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.all(18.0),
+            Padding(
+              padding: const EdgeInsets.all(18.0),
               child: Text(
                 "This program was developed by the developers of Orchida Soft Software Company",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.black,
+                  color: Theme.of(context).colorScheme.primary,
                   fontSize: 13,
                 ),
               ),
@@ -117,10 +120,10 @@ class _ContactUsPageState extends State<ContactUsPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 CircleAvatar(
-                  radius: 35, // حجم متوسط للصورة
+                  radius: 40, // حجم متوسط للصورة
                   backgroundImage: AssetImage(image),
                 ),
-                const SizedBox(width: 14), // تقليل المسافة بين الصورة والنصوص
+                const SizedBox(width: 50), // تقليل المسافة بين الصورة والنصوص
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,37 +149,39 @@ class _ContactUsPageState extends State<ContactUsPage> {
                         ),
                       ),
                     ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors().white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14.0,
+                          vertical: 8.0, // حجم مناسب للزر
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HelpSupportPage(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        "Send",
+                        style: TextStyle(
+                          color: AppColors().navy,
+                          fontSize: 13, // حجم نص متوسط للزر
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ],
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors().white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14.0,
-                  vertical: 8.0, // حجم مناسب للزر
-                ),
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const HelpSupportPage(),
-                  ),
-                );
-              },
-              child: const Text(
-                "Send",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 13, // حجم نص متوسط للزر
-                ),
-              ),
             ),
           ],
         ),

@@ -3,20 +3,16 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
+
 import 'package:hire_harmony/api/firebase_api.dart';
->>>>>>> 241437ef76d808334ea62f616f23b5cb717e7da7
 import 'package:hire_harmony/api/notification_screen.dart';
 import 'package:hire_harmony/utils/light_mode.dart';
-<<<<<<< HEAD
-=======
->>>>>>> c259c4a2a6e428ace9059d98fb68afdf00b732ce
->>>>>>> 935abbeacd3451beb3f710c92bf2fa711d31b2a3
->>>>>>> 241437ef76d808334ea62f616f23b5cb717e7da7
+
+import 'package:hire_harmony/api/firebase_api.dart';
+
+import 'package:hire_harmony/api/notification_screen.dart';
+import 'package:hire_harmony/utils/light_mode.dart';
+
 import 'package:hire_harmony/utils/route/app_router.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:hire_harmony/utils/theme_provider.dart';
@@ -44,32 +40,26 @@ void main() async {
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50cWd0ZmtpeWV2dHRsbHl5ZWNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzYxNTQzNDIsImV4cCI6MjA1MTczMDM0Mn0.7APvbYoT5BpkmV1goMLIzJ7Ys2pehlns-hCO5f1oIFU',
   );
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
+
   runApp(ChangeNotifierProvider(
     create: (context) => ThemeProvider(),
     child: const MyApp(),
   ));
-=======
-<<<<<<< HEAD
-  await FirebaseApi().initNotifications();
-  runApp(const MyApp());
-=======
->>>>>>> 241437ef76d808334ea62f616f23b5cb717e7da7
-  runApp(
-  ChangeNotifierProvider(
+
+ // await FirebaseApi().initNotifications();
+
+  runApp(ChangeNotifierProvider(
     create: (context) => ThemeProvider(),
     child: const MyApp(),
+  ));
 
-  )
+
+
+
   
-  );
-<<<<<<< HEAD
-=======
->>>>>>> c259c4a2a6e428ace9059d98fb68afdf00b732ce
->>>>>>> 935abbeacd3451beb3f710c92bf2fa711d31b2a3
->>>>>>> 241437ef76d808334ea62f616f23b5cb717e7da7
+  
+  
+
 }
 
 class MyApp extends StatelessWidget {

@@ -75,7 +75,7 @@ class EmployeesUnderCategoryPage extends StatelessWidget {
 
               return Card(
                 margin: const EdgeInsets.symmetric(
-                    vertical: 8.0, horizontal: 12.0), // تقليل المسافات الخارجية
+                vertical: 8.0, horizontal: 12.0), // تقليل المسافات الخارجية
                 elevation: 3, // إضافة ظل خفيف للكارد
                 shape: RoundedRectangleBorder(
                   borderRadius:

@@ -17,4 +17,8 @@ class ThemeProvider extends ChangeNotifier{
       themeData=lightMode;
     }
   }
+  void setLightMode() {
+  themeData = lightMode;
+}
+
 }
