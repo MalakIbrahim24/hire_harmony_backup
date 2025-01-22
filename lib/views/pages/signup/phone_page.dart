@@ -153,7 +153,9 @@ class _PhonePageState extends State<PhonePage> {
   // Verify OTP and register the user
   Future<void> verifyOtpAndRegister(Map<String, dynamic> formData) async {
     const availability = 'available';
-    const img = 'lib/assets/images/employee.png';
+    const state = 'accepted';
+    const img =
+        'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg';
 
     try {
       // Verify the OTP and sign in the user with the phone credential
@@ -204,6 +206,8 @@ class _PhonePageState extends State<PhonePage> {
         'uid': user.uid,
         'img': img,
         'availability': availability,
+        'state': state,
+        'similarity': formData['similarity'],
       });
 
       // Navigate to the success page
@@ -228,6 +232,9 @@ class _PhonePageState extends State<PhonePage> {
   }
 
   Future<void> verifyOtpAndRegisterCus(Map<String, dynamic> formData) async {
+    const img =
+        'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg';
+
     try {
       // Verify the OTP and sign in the user with the phone credential
       final PhoneAuthCredential credential = PhoneAuthProvider.credential(
@@ -265,6 +272,7 @@ class _PhonePageState extends State<PhonePage> {
         'phone': '+970${_phoneController.text.trim()}',
         'role': 'employee',
         'uid': user.uid,
+        'img': img,
       });
 
       // Navigate to the success page

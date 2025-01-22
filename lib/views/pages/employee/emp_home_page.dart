@@ -153,6 +153,8 @@ class _EmpHomePageState extends State<EmpHomePage> {
                       },
                       cardColor: AppColors().lightblue,
                       iconColor: AppColors().orange,
+                      showCounter:
+                          true, // New property to indicate whether to show a badge
                     ),
                     OverviewCard(
                       title: 'Post Ad',
@@ -212,11 +214,11 @@ class _EmpHomePageState extends State<EmpHomePage> {
 
 class OverviewCard extends StatelessWidget {
   final String title;
-
   final IconData icon;
   final VoidCallback? onTap;
   final Color cardColor;
   final Color iconColor;
+  final bool showCounter; // Indicates whether to show the badge
 
   const OverviewCard({
     super.key,
@@ -225,27 +227,91 @@ class OverviewCard extends StatelessWidget {
     this.onTap,
     required this.cardColor,
     required this.iconColor,
+    this.showCounter = false, // Default to false
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Card(
-        color: cardColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        elevation: 1,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: iconColor, size: 30),
-            const SizedBox(height: 5),
-            Text(title,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.montserratAlternates(fontSize: 14)),
-          ],
-        ),
+      child: Stack(
+        alignment: Alignment.center, // Align all children to the center
+        children: [
+          Card(
+            color: cardColor,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            elevation: 1,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon, color: iconColor, size: 30),
+                  const SizedBox(height: 5),
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.montserratAlternates(fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (showCounter) // Show the badge if showCounter is true
+            Positioned(
+              top: 10,
+              right: 10,
+              child: _PendingRequestsBadge(),
+            ),
+        ],
       ),
+    );
+  }
+}
+
+class _PendingRequestsBadge extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final String? loggedInUserId = FirebaseAuth.instance.currentUser?.uid;
+
+    if (loggedInUserId == null) {
+      return const SizedBox(); // Return an empty widget if the user is not logged in
+    }
+
+    // Firestore query for pending requests count
+    final Stream<QuerySnapshot> pendingRequestsStream = FirebaseFirestore
+        .instance
+        .collection('users')
+        .doc(loggedInUserId)
+        .collection('recievedRequests')
+        .where('pendingRequests', isEqualTo: 'pending')
+        .snapshots();
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: pendingRequestsStream,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const SizedBox(); // Do not show the badge if no data or empty
+        }
+
+        final pendingCount = snapshot.data!.docs.length;
+
+        return Container(
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: AppColors().orange,
+            shape: BoxShape.circle,
+          ),
+          child: Text(
+            '$pendingCount',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        );
+      },
     );
   }
 }

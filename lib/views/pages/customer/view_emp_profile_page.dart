@@ -361,6 +361,8 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
 
                                   String description =
                                       descriptionController.text.trim();
+                                  String name =
+                                      titleController.text.trim();
 
                                   if (description.isEmpty) {
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -379,6 +381,7 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                                       'description': description,
                                       'timestamp': FieldValue.serverTimestamp(),
                                       'pendingRequests': 'pending',
+                                      'name': name,
                                     };
 
                                     // Save to both users' sentRequests collections

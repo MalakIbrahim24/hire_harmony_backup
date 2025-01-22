@@ -3,15 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 
-class NewAccountsRequestsPage extends StatefulWidget {
-  const NewAccountsRequestsPage({super.key});
+class EmployeesMaintenance extends StatefulWidget {
+  const EmployeesMaintenance({super.key});
 
   @override
-  State<NewAccountsRequestsPage> createState() =>
-      _NewAccountsRequestsPageState();
+  State<EmployeesMaintenance> createState() => _NewAccountsRequestsPageState();
 }
 
-class _NewAccountsRequestsPageState extends State<NewAccountsRequestsPage> {
+class _NewAccountsRequestsPageState extends State<EmployeesMaintenance> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Stream to fetch users with role "employee" and state "pending"
@@ -19,7 +18,7 @@ class _NewAccountsRequestsPageState extends State<NewAccountsRequestsPage> {
     return _firestore
         .collection('users')
         .where('role', isEqualTo: 'employee')
-        .where('state', isEqualTo: 'pending')
+        .where('state', isEqualTo: 'accepted')
         .snapshots();
   }
 
@@ -27,7 +26,13 @@ class _NewAccountsRequestsPageState extends State<NewAccountsRequestsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Pending Employee Requests"),
+        title: Text(
+          "Employee Maintenance",
+          style: GoogleFonts.montserratAlternates(
+            color: AppColors().white,
+            fontSize: 15,
+          ),
+        ),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _fetchPendingEmployees(),
@@ -46,7 +51,7 @@ class _NewAccountsRequestsPageState extends State<NewAccountsRequestsPage> {
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return const Center(
-              child: Text("No pending employee requests."),
+              child: Text("No registered employees."),
             );
           }
 
@@ -64,7 +69,27 @@ class _NewAccountsRequestsPageState extends State<NewAccountsRequestsPage> {
                     backgroundImage: NetworkImage(user['img']),
                   ),
                   title: Text(user['name']),
-                  subtitle: Text(user['email']),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(user['email']),
+                      if (user['similarity'] != null)
+                        Text(
+                          'Similarity: ${user['similarity'].toString()}%',
+                          style: TextStyle(
+                            color: (user['similarity'] is int
+                                        ? user['similarity']
+                                        : double.tryParse(user['similarity']
+                                                .toString()) ??
+                                            0) <
+                                    80
+                                ? AppColors().orange
+                                : AppColors().green,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                    ],
+                  ),
                   trailing: SizedBox(
                     width: 100, // Set the desired width of the button
                     child: ElevatedButton(
@@ -78,20 +103,18 @@ class _NewAccountsRequestsPageState extends State<NewAccountsRequestsPage> {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            AppColors().navy, // Set the button color to blue
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 8), // Adjust vertical padding
+                        backgroundColor: AppColors().navy,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              8), // Optional: Add rounded corners
+                          borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                       child: Text(
-                        "View Request",
+                        "View employee",
+                        textAlign: TextAlign.center,
                         style: GoogleFonts.montserratAlternates(
                           fontSize: 12,
-                          color: Colors.white, // Text color
+                          color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -113,16 +136,15 @@ class EndorseEmployeePage extends StatelessWidget {
 
   const EndorseEmployeePage({super.key, required this.user});
 
-  Future<void> _approveEmployee(BuildContext context) async {
-    
+  Future<void> _deferEmployee(BuildContext context) async {
     try {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user.id) // Use document ID to locate the user
-          .update({'state': 'approved'}); // Update state to approved
+          .update({'state': 'pending'}); // Update state to approved
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Employee approved successfully!")),
+        const SnackBar(content: Text("Employee suspended for now!")),
       );
 
       // ignore: use_build_context_synchronously
@@ -130,7 +152,7 @@ class EndorseEmployeePage extends StatelessWidget {
     } catch (e) {
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error approving employee: $e")),
+        SnackBar(content: Text("Error suspending employee: $e")),
       );
     }
   }
@@ -203,17 +225,19 @@ class EndorseEmployeePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     ElevatedButton(
-                      onPressed: () => _approveEmployee(context),
-                      child: const Text("Approve"),
-                    ),
-                    ElevatedButton(
                       onPressed: () {
-                        // Handle reject logic here
+                        _deferEmployee(context);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                        backgroundColor: AppColors().navy,
                       ),
-                      child: const Text("Reject"),
+                      child: Text(
+                        "Defer",
+                        style: GoogleFonts.montserratAlternates(
+                          color: AppColors().white,
+                          fontSize: 15,
+                        ),
+                      ),
                     ),
                   ],
                 ),

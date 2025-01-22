@@ -84,10 +84,17 @@ class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
         var similarity = matchedFaces.matchedFaces[0].similarity * 100;
 
         if (similarity > 75) {
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
+                backgroundColor: AppColors().green,
                 content: Text(
-                    'Match Successful! Similarity: ${similarity.toStringAsFixed(2)}%')),
+                  'Match Successful! Similarity: ${similarity.toStringAsFixed(2)}%',
+                  style: GoogleFonts.montserratAlternates(
+                    color: AppColors().white,
+                    fontSize: 15,
+                  ),
+                )),
           );
 
           // Navigate to the next page
@@ -98,22 +105,49 @@ class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
             'idImage': idImage!,
             'selfieImage': selfieImage!,
             'role': 'employee',
+            'similarity': similarity,
           });
         } else {
+          if (!mounted) return;
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
+                backgroundColor: AppColors().red,
                 content: Text(
-                    'Match Failed! Similarity: ${similarity.toStringAsFixed(2)}%')),
+                  'Match Failed! Similarity: ${similarity.toStringAsFixed(2)}%',
+                  style: GoogleFonts.montserratAlternates(
+                    color: AppColors().white,
+                    fontSize: 15,
+                  ),
+                )),
           );
         }
       } else {
+        if (!mounted) return;
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No match found.')),
+          SnackBar(
+              backgroundColor: AppColors().red,
+              content: Text(
+                'No match found.',
+                style: GoogleFonts.montserratAlternates(
+                  color: AppColors().white,
+                  fontSize: 15,
+                ),
+              )),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error during face matching: $e')),
+        SnackBar(
+            backgroundColor: AppColors().red,
+            content: Text(
+              'Error during face matching: $e',
+              style: GoogleFonts.montserratAlternates(
+                color: AppColors().white,
+                fontSize: 15,
+              ),
+            )),
       );
     } finally {
       setState(() {
