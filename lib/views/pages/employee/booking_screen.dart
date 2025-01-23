@@ -68,6 +68,8 @@ class NewRequestsTab extends StatefulWidget {
 class _NewRequestsTabState extends State<NewRequestsTab> {
   Future<void> _acceptRequest(String requestId, String receiverId) async {
     try {
+      // Generate a unique ID
+
       // Fetch the request data to get senderId
       final requestDoc = await FirebaseFirestore.instance
           .collection('users')
@@ -82,49 +84,21 @@ class _NewRequestsTabState extends State<NewRequestsTab> {
 
       final data = requestDoc.data() as Map<String, dynamic>;
       final senderId = data['senderId'];
-      final description = data['description'] ?? 'No description provided';
-      final senderName = data['name'] ?? 'Unknown';
-      final senderImg = data['senderImg'] ?? 'https://via.placeholder.com/150';
 
-      // Order data for both employee and customer
-      final orderData = {
-        'name': senderName,
-        'description': description,
-        'img': senderImg,
-        'status': 'in progress',
-        'confirmedTime': FieldValue.serverTimestamp(),
-        'orderId': requestId, // Use the same request ID
-      };
-
-      // Update request to "active" in both collections
+      // Update status to "active" in both collections
       await FirebaseFirestore.instance
           .collection('users')
           .doc(receiverId)
           .collection('recievedRequests')
           .doc(requestId)
-          .update({'pendingRequests': 'active'});
+          .update({'status': 'active'});
 
       await FirebaseFirestore.instance
           .collection('users')
           .doc(senderId)
           .collection('sentRequests')
           .doc(requestId)
-          .update({'pendingRequests': 'active'});
-
-      // Add order to employee's and customer's "orders" collections
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(receiverId)
-          .collection('orders')
-          .doc(requestId)
-          .set(orderData);
-
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(senderId)
-          .collection('orders')
-          .doc(requestId)
-          .set(orderData);
+          .update({'status': 'active'});
 
       if (!mounted) return;
 
@@ -201,7 +175,7 @@ class _NewRequestsTabState extends State<NewRequestsTab> {
         .collection('users')
         .doc(loggedInUserId)
         .collection('recievedRequests')
-        .where('pendingRequests', isEqualTo: 'pending')
+        .where('status', isEqualTo: 'pending')
         .snapshots();
 
     return StreamBuilder<QuerySnapshot>(
@@ -366,17 +340,33 @@ class ActiveBookingsTab extends StatelessWidget {
       if (loggedInUserId == null) throw Exception('User not logged in.');
 
       final data = activeRequest.data() as Map<String, dynamic>;
+      final String senderId = data['senderId'] ?? '';
 
-      // Prepare data for the booking history and orders
-      final bookingData = {
+      // Prepare data for the orders collection
+      final orderData = {
         'name': data['name'] ?? 'Unknown',
         'orderId': activeRequest.id, // Same as request document ID
-        'senderId': data['senderId'] ?? 'Unknown senderId',
+        'senderId': senderId,
         'img': data['senderImg'] ?? 'https://via.placeholder.com/150',
         'description': data['description'] ?? 'No description provided',
         'confirmedTime': FieldValue.serverTimestamp(),
-        'status': "in progress", // Current time
+        'status': 'in progress',
       };
+
+      // Update the status to "in progress" in both collections
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(loggedInUserId)
+          .collection('recievedRequests')
+          .doc(activeRequest.id)
+          .update({'status': 'in progress'});
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(senderId)
+          .collection('sentRequests')
+          .doc(activeRequest.id)
+          .update({'status': 'in progress'});
 
       // Add the booking to the "orders" collection of the employee
       await FirebaseFirestore.instance
@@ -384,18 +374,37 @@ class ActiveBookingsTab extends StatelessWidget {
           .doc(loggedInUserId)
           .collection('orders')
           .doc(activeRequest.id)
-          .set(bookingData);
-
-      // Add the booking to the "bookingHistory" collection of the employee
+          .set(orderData);
+// Add the booking to the "bookingHistory" collection of the employee
       await FirebaseFirestore.instance
           .collection('users')
           .doc(loggedInUserId)
           .collection('bookingHistory')
           .doc(activeRequest.id)
-          .set(bookingData);
+          .set(orderData);
 
-      // Delete the request from "recievedRequests"
-      await activeRequest.reference.delete();
+      // Add the booking to the "orders" collection of the customer
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(senderId)
+          .collection('orders')
+          .doc(activeRequest.id)
+          .set(orderData);
+
+      // Remove the request from both `sentRequests` and `recievedRequests` collections
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(loggedInUserId)
+          .collection('recievedRequests')
+          .doc(activeRequest.id)
+          .delete();
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(senderId)
+          .collection('sentRequests')
+          .doc(activeRequest.id)
+          .delete();
 
       if (!context.mounted) return;
 
@@ -448,7 +457,7 @@ class ActiveBookingsTab extends StatelessWidget {
         .collection('users')
         .doc(loggedInUserId)
         .collection('recievedRequests')
-        .where('pendingRequests', isEqualTo: 'active')
+        .where('status', isEqualTo: 'active')
         .snapshots();
 
     return StreamBuilder<QuerySnapshot>(
@@ -482,109 +491,128 @@ class ActiveBookingsTab extends StatelessWidget {
           itemBuilder: (context, index) {
             final activeRequest = activeRequests[index];
 
-            // Safely fetch fields
             final data = activeRequest.data() as Map<String, dynamic>;
-            final senderImg =
-                data['senderImg'] ?? 'https://via.placeholder.com/150';
-            final description =
-                data['description'] ?? 'No description provided';
-            final name = data['name'] ?? 'Unknown';
-            final acceptedOnTimestamp =
-                data['acceptedOn'] as Timestamp? ?? Timestamp.now();
-            final formattedAcceptedDate =
-                DateFormat.yMMMMd().format(acceptedOnTimestamp.toDate());
-            final formattedAcceptedTime =
-                DateFormat.jm().format(acceptedOnTimestamp.toDate());
+            final senderId = data['senderId'];
 
-            return Card(
-              margin: const EdgeInsets.only(bottom: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    // Sender image
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(senderImg),
+            return FutureBuilder<DocumentSnapshot>(
+              future: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(senderId)
+                  .get(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (!snapshot.hasData || !snapshot.data!.exists) {
+                  return const ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage:
+                          NetworkImage('https://via.placeholder.com/150'),
                       radius: 30,
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            name,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            description,
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Accepted on $formattedAcceptedDate at $formattedAcceptedTime',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Column(
+                    title: Text('Unknown User'),
+                    subtitle: Text('No data available'),
+                  );
+                }
+
+                final userDoc = snapshot.data!;
+                final userImg =
+                    userDoc['img'] ?? 'https://via.placeholder.com/150';
+                final name = userDoc['name'] ?? 'Unknown';
+                final description =
+                    data['description'] ?? 'No description provided';
+                final acceptedOnTimestamp =
+                    data['acceptedOn'] as Timestamp? ?? Timestamp.now();
+                final formattedAcceptedDate =
+                    DateFormat.yMMMMd().format(acceptedOnTimestamp.toDate());
+                final formattedAcceptedTime =
+                    DateFormat.jm().format(acceptedOnTimestamp.toDate());
+
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
                       children: [
-                        ElevatedButton(
-                          onPressed: () =>
-                              _confirmBooking(context, activeRequest),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors().navy,
-                            minimumSize: const Size(80, 36),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: Text(
-                            'Confirm',
-                            style: GoogleFonts.montserratAlternates(
-                              fontSize: 12,
-                              color: AppColors().white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        CircleAvatar(
+                          backgroundImage: NetworkImage(userImg),
+                          radius: 30,
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                name,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(description),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Accepted on $formattedAcceptedDate at $formattedAcceptedTime',
+                                style: const TextStyle(color: Colors.grey),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: () =>
-                              _revokeRequest(context, activeRequest),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors().red,
-                            minimumSize: const Size(80, 36),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                        const SizedBox(width: 16),
+                        Column(
+                          children: [
+                            ElevatedButton(
+                              onPressed: () =>
+                                  _confirmBooking(context, activeRequest),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors().navy,
+                                minimumSize: const Size(80, 36),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: Text(
+                                'Confirm',
+                                style: GoogleFonts.montserratAlternates(
+                                  fontSize: 12,
+                                  color: AppColors().white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
-                          ),
-                          child: Text(
-                            'Revoke',
-                            style: GoogleFonts.montserratAlternates(
-                              fontSize: 12,
-                              color: AppColors().white,
-                              fontWeight: FontWeight.bold,
+                            const SizedBox(height: 8),
+                            ElevatedButton(
+                              onPressed: () =>
+                                  _revokeRequest(context, activeRequest),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors().red,
+                                minimumSize: const Size(80, 36),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: Text(
+                                'Revoke',
+                                style: GoogleFonts.montserratAlternates(
+                                  fontSize: 12,
+                                  color: AppColors().white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             );
           },
         );
@@ -650,70 +678,89 @@ class BookingHistoryTab extends StatelessWidget {
           itemBuilder: (context, index) {
             final booking = bookings[index];
             final data = booking.data() as Map<String, dynamic>;
+            final senderId = data['senderId'];
 
-            final senderImg = data['img'] ?? 'https://via.placeholder.com/150';
-            final description =
-                data['description'] ?? 'No description provided';
-            final name = data['name'] ?? 'Unknown';
-            final confirmedTimestamp =
-                data['confirmedTime'] as Timestamp? ?? Timestamp.now();
-            final formattedDate =
-                DateFormat.yMMMMd().format(confirmedTimestamp.toDate());
-            final formattedTime =
-                DateFormat.jm().format(confirmedTimestamp.toDate());
+            return FutureBuilder<DocumentSnapshot>(
+              future: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(senderId)
+                  .get(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-            return Card(
-              margin: const EdgeInsets.only(bottom: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    // Sender image
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(senderImg),
+                if (!snapshot.hasData || !snapshot.data!.exists) {
+                  return const ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage:
+                          NetworkImage('https://via.placeholder.com/150'),
                       radius: 30,
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            name,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
+                    title: Text('Unknown User'),
+                    subtitle: Text('No data available'),
+                  );
+                }
+
+                final userDoc = snapshot.data!;
+                final userImg =
+                    userDoc['img'] ?? 'https://via.placeholder.com/150';
+                final name = userDoc['name'] ?? 'Unknown';
+                final description =
+                    data['description'] ?? 'No description provided';
+                final confirmedTimestamp =
+                    data['confirmedTime'] as Timestamp? ?? Timestamp.now();
+                final formattedDate =
+                    DateFormat.yMMMMd().format(confirmedTimestamp.toDate());
+                final formattedTime =
+                    DateFormat.jm().format(confirmedTimestamp.toDate());
+
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: NetworkImage(userImg),
+                          radius: 30,
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                name,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(description),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Confirmed on $formattedDate at $formattedTime',
+                                style: const TextStyle(color: Colors.grey),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            description,
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Confirmed on $formattedDate at $formattedTime',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(width: 16),
+                        const Icon(
+                          Icons.check_circle,
+                          color: Colors.green,
+                          size: 24,
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 16),
-                    // Green check icon
-                    const Icon(
-                      Icons.check_circle,
-                      color: Colors.green,
-                      size: 24,
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             );
           },
         );

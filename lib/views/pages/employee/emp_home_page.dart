@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/pages/employee/advertisement_screen.dart';
 import 'package:hire_harmony/views/pages/employee/booking_screen.dart';
+import 'package:hire_harmony/views/pages/employee/display_items.dart';
 import 'package:hire_harmony/views/pages/employee/emp_notifications_page.dart';
 import 'package:hire_harmony/views/pages/employee/help_support_page.dart';
 import 'package:hire_harmony/views/pages/employee/tickets_page.dart';
@@ -151,8 +152,8 @@ class _EmpHomePageState extends State<EmpHomePage> {
                           ),
                         );
                       },
-                      cardColor: AppColors().lightblue,
-                      iconColor: AppColors().orange,
+                      cardColor: AppColors().orangelight,
+                      iconColor: AppColors().navy,
                       showCounter:
                           true, // New property to indicate whether to show a badge
                     ),
@@ -181,8 +182,8 @@ class _EmpHomePageState extends State<EmpHomePage> {
                           ),
                         );
                       },
-                      cardColor: AppColors().lightblue,
-                      iconColor: AppColors().orange,
+                      cardColor: AppColors().orangelight,
+                      iconColor: AppColors().navy,
                     ),
                     OverviewCard(
                       title: 'Tickets',
@@ -192,6 +193,20 @@ class _EmpHomePageState extends State<EmpHomePage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => const TicketsPage(),
+                          ),
+                        );
+                      },
+                      cardColor: AppColors().orangelight,
+                      iconColor: AppColors().navy,
+                    ),
+                    OverviewCard(
+                      title: 'Display items',
+                      icon: Icons.living_outlined,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const DisplayItems(),
                           ),
                         );
                       },
@@ -284,7 +299,7 @@ class _PendingRequestsBadge extends StatelessWidget {
         .collection('users')
         .doc(loggedInUserId)
         .collection('recievedRequests')
-        .where('pendingRequests', isEqualTo: 'pending')
+        .where('status', isEqualTo: 'pending')
         .snapshots();
 
     return StreamBuilder<QuerySnapshot>(

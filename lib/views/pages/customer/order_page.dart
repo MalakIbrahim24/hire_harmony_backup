@@ -36,6 +36,7 @@ class _OrderPageState extends State<OrderPage>
       return Scaffold(
         backgroundColor: AppColors().orange,
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
           elevation: 0,
           centerTitle: true,
@@ -55,7 +56,6 @@ class _OrderPageState extends State<OrderPage>
             .collection('users')
             .doc(loggedInUserId)
             .collection('sentRequests')
-            .where('pendingRequests', isEqualTo: 'pending')
             .snapshots()
             .map((snapshot) => snapshot.docs
                 .map((doc) => {...doc.data(), 'id': doc.id})
