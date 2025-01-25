@@ -56,7 +56,8 @@ class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
   }
 
   // Function to navigate to PhonePage
-  Future<void> _navigateToPhonePage(Map<String, String> userData) async {
+  Future<void> _navigateToPhonePage(
+      Map<String, String> userData, List<String> categories) async {
     if (idImage == null || selfieImage == null) return;
 
     setState(() {
@@ -106,6 +107,7 @@ class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
             'selfieImage': selfieImage!,
             'role': 'employee',
             'similarity': similarity,
+            'categories': categories,
           });
         } else {
           if (!mounted) return;
@@ -159,8 +161,11 @@ class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
   @override
   Widget build(BuildContext context) {
     // Retrieve arguments passed from SignUpPage
-    final Map<String, String>? formData =
-        ModalRoute.of(context)?.settings.arguments as Map<String, String>?;
+    final Map<String, dynamic>? formData =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+    final List<String> categories =
+        (formData?['categories'] as List<dynamic>?)?.cast<String>() ?? [];
 
     if (formData == null) {
       return const Center(
@@ -280,7 +285,13 @@ class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
                   ),
                   onPressed:
                       (idImage != null && selfieImage != null && !isProcessing)
-                          ? () => _navigateToPhonePage(formData)
+                          ? () => _navigateToPhonePage(
+                                formData.map((key, value) => MapEntry(
+                                    key,
+                                    value
+                                        .toString())), // Convert to Map<String, String>
+                                categories,
+                              )
                           : null,
                   child: isProcessing
                       ? const CircularProgressIndicator()

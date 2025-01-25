@@ -151,7 +151,8 @@ class _PhonePageState extends State<PhonePage> {
   }
 
   // Verify OTP and register the user
-  Future<void> verifyOtpAndRegister(Map<String, dynamic> formData) async {
+  Future<void> verifyOtpAndRegister(
+      Map<String, dynamic> formData, List<String> categories) async {
     const availability = 'available';
     const state = 'accepted';
     const img =
@@ -185,7 +186,6 @@ class _PhonePageState extends State<PhonePage> {
       String hashedPassword = _hashPassword(formData['password']!);
 
       // Upload images to Supabase
-
       final idImage = formData['idImage'] as File;
       final selfieImage = formData['selfieImage'] as File;
 
@@ -194,7 +194,7 @@ class _PhonePageState extends State<PhonePage> {
       final selfieImageUrl = await _uploadToSupabase(
           selfieImage, 'selfie_${DateTime.now().millisecondsSinceEpoch}.jpg');
 
-      // Save data in Firestore
+      // Save user data in the `users` collection
       await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
         'name': formData['name'],
         'email': formData['email'],
@@ -208,6 +208,15 @@ class _PhonePageState extends State<PhonePage> {
         'availability': availability,
         'state': state,
         'similarity': formData['similarity'],
+      });
+
+      // Save categories in the `empcategories` collection
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('empcategories')
+          .add({
+        'categories': categories,
       });
 
       // Navigate to the success page
@@ -302,6 +311,9 @@ class _PhonePageState extends State<PhonePage> {
 
     final Map<String, dynamic>? formData =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+    final List<String> categories =
+        (formData?['categories'] as List<dynamic>?)?.cast<String>() ?? [];
 
     if (formData == null) {
       return const Center(
@@ -443,7 +455,8 @@ class _PhonePageState extends State<PhonePage> {
                               onPressed: isVerifyButtonEnabled
                                   ? () async {
                                       if (role == 'employee') {
-                                        await verifyOtpAndRegister(formData);
+                                        await verifyOtpAndRegister(
+                                            formData, categories);
                                       } else if (role == 'customer') {
                                         await verifyOtpAndRegisterCus(formData);
                                       } else {

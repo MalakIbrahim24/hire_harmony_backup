@@ -41,11 +41,6 @@ class EmpOrderPage extends StatelessWidget {
             style: TextStyle(color: AppColors().navy),
           ),
         ),
-
-
-
-        
-
         body: const Center(
           child: Text('User not logged in'),
         ),
@@ -122,6 +117,7 @@ class EmpOrderPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       Text(
+                        textAlign: TextAlign.center,
                         'Orders are locked for now, we are checking your information',
                         style: GoogleFonts.montserratAlternates(
                           fontSize: 20,

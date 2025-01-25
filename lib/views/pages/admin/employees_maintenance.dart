@@ -13,12 +13,11 @@ class EmployeesMaintenance extends StatefulWidget {
 class _NewAccountsRequestsPageState extends State<EmployeesMaintenance> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Stream to fetch users with role "employee" and state "pending"
+  // Stream to fetch users with role "employee" and state "accepted"
   Stream<QuerySnapshot> _fetchPendingEmployees() {
     return _firestore
         .collection('users')
         .where('role', isEqualTo: 'employee')
-        .where('state', isEqualTo: 'accepted')
         .snapshots();
   }
 
@@ -75,13 +74,11 @@ class _NewAccountsRequestsPageState extends State<EmployeesMaintenance> {
                       Text(user['email']),
                       if (user['similarity'] != null)
                         Text(
-                          'Similarity: ${user['similarity'].toString()}%',
+                          'Similarity: ${double.tryParse(user['similarity'].toString())?.toStringAsFixed(3) ?? '0.000'}%',
                           style: TextStyle(
-                            color: (user['similarity'] is int
-                                        ? user['similarity']
-                                        : double.tryParse(user['similarity']
-                                                .toString()) ??
-                                            0) <
+                            color: (double.tryParse(
+                                            user['similarity'].toString()) ??
+                                        0) <
                                     80
                                 ? AppColors().orange
                                 : AppColors().green,
@@ -131,28 +128,49 @@ class _NewAccountsRequestsPageState extends State<EmployeesMaintenance> {
 }
 
 // EndorseEmployeePage for detailed view
-class EndorseEmployeePage extends StatelessWidget {
+class EndorseEmployeePage extends StatefulWidget {
   final DocumentSnapshot user;
 
   const EndorseEmployeePage({super.key, required this.user});
 
-  Future<void> _deferEmployee(BuildContext context) async {
+  @override
+  State<EndorseEmployeePage> createState() => _EndorseEmployeePageState();
+}
+
+class _EndorseEmployeePageState extends State<EndorseEmployeePage> {
+  late String currentState;
+
+  @override
+  void initState() {
+    super.initState();
+    currentState = widget.user['state']; // Initialize the state from Firestore
+  }
+
+  Future<void> _toggleEmployeeState(BuildContext context) async {
     try {
+      final newState = currentState == 'accepted' ? 'pending' : 'accepted';
+
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(user.id) // Use document ID to locate the user
-          .update({'state': 'pending'}); // Update state to approved
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Employee suspended for now!")),
-      );
+          .doc(widget.user.id) // Use document ID to locate the user
+          .update({'state': newState}); // Toggle the state
 
-      // ignore: use_build_context_synchronously
-      Navigator.pop(context); // Go back to the previous page
-    } catch (e) {
-      // ignore: use_build_context_synchronously
+      setState(() {
+        currentState = newState; // Update the local state
+      });
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error suspending employee: $e")),
+        SnackBar(
+          content: Text(
+            currentState == 'pending'
+                ? "Employee suspended for now!"
+                : "Employee reinstated successfully!",
+          ),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error updating employee state: $e")),
       );
     }
   }
@@ -161,7 +179,7 @@ class EndorseEmployeePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(user['name']),
+        title: Text(widget.user['name']),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -173,27 +191,27 @@ class EndorseEmployeePage extends StatelessWidget {
                 Center(
                   child: CircleAvatar(
                     radius: 50,
-                    backgroundImage: NetworkImage(user['img']),
+                    backgroundImage: NetworkImage(widget.user['img']),
                   ),
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  "Name: ${user['name']}",
+                  "Name: ${widget.user['name']}",
                   style: const TextStyle(fontSize: 18),
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  "Email: ${user['email']}",
+                  "Email: ${widget.user['email']}",
                   style: const TextStyle(fontSize: 18),
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  "Phone: ${user['phone']}",
+                  "Phone: ${widget.user['phone']}",
                   style: const TextStyle(fontSize: 18),
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  "Role: ${user['role']}",
+                  "Role: ${widget.user['role']}",
                   style: const TextStyle(fontSize: 18),
                 ),
                 const SizedBox(height: 20),
@@ -204,7 +222,7 @@ class EndorseEmployeePage extends StatelessWidget {
                 const SizedBox(height: 10),
                 Center(
                   child: Image.network(
-                    user['selfieImageUrl'], // Fetch selfie image URL
+                    widget.user['selfieImageUrl'], // Fetch selfie image URL
                     height: 200,
                   ),
                 ),
@@ -216,7 +234,7 @@ class EndorseEmployeePage extends StatelessWidget {
                 const SizedBox(height: 10),
                 Center(
                   child: Image.network(
-                    user['idImageUrl'], // Fetch ID image URL
+                    widget.user['idImageUrl'], // Fetch ID image URL
                     height: 200,
                   ),
                 ),
@@ -226,13 +244,13 @@ class EndorseEmployeePage extends StatelessWidget {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        _deferEmployee(context);
+                        _toggleEmployeeState(context); // Toggle state
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors().navy,
                       ),
                       child: Text(
-                        "Defer",
+                        currentState == 'accepted' ? "Defer" : "Unlock",
                         style: GoogleFonts.montserratAlternates(
                           color: AppColors().white,
                           fontSize: 15,
