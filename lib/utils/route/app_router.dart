@@ -143,15 +143,17 @@ class AppRouter {
           settings: settings,
         );
 
-    /*  case AppRoutes.empidverificationPage:
+      case AppRoutes.empidverificationPage:
         return MaterialPageRoute(
           builder: (_) => const EmpIdVerificationPage(),
           settings: settings,
         );
-*/
+
       case AppRoutes.empProfileInfoPage:
         return MaterialPageRoute(
-          builder: (_) => const EmpProfileInfoPage(),
+          builder: (_) =>  EmpProfileInfoPage(
+             employeeId: FirebaseAuth.instance.currentUser!.uid
+          ),
           settings: settings,
         );
       case AppRoutes.accountDeletionScreen:

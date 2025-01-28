@@ -6,33 +6,40 @@ import 'package:hire_harmony/component/chat_bubble.dart';
 import 'package:hire_harmony/services/auth_services.dart';
 import 'package:hire_harmony/services/chat/chat_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
+
 class Chatepage extends StatelessWidget {
   final String reciverEmail;
   final String reciverID;
-    final String? reciverName;
-
+  final String? reciverName;
+  final String? chatController;
 
   final ChatServices _chatServices = ChatServices();
   final AuthServices _authServices = AuthServicesImpl();
   final TextEditingController _messageController = TextEditingController();
-  final ScrollController _scrollController = ScrollController(); // ScrollController
+  final ScrollController _scrollController =
+      ScrollController(); // ScrollController
 
-  Chatepage({super.key, required this.reciverEmail, required this.reciverID ,  this.reciverName});
+  Chatepage(
+      {super.key,
+      required this.reciverEmail,
+      required this.reciverID,
+      this.reciverName,
+      this.chatController});
 
   void sendMessage() async {
     if (_messageController.text.isNotEmpty) {
-      // إرسال الرسالة
+      // Send the message
       await _chatServices.sendMessages(
         reciverID,
         _messageController.text,
       );
       _messageController.clear();
-      _scrollToBottom(); // التمرير إلى الأسفل بعد إرسال الرسالة
+      _scrollToBottom(); // Scroll to bottom after sending the message
     }
   }
 
   void _scrollToBottom() {
-    // التمرير إلى الأسفل
+    // Scroll to bottom
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
@@ -42,37 +49,112 @@ class Chatepage extends StatelessWidget {
     }
   }
 
+  Future<String> _getChatControllerStatus(String chatRoomID) async {
+    // Fetch the chat room's document
+    final chatRoomDoc = await FirebaseFirestore.instance
+        .collection('chat_rooms')
+        .doc(chatRoomID)
+        .get();
+
+    if (chatRoomDoc.exists) {
+      final data = chatRoomDoc.data() as Map<String, dynamic>;
+      return data['chatController'] ?? 'closed'; // Default to 'closed'
+    }
+
+    throw Exception('Chat room does not exist.');
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          reciverName?? 'unkown',
-          style: TextStyle(color: Theme.of(context).colorScheme.primary),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        foregroundColor: Colors.grey,
-        elevation: 0,
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: NetworkImage(
-            "https://e0.pxfuel.com/wallpapers/722/149/desktop-wallpaper-message-background-whatsapp-message-background.jpg"),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Column(
-          children: [
-            // عرض الرسائل
-            Expanded(
-              child: _buildMessageList(),
+    final String currentUserID = _authServices.getCurrentUser()!.uid;
+
+    // Generate chatRoomID in a consistent order
+    final String chatRoomID = currentUserID.compareTo(reciverID) < 0
+        ? '${currentUserID}_$reciverID'
+        : '${reciverID}_$currentUserID';
+
+    return FutureBuilder<String>(
+      future: _getChatControllerStatus(chatRoomID),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Loading Chat...')),
+            body: const Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Error')),
+            body: Center(child: Text('Error loading chat: ${snapshot.error}')),
+          );
+        }
+
+        // If the chatController is "open", show the chat interface
+        if (snapshot.data == 'open') {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(
+                reciverName ?? 'Unknown',
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              foregroundColor: Colors.grey,
+              elevation: 0,
             ),
-            // إدخال المستخدم
-            _buildUserInput(),
-          ],
-        ),
-      ),
+            body: Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage(
+                      "https://e0.pxfuel.com/wallpapers/722/149/desktop-wallpaper-message-background-whatsapp-message-background.jpg"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Column(
+                children: [
+                  // Message list
+                  Expanded(
+                    child: _buildMessageList(),
+                  ),
+                  // User input
+                  _buildUserInput(),
+                ],
+              ),
+            ),
+          );
+        } else {
+          // If the chatController is "closed", lock the page
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(
+                reciverName ?? 'Unknown',
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              foregroundColor: Colors.grey,
+              elevation: 0,
+            ),
+            body: const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.lock, size: 100, color: Colors.grey),
+                  SizedBox(height: 20),
+                  Text(
+                    'This chat room is locked.',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'You cannot access this chat right now.',
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+      },
     );
   }
 
@@ -93,20 +175,19 @@ class Chatepage extends StatelessWidget {
         }
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          _scrollToBottom(); // التمرير إلى الأسفل بعد تحميل الرسائل
+          _scrollToBottom(); // Scroll to bottom after loading messages
         });
 
         return ListView(
-          controller: _scrollController, // ربط ScrollController
-          children: snapshot.data!.docs
-              .map((doc) => _buildMessageitem(doc))
-              .toList(),
+          controller: _scrollController, // Bind ScrollController
+          children:
+              snapshot.data!.docs.map((doc) => _buildMessageItem(doc)).toList(),
         );
       },
     );
   }
 
-  Widget _buildMessageitem(DocumentSnapshot doc) {
+  Widget _buildMessageItem(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     bool isCurrentUser =
         data['senderID'] == _authServices.getCurrentUser()!.uid;
@@ -142,7 +223,7 @@ class Chatepage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(25.0),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
+                    color: Colors.black.withAlpha(25),
                     blurRadius: 5.0,
                     offset: const Offset(0, 2),
                   ),
@@ -164,7 +245,7 @@ class Chatepage extends StatelessWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors().orange.withValues(alpha: 0.4),
+                  color: AppColors().orange.withAlpha(100),
                   blurRadius: 6.0,
                   offset: const Offset(0, 3),
                 ),

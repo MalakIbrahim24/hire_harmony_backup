@@ -10,7 +10,6 @@ class ChatListPage extends StatefulWidget {
   const ChatListPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _ChatListPageState createState() => _ChatListPageState();
 }
 
@@ -20,7 +19,6 @@ class _ChatListPageState extends State<ChatListPage> {
 
   @override
   void dispose() {
-    // Cancel or clean up any ongoing operations, if necessary
     super.dispose();
   }
 
@@ -30,14 +28,14 @@ class _ChatListPageState extends State<ChatListPage> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.surface,
-
         centerTitle: true,
         title: Text(
           'Messages',
           textAlign: TextAlign.center,
           style: GoogleFonts.montserratAlternates(
-            color: AppColors().navy,
-            fontSize: 20,
+            fontSize: 22,
+            color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
@@ -65,7 +63,16 @@ class _ChatListPageState extends State<ChatListPage> {
             }).toList(),
           );
         }
-        return const Center(child: Text('No conversations found.'));
+        return Center(
+          child: Text(
+            'No conversations found.',
+            style: GoogleFonts.montserratAlternates(
+              fontSize: 18,
+              color: AppColors().navy,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        );
       },
     );
   }
@@ -94,47 +101,74 @@ class _ChatListPageState extends State<ChatListPage> {
         }
 
         if (snapshot.data == null || snapshot.data!.data() == null) {
-          return const SizedBox
-              .shrink(); // Handle gracefully when there's no data
+          return const SizedBox.shrink();
         }
 
         var userData = snapshot.data!.data() as Map<String, dynamic>;
 
-        return ListTile(
-          leading: CircleAvatar(
-            backgroundImage:
-                userData['img'] != null && userData['img'].isNotEmpty
-                    ? NetworkImage(userData['img'])
-                    : const NetworkImage(
-                        'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg',
-                      ),
-          ),
-          title: Text(
-            userData['name'] ?? 'Unknown User',
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-          subtitle: Text(
-            chatData['lastMessage'] ?? 'No messages yet...',
-            style: const TextStyle(color: Colors.grey),
-          ),
-          trailing: Text(
-            chatData['lastUpdated'] != null
-                ? _formatTimestamp(chatData['lastUpdated'])
-                : '',
-            style: const TextStyle(color: Colors.grey, fontSize: 12),
-          ),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Chatepage(
-                  reciverEmail: userData['email'],
-                  reciverID: otherUserID,
-                  reciverName:userData['name']
-                ),
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          padding: const EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withValues(alpha: 0.2),
+                blurRadius: 6,
+                offset: const Offset(0, 4),
               ),
-            );
-          },
+            ],
+          ),
+          child: ListTile(
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+            leading: CircleAvatar(
+              radius: 30, // Larger avatar
+              backgroundImage:
+                  userData['img'] != null && userData['img'].isNotEmpty
+                      ? NetworkImage(userData['img'])
+                      : const NetworkImage(
+                          'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg',
+                        ),
+            ),
+            title: Text(
+              userData['name'] ?? 'Unknown User',
+              style: GoogleFonts.montserratAlternates(
+                fontSize: 14,
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            subtitle: Text(
+              chatData['lastMessage'] ?? 'No messages yet...',
+              style: GoogleFonts.montserratAlternates(
+                fontSize: 13,
+                color: Colors.grey,
+              ),
+            ),
+            trailing: Text(
+              chatData['lastUpdated'] != null
+                  ? _formatTimestamp(chatData['lastUpdated'])
+                  : '',
+              style: GoogleFonts.montserratAlternates(
+                fontSize: 12,
+                color: Colors.grey,
+              ),
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Chatepage(
+                    reciverEmail: userData['email'],
+                    reciverID: otherUserID,
+                    reciverName: userData['name'],
+                  ),
+                ),
+              );
+            },
+          ),
         );
       },
     );

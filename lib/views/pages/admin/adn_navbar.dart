@@ -6,6 +6,7 @@ import 'package:hire_harmony/view_models/cubit/adnhome_cubit.dart';
 import 'package:hire_harmony/views/pages/admin/adn_home_page.dart';
 import 'package:hire_harmony/views/pages/admin/adn_messages_page.dart';
 import 'package:hire_harmony/views/pages/admin/adn_profile_page.dart';
+import 'package:hire_harmony/views/pages/admin/adn_tickets_page.dart';
 
 class AdnNavbar extends StatefulWidget {
   const AdnNavbar({super.key});
@@ -56,6 +57,16 @@ class _AdnNavbarState extends State<AdnNavbar> {
                 extras: {"label": "Home"},
               ),
               FluidNavBarIcon(
+                icon: Icons.card_membership_outlined,
+                backgroundColor:
+                    AppColors().transparent, // Transparent when not selected
+                selectedForegroundColor:
+                    AppColors().white, // Set to teal when selected
+                unselectedForegroundColor:
+                    AppColors().white, // White when not selected
+                extras: {"label": "Tickets"},
+              ),
+              FluidNavBarIcon(
                 icon: Icons.person_2_outlined,
                 backgroundColor: Colors.transparent,
                 selectedForegroundColor: AppColors().white,
@@ -91,6 +102,9 @@ class _AdnNavbarState extends State<AdnNavbar> {
           _child = const AdnHomePage();
           break;
         case 2:
+          _child = const AdnTicketsPage();
+          break;
+        case 3:
           _child = const AdnProfilePage();
           break;
       }

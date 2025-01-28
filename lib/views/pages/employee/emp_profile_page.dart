@@ -21,25 +21,30 @@ class EmpProfilePage extends StatefulWidget {
 
 class _EmpProfilePageState extends State<EmpProfilePage> {
   final AuthServices authServices = AuthServicesImpl();
-
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   String? _imageUrl;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  int orderCount = 0;
+  int ticketCount = 0;
+  int pendingRequestCount = 0;
+
   @override
   void initState() {
     super.initState();
     _fetchEmployeeData();
+    _fetchOrderCount();
+    _fetchTicketCount();
+    _fetchPendingRequestCount();
   }
 
   Future<void> _fetchEmployeeData() async {
     try {
-      final User? user = _auth.currentUser; // Get the logged-in user
+      final User? user = _auth.currentUser;
       if (user == null) return;
 
-      // Fetch the employee's document from Firestore
       final DocumentSnapshot doc =
           await _firestore.collection('users').doc(user.uid).get();
 
@@ -53,6 +58,63 @@ class _EmpProfilePageState extends State<EmpProfilePage> {
       }
     } catch (e) {
       debugPrint('Error fetching employee data: $e');
+    }
+  }
+
+  Future<void> _fetchOrderCount() async {
+    final User? user = _auth.currentUser;
+    if (user == null) return;
+
+    try {
+      final QuerySnapshot ordersSnapshot = await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('completedOrders')
+          .get();
+
+      setState(() {
+        orderCount = ordersSnapshot.size;
+      });
+    } catch (e) {
+      debugPrint('Error fetching order count: $e');
+    }
+  }
+
+  Future<void> _fetchTicketCount() async {
+    final User? user = _auth.currentUser;
+    if (user == null) return;
+
+    try {
+      final QuerySnapshot ticketsSnapshot = await _firestore
+          .collection('ticketsSent')
+          .where('uid', isEqualTo: user.uid)
+          .get();
+
+      setState(() {
+        ticketCount = ticketsSnapshot.size;
+      });
+    } catch (e) {
+      debugPrint('Error fetching ticket count: $e');
+    }
+  }
+
+  Future<void> _fetchPendingRequestCount() async {
+    final User? user = _auth.currentUser;
+    if (user == null) return;
+
+    try {
+      final QuerySnapshot requestsSnapshot = await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('sentRequests')
+          .where('status', isEqualTo: 'pending')
+          .get();
+
+      setState(() {
+        pendingRequestCount = requestsSnapshot.size;
+      });
+    } catch (e) {
+      debugPrint('Error fetching pending request count: $e');
     }
   }
 
@@ -86,10 +148,10 @@ class _EmpProfilePageState extends State<EmpProfilePage> {
         }
         return SafeArea(
           child: Scaffold(
-          backgroundColor:Theme.of(context).colorScheme.surface,
+            backgroundColor: Theme.of(context).colorScheme.surface,
             appBar: AppBar(
               automaticallyImplyLeading: false,
-          backgroundColor:Theme.of(context).colorScheme.surface,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               elevation: 0,
               centerTitle: true,
               actions: [
@@ -101,8 +163,7 @@ class _EmpProfilePageState extends State<EmpProfilePage> {
                       MaterialPageRoute(
                         builder: (context) => const EmpProfileEditPage(),
                       ),
-                    ).then(
-                        (_) => _fetchEmployeeData()); // Refresh data on return
+                    ).then((_) => _fetchEmployeeData());
                   },
                 ),
               ],
@@ -114,8 +175,7 @@ class _EmpProfilePageState extends State<EmpProfilePage> {
                 CircleAvatar(
                   radius: 50,
                   backgroundImage: NetworkImage(
-                    _imageUrl ??
-                        'https://via.placeholder.com/150', // Placeholder if no image
+                    _imageUrl ?? 'https://via.placeholder.com/150',
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -143,65 +203,71 @@ class _EmpProfilePageState extends State<EmpProfilePage> {
                       ),
                     ],
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      StatItem(label: 'Orders \n Completed', value: '20'),
-                      StatItem(label: 'Tickets', value: '2'),
-                      StatItem(label: 'Pending \n Requests', value: '5'),
+                      StatItem(
+                          label: 'Orders \n Completed',
+                          value: orderCount.toString()),
+                      StatItem(label: 'Tickets', value: ticketCount.toString()),
+                      StatItem(
+                          label: 'Pending \n Requests',
+                          value: pendingRequestCount.toString()),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
                 Expanded(
-                  
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                      EmpBuildMenuContainer(
-                        title: 'Profile',
-                        icon: Icons.person,
-                        onTap: () {
-                          Navigator.pushNamed(
+                        EmpBuildMenuContainer(
+                          title: 'Profile',
+                          icon: Icons.person,
+                          onTap: () {
+                            Navigator.pushNamed(
                               context,
-                              AppRoutes.empProfileInfoPage); // Refresh data on return
-                        },
-                      ),
-                      EmpBuildMenuContainer(
-                        title: 'Contact us',
-                        icon: Icons.contact_page,
-                        onTap: () {
-                          Navigator.pushNamed(context, AppRoutes.contactUsPage);
-                        },
-                      ),
-                      EmpBuildMenuContainer(
-                        title: 'Delete Account',
-                        icon: Icons.info,
-                        onTap: () {
-                          Navigator.pushNamed(
-                              context, AppRoutes.accountDeletionScreen);
-                        },
-                      ),
-                      EmpBuildMenuContainer(
-                        title: 'Setting',
-                        icon: Icons.settings,
-                        onTap: () {
-                           Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const SettingsPage(),
-                                    ),
-                                  );
-                        },
-                      ),
-                      EmpBuildMenuContainer(
-                        title: 'Logout',
-                        icon: Icons.logout,
-                        onTap: () async {
-                          await authCubit.signOut();
-                        },
-                      ),
-                    ]),
+                              AppRoutes.empProfileInfoPage,
+                            );
+                          },
+                        ),
+                        EmpBuildMenuContainer(
+                          title: 'Contact us',
+                          icon: Icons.contact_page,
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, AppRoutes.contactUsPage);
+                          },
+                        ),
+                        EmpBuildMenuContainer(
+                          title: 'Delete Account',
+                          icon: Icons.info,
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, AppRoutes.accountDeletionScreen);
+                          },
+                        ),
+                        EmpBuildMenuContainer(
+                          title: 'Setting',
+                          icon: Icons.settings,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const SettingsPage(),
+                              ),
+                            );
+                          },
+                        ),
+                        EmpBuildMenuContainer(
+                          title: 'Logout',
+                          icon: Icons.logout,
+                          onTap: () async {
+                            await authCubit.signOut();
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

@@ -1,12 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hire_harmony/api/firebase_api.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/pages/employee/advertisement_screen.dart';
 import 'package:hire_harmony/views/pages/employee/booking_screen.dart';
 import 'package:hire_harmony/views/pages/employee/contact_us_page.dart';
+import 'package:hire_harmony/views/pages/employee/display_items.dart';
 import 'package:hire_harmony/views/pages/employee/emp_notifications_page.dart';
+import 'package:hire_harmony/views/pages/employee/tickets_page.dart';
+import 'package:hire_harmony/views/pages/location_page.dart';
+import 'package:hire_harmony/views/widgets/employee/prev_work.dart';
 
 class EmpHomePage extends StatefulWidget {
   const EmpHomePage({super.key});
@@ -18,21 +24,25 @@ class EmpHomePage extends StatefulWidget {
 class _EmpHomePageState extends State<EmpHomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String userName = "User"; // Default user name
+  final String? userId = FirebaseAuth.instance.currentUser?.uid;
 
-  Future<String?> _fetchEmployeeState(String userId) async {
-    try {
-      final DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
+  @override
+  void initState() {
+    super.initState();
+    _checkUserLocation();
+    fetchUserName(); // Fetch user name when the page initializes
+  }
 
-      if (userDoc.exists) {
-        return userDoc['state'] as String?;
-      }
-    } catch (e) {
-      debugPrint("Error fetching employee state: $e");
+  Future<void> _checkUserLocation() async {
+    await Future.delayed(const Duration(seconds: 10)); // الانتظار لمدة 10 ثوانٍ
+
+    // افترض أن لديك Firebase API تتحقق من الموقع
+    final isLocationSaved = await FirebaseApi().isUserLocationSaved(userId!);
+
+    if (!isLocationSaved) {
+      // تحويل المستخدم إلى صفحة الموقع باستخدام GetX
+      await Get.to(() => const LocationPage());
     }
-    return null;
   }
 
   Future<void> fetchUserName() async {
@@ -57,242 +67,177 @@ class _EmpHomePageState extends State<EmpHomePage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    fetchUserName(); // Fetch user name when the page initializes
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final String? loggedInUserId = FirebaseAuth.instance.currentUser?.uid;
-
-    if (loggedInUserId == null) {
-      return Scaffold(
-        backgroundColor: AppColors().orange,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.white,
-          elevation: 0,
-          centerTitle: true,
-          title: Text(
-            'Employee Home',
-            style: TextStyle(color: AppColors().navy),
+    return Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(100),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors().navy,
+                AppColors().orange,
+              ], // Navy and Orange colors
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
-        ),
-        body: const Center(
-          child: Text('User not logged in'),
-        ),
-      );
-    }
-
-    return FutureBuilder<String?>(
-      future: _fetchEmployeeState(loggedInUserId),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        if (snapshot.hasError) {
-          return Scaffold(
-            appBar: AppBar(
-              backgroundColor: AppColors().transparent,
-              automaticallyImplyLeading: false,
-            ),
-            extendBodyBehindAppBar: true,
-            body: Center(
-              child: Text(
-                'Error loading data. Please try again later.',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.montserratAlternates(
-                  fontSize: 18,
-                  color: AppColors().navy,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          );
-        }
-
-        final String? employeeState = snapshot.data;
-
-        if (employeeState == 'pending') {
-          return Scaffold(
-            backgroundColor: AppColors().transparent,
-            extendBodyBehindAppBar: true,
-            body: Stack(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+          child: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  color: Colors.black.withValues(alpha: 0.35), // Dark overlay
-                ),
-                Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.lock,
-                        size: 70,
-                        color: AppColors().white,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        textAlign: TextAlign.center, 
-                        'Home is locked for now, we are checking your information',
-                        style: GoogleFonts.montserratAlternates(
-                          fontSize: 20,
-                          color: AppColors().white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Please wait until we verify your identity.',
-                        style: GoogleFonts.montserratAlternates(
-                          fontSize: 16,     
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-
-        return Scaffold(
-          key: _scaffoldKey,
-          backgroundColor: Colors.white,
-          appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(100),
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors().navy,
-                    AppColors().orange,
-                  ], // Navy and Orange colors
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-              child: SafeArea(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            const SizedBox(width: 10),
-                            Text(
-                              textAlign: TextAlign.center,
-                              'Welcome, $userName', // Display the fetched user name
-                              style: GoogleFonts.montserratAlternates(
-                                textStyle: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
+                        const SizedBox(width: 10),
+                        Text(
+                          textAlign: TextAlign.center,
+                          'Welcome, $userName', // Display the fetched user name
+                          style: GoogleFonts.montserratAlternates(
+                            textStyle: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
-                          ],
-                        ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.notifications_active_outlined,
-                            color: Colors.white,
-                            size: 25,
                           ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const EmpNotificationsPage()),
-                            );
-                          },
-                        )
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 15),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Overview',
-                      style: GoogleFonts.montserratAlternates(
-                        textStyle: TextStyle(
-                          fontSize: 15,
-                          color: AppColors().navy,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.notifications_active_outlined,
+                        color: Colors.white,
+                        size: 25,
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    const SizedBox(height: 10),
-                    GridView.count(
-                      crossAxisCount: 3,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: [
-                        OverviewCard(
-                          title: 'Booking',
-                          icon: Icons.book_online,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const BookingScreen(),
-                              ),
-                            );
-                          },
-                          cardColor: AppColors().orangelight,
-                          iconColor: AppColors().navy,
-                        ),
-                        OverviewCard(
-                          title: 'Post Ad',
-                          icon: Icons.post_add,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const AdvertisementScreen(),
-                              ),
-                            );
-                          },
-                          cardColor: AppColors().orangelight,
-                          iconColor: AppColors().navy,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const EmpNotificationsPage()),
+                        );
+                      },
+                    )
                   ],
                 ),
-              ),
+                const SizedBox(height: 15),
+              ],
             ),
           ),
-        );
-      },
+        ),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Overview',
+                  style: GoogleFonts.montserratAlternates(
+                    textStyle: TextStyle(
+                      fontSize: 15,
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const SizedBox(height: 10),
+                GridView.count(
+                  crossAxisCount: 3,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    OverviewCard(
+                      title: 'Booking',
+                      icon: Icons.book_online,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const BookingScreen(),
+                          ),
+                        );
+                      },
+                      cardColor: AppColors().orangelight,
+                      iconColor: AppColors().navy,
+                    ),
+                    OverviewCard(
+                      title: 'Post Ad',
+                      icon: Icons.post_add,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AdvertisementScreen(),
+                          ),
+                        );
+                      },
+                      cardColor: AppColors().orangelight,
+                      iconColor: AppColors().navy,
+                    ),
+                    OverviewCard(
+                      title: 'Contact Us ',
+                      icon: Icons.support_agent,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ContactUsPage(),
+                          ),
+                        );
+                      },
+                      cardColor: AppColors().orangelight,
+                      iconColor: AppColors().navy,
+                    ),
+                    OverviewCard(
+                      title: 'Items',
+                      icon: Icons.living_outlined,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const DisplayItems(),
+                          ),
+                        );
+                      },
+                      cardColor: AppColors().orangelight,
+                      iconColor: AppColors().navy,
+                    ),
+                    OverviewCard(
+                      title: 'Tickets',
+                      icon: Icons.list,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TicketsPage(),
+                          ),
+                        );
+                      },
+                      cardColor: AppColors().orangelight,
+                      iconColor: AppColors().navy,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                const PrevWork(),
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -336,7 +281,8 @@ class OverviewCard extends StatelessWidget {
                   Text(
                     title,
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.montserratAlternates(fontSize: 14),
+                    style: GoogleFonts.montserratAlternates(
+                        fontSize: 14, color: AppColors().navy),
                   ),
                 ],
               ),

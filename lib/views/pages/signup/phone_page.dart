@@ -218,7 +218,19 @@ class _PhonePageState extends State<PhonePage> {
           .add({
         'categories': categories,
       });
+      for (String categoryId in categories) {
+        DocumentReference categoryRef =
+            FirebaseFirestore.instance.collection('categories').doc(categoryId);
 
+        await FirebaseFirestore.instance.runTransaction((transaction) async {
+          DocumentSnapshot snapshot = await transaction.get(categoryRef);
+
+          if (snapshot.exists) {
+            int currentEmpNum = snapshot['empNum'] ?? 0;
+            transaction.update(categoryRef, {'empNum': currentEmpNum + 1});
+          }
+        });
+      }
       // Navigate to the success page
       if (!mounted) return;
       Navigator.pushNamed(context, AppRoutes.empVerificationSuccessPage);
@@ -279,14 +291,14 @@ class _PhonePageState extends State<PhonePage> {
         'email': formData['email'],
         'passwordHash': hashedPassword,
         'phone': '+970${_phoneController.text.trim()}',
-        'role': 'employee',
+        'role': 'customer',
         'uid': user.uid,
         'img': img,
       });
 
       // Navigate to the success page
       if (!mounted) return;
-      Navigator.pushNamed(context, AppRoutes.empVerificationSuccessPage);
+      Navigator.pushNamed(context, AppRoutes.cusVerificationSuccessPage);
     } catch (e) {
       // Handle errors
       if (!mounted) return;

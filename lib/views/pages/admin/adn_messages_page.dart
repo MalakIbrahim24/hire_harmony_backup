@@ -62,18 +62,8 @@ class _AdnMessagesPageState extends State<AdnMessagesPage> {
                 children: [
                   // AppBar Section
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      IconButton(
-                        icon: Icon(
-                          Icons.arrow_back_ios_new,
-                          color: AppColors().white,
-                          size: 25,
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
                       Text(
                         "Messages",
                         style: GoogleFonts.montserratAlternates(

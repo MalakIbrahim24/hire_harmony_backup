@@ -158,17 +158,17 @@ class _CusProfileInfoState extends State<CusProfileInfo> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Container(
-               decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors().grey,
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors().grey,
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
                     ),
+                  ],
+                ),
                 child: Card(
                   color: Theme.of(context).colorScheme.surface,
                   shadowColor: Theme.of(context).colorScheme.tertiary,
@@ -196,7 +196,7 @@ class _CusProfileInfoState extends State<CusProfileInfo> {
                         leading: Icon(Icons.location_on,
                             color: Theme.of(context).colorScheme.secondary),
                         title: Text(
-                          userData?['location'] ?? 'No Location',
+                          userData?['location'].toString() ?? 'No Location',
                           style: TextStyle(
                               color: Theme.of(context).colorScheme.primary),
                         ),

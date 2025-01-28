@@ -158,7 +158,8 @@ class _EndorseEmployeePageState extends State<EndorseEmployeePage> {
       setState(() {
         currentState = newState; // Update the local state
       });
-
+      if (!mounted) return;
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -169,6 +170,7 @@ class _EndorseEmployeePageState extends State<EndorseEmployeePage> {
         ),
       );
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error updating employee state: $e")),
       );

@@ -5,10 +5,11 @@ import 'package:hire_harmony/utils/app_colors.dart';
 
 class AddTicket extends StatelessWidget {
   final TextEditingController descriptionController = TextEditingController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   AddTicket({super.key});
 
-  Future<void> saveTicket() async {
+  Future<void> saveTicket(BuildContext context) async {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
@@ -24,17 +25,32 @@ class AddTicket extends StatelessWidget {
     }
 
     try {
-      await FirebaseFirestore.instance.collection('send ticket').add({
-        'uid': user.uid, // إضافة UID الخاص بالمستخدم
-        'userName': user.displayName ?? 'Unknown User', // اسم المستخدم
-        'description': description,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+      final DocumentSnapshot employeeDoc =
+          await _firestore.collection('users').doc(user.uid).get();
 
-      // تفريغ الحقول عند الحفظ بنجاح
-      descriptionController.clear();
+      if (employeeDoc.exists) {
+        final data = employeeDoc.data() as Map<String, dynamic>;
 
-      print('Ticket saved successfully!');
+        final name = data['name'] ?? 'unknown user';
+        await FirebaseFirestore.instance.collection('ticketsSent').add({
+          'uid': user.uid, // User's UID
+          'name': name, // User's name
+          'description': description,
+          'timestamp': FieldValue.serverTimestamp(),
+          'state': 'unresolved',
+          'response': 'No response yet',
+        });
+
+        // Clear the description field
+        descriptionController.clear();
+
+        // Navigate back to the previous page
+
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context);
+
+        print('Ticket saved successfully!');
+      }
     } catch (e) {
       print('Error saving ticket: $e');
     }
@@ -100,7 +116,9 @@ class AddTicket extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
-                onPressed: saveTicket,
+                onPressed: () {
+                  saveTicket(context); // Pass context to the saveTicket method
+                },
                 child: Text(
                   'Save',
                   style: TextStyle(
