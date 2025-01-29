@@ -25,11 +25,12 @@ class _NewAccountsRequestsPageState extends State<EmployeesMaintenance> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           "Employee Maintenance",
           style: GoogleFonts.montserratAlternates(
-            color: AppColors().white,
-            fontSize: 15,
+            color: AppColors().navy,
+            fontSize: 18,
           ),
         ),
       ),

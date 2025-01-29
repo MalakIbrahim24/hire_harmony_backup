@@ -244,3 +244,7 @@ class _AdnHomePageState extends State<AdnHomePage> {
     );
   }
 }
+
+class ComplaintsPage {
+  const ComplaintsPage();
+}

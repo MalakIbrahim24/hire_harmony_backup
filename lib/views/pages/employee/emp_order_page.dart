@@ -49,8 +49,8 @@ class EmpOrderPage extends StatelessWidget {
 
       // Close the chat room
       final chatId = employeeId.compareTo(customerId) < 0
-          ? '$employeeId$customerId'
-          : '$customerId$employeeId';
+          ? '${employeeId}_$customerId'
+          : '${customerId}_$employeeId';
 
       await firestore.collection('chat_rooms').doc(chatId).update({
         'chatController': 'closed',

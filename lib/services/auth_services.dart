@@ -4,7 +4,7 @@ import 'package:hire_harmony/services/firestore_services.dart';
 import 'package:hire_harmony/utils/route/api_paths.dart';
 
 abstract class AuthServices {
-    User? getCurrentUser();
+  User? getCurrentUser();
 
   Future<bool> signInWithEmailAndPassword(String email, String password);
   Future<bool> cusSignInWithEmailAndPassword(String email, String password);
@@ -20,11 +20,12 @@ abstract class AuthServices {
 class AuthServicesImpl implements AuthServices {
   final firebaseAuth = FirebaseAuth.instance;
   final firestoreService = FirestoreService.instance;
-  final _firestore =FirebaseFirestore.instance;
-@override
-User? getCurrentUser(){
-  return firebaseAuth.currentUser;
-}
+  final _firestore = FirebaseFirestore.instance;
+  @override
+  User? getCurrentUser() {
+    return firebaseAuth.currentUser;
+  }
+
   @override
   Future<bool> signInWithEmailAndPassword(String email, String password) async {
     try {
@@ -32,14 +33,6 @@ User? getCurrentUser(){
         email: email,
         password: password, // Use raw password directly
       );
-      _firestore.collection('user').doc(
-  userCredential.user!.uid).set({
-    "uid":userCredential.user!.uid,
-    "email":email,
-
-    
-  
-    });
 
       return userCredential.user != null;
     } catch (e) {
@@ -55,14 +48,6 @@ User? getCurrentUser(){
         password: password, // Use raw password here
       );
 
-_firestore.collection('user').doc(
-  userCredential.user!.uid).set({
-    "uid":userCredential.user!.uid,
-    "email":email,
-
-    
-  
-    });
       User? user = userCredential.user;
       if (user != null) {
         // Save user info (without password) in Firestore
@@ -106,4 +91,3 @@ _firestore.collection('user').doc(
     return await signInWithEmailAndPassword(email, password);
   }
 }
-

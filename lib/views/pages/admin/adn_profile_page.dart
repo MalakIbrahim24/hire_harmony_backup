@@ -147,6 +147,14 @@ class _AdnProfilePageState extends State<AdnProfilePage> {
                             },
                           ),
                           AdnProfileContainer(
+                            icon: Icons.warning_amber_outlined,
+                            title: 'Complaints',
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, AppRoutes.complaintsPage);
+                            },
+                          ),
+                          AdnProfileContainer(
                             icon: Icons.account_tree_outlined,
                             title: 'Employee Maintenance',
                             onTap: () {

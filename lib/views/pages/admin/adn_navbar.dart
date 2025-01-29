@@ -4,9 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/view_models/cubit/adnhome_cubit.dart';
 import 'package:hire_harmony/views/pages/admin/adn_home_page.dart';
-import 'package:hire_harmony/views/pages/admin/adn_messages_page.dart';
 import 'package:hire_harmony/views/pages/admin/adn_profile_page.dart';
 import 'package:hire_harmony/views/pages/admin/adn_tickets_page.dart';
+import 'package:hire_harmony/views/pages/adn_chatlist_page.dart';
 
 class AdnNavbar extends StatefulWidget {
   const AdnNavbar({super.key});
@@ -96,7 +96,7 @@ class _AdnNavbarState extends State<AdnNavbar> {
     setState(() {
       switch (index) {
         case 0:
-          _child = const AdnMessagesPage();
+          _child = const AdnChatlistPage();
           break;
         case 1:
           _child = const AdnHomePage();

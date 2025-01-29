@@ -182,7 +182,7 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                                 color: AppColors().orange, size: 20),
                             const SizedBox(width: 4),
                             Text(
-                              '${employeeData!['rating']} (${employeeData!['reviews']} reviews)',
+                              '${employeeData!['rating']} (${employeeData!['reviewsNum']} reviews)',
                               style: GoogleFonts.montserratAlternates(
                                 fontSize: 14,
                                 color: Colors.grey,
@@ -248,8 +248,8 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                           children: services.map((service) {
                             return Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
+                                horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
                                 color: AppColors().orange.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
@@ -329,6 +329,7 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+               
                   const SizedBox(width: 16),
                   ElevatedButton(
                     onPressed: isAvailable

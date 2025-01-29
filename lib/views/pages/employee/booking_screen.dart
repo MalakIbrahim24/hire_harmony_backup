@@ -407,6 +407,7 @@ class ActiveBookingsTab extends StatelessWidget {
         'name': data['name'] ?? 'Unknown',
         'orderId': activeRequest.id, // Same as request document ID
         'senderId': senderId,
+        'reciverId': loggedInUserId,
         'img': data['senderImg'] ?? 'https://via.placeholder.com/150',
         'description': data['description'] ?? 'No description provided',
         'confirmedTime': FieldValue.serverTimestamp(),

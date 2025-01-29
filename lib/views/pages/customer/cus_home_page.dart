@@ -38,12 +38,12 @@ class _CusHomePageState extends State<CusHomePage> {
     // افترض أن لديك Firebase API تتحقق من الموقع
     final isLocationSaved = await FirebaseApi().isUserLocationSaved(userId!);
     debugPrint(isLocationSaved.toString());
-    debugPrint(userId.toString());
 
-    if (!isLocationSaved) {
-      // تحويل المستخدم إلى صفحة الموقع باستخدام GetX
-      await Get.to(() => const LocationPage());
-    }
+ if (!isLocationSaved) {
+  // تحويل المستخدم إلى صفحة الموقع باستخدام GetX
+  await Get.to(() => const LocationPage());
+}
+
   }
 
   @override
@@ -105,7 +105,7 @@ class _CusHomePageState extends State<CusHomePage> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
+                       color: Theme.of(context).colorScheme.surface,      
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: GestureDetector(
@@ -241,7 +241,7 @@ class _CusHomePageState extends State<CusHomePage> {
                         style: GoogleFonts.montserratAlternates(
                           textStyle: TextStyle(
                             fontSize: 15,
-                            color: AppColors().navy,
+                            color: AppColors().white,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -252,8 +252,8 @@ class _CusHomePageState extends State<CusHomePage> {
                         style: GoogleFonts.montserratAlternates(
                           textStyle: TextStyle(
                             fontSize: 13,
-                            color: AppColors().navy,
-                            fontWeight: FontWeight.w400,
+                            color: AppColors().white,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -296,7 +296,7 @@ class _CusHomePageState extends State<CusHomePage> {
                             ),
                             const SizedBox(width: 4),
                             Icon(
-                              Icons.arrow_forward,
+                              Icons.link_outlined,
                               size: 16,
                               color: AppColors().orange,
                             ),
