@@ -263,7 +263,7 @@ class _EmpProfilePageState extends State<EmpProfilePage> {
                           title: 'Logout',
                           icon: Icons.logout,
                           onTap: () async {
-                            await authCubit.signOut();
+                            await authCubit.signOut(context);
                           },
                         ),
                       ],

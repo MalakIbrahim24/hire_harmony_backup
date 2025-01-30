@@ -30,6 +30,48 @@ class _PhonePageState extends State<PhonePage> {
   bool isVerifyButtonEnabled = false;
   bool isSendOtpButtonEnabled = false;
   String verificationId = "";
+Future<void> incrementEmpNumForCategories(List<String> categories) async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  for (String categoryName in categories) {
+    categoryName = categoryName.trim(); // إزالة المسافات الإضافية
+
+    // البحث عن الكاتيجوري بناءً على الاسم
+    QuerySnapshot categorySnapshot = await firestore
+        .collection('categories')
+        .where('name', isEqualTo: categoryName)
+        .get();
+
+    if (categorySnapshot.docs.isEmpty) {
+      print("⚠️ الكاتيجوري '$categoryName' غير موجودة في Firestore.");
+      continue; // تخطي هذه الكاتيجوري
+    }
+
+    // الحصول على ID الخاص بالكاتيجوري
+    String categoryId = categorySnapshot.docs.first.id;
+
+    // جلب العدد الحالي من `empNum`
+    DocumentSnapshot categoryDoc =
+        await firestore.collection('categories').doc(categoryId).get();
+
+    if (!categoryDoc.exists) {
+      print("⚠️ الوثيقة الخاصة بـ '$categoryName' غير موجودة.");
+      continue;
+    }
+
+    Map<String, dynamic> categoryData =
+        categoryDoc.data() as Map<String, dynamic>;
+
+    int currentEmpNum = (categoryData['empNum'] ?? 0) as int;
+
+    // تحديث العدد بزيادة واحد عند إنشاء مستخدم جديد
+    await firestore.collection('categories').doc(categoryId).update({
+      'empNum': currentEmpNum + 1,
+    });
+
+    print("✅ تم تحديث `empNum` للكاتيجوري '$categoryName' إلى ${currentEmpNum + 1}");
+  }
+}
 
   // Validate phone number format (basic validation)
   bool isValidPhoneNumber(String phoneNumber) {
@@ -150,6 +192,7 @@ class _PhonePageState extends State<PhonePage> {
     }
   }
 
+
   // Verify OTP and register the user
   Future<void> verifyOtpAndRegister(
       Map<String, dynamic> formData, List<String> categories) async {
@@ -159,7 +202,7 @@ class _PhonePageState extends State<PhonePage> {
         'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg';
 
     try {
-      // Verify the OTP and sign in the user with the phone credential
+      // Verify OTP and sign in the user
       final PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: verificationId,
         smsCode: _otpController.text,
@@ -174,15 +217,14 @@ class _PhonePageState extends State<PhonePage> {
 
       final User user = userCredential.user!;
 
-      // Link email and password as additional providers
+      // Link email and password
       final emailCredential = EmailAuthProvider.credential(
         email: formData['email']!,
         password: formData['password']!,
       );
-
       await user.linkWithCredential(emailCredential);
 
-      // Store user details in Firestore
+      // Hash the password
       String hashedPassword = _hashPassword(formData['password']!);
 
       // Upload images to Supabase
@@ -194,8 +236,11 @@ class _PhonePageState extends State<PhonePage> {
       final selfieImageUrl = await _uploadToSupabase(
           selfieImage, 'selfie_${DateTime.now().millisecondsSinceEpoch}.jpg');
 
-      // Save user data in the `users` collection
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+      // Reference to Firestore
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // Store user details
+      await firestore.collection('users').doc(user.uid).set({
         'name': formData['name'],
         'email': formData['email'],
         'passwordHash': hashedPassword,
@@ -210,28 +255,18 @@ class _PhonePageState extends State<PhonePage> {
         'similarity': formData['similarity'],
       });
 
-      // Save categories in the `empcategories` collection
-      await FirebaseFirestore.instance
+      // Store categories as an array inside `empcategories`
+      await firestore
           .collection('users')
           .doc(user.uid)
           .collection('empcategories')
-          .add({
-        'categories': categories,
+          .doc() // Auto-generated ID
+          .set({
+        'categories': categories, // Store categories as an array
       });
-      for (String categoryId in categories) {
-        DocumentReference categoryRef =
-            FirebaseFirestore.instance.collection('categories').doc(categoryId);
+      await incrementEmpNumForCategories(categories);
 
-        await FirebaseFirestore.instance.runTransaction((transaction) async {
-          DocumentSnapshot snapshot = await transaction.get(categoryRef);
-
-          if (snapshot.exists) {
-            int currentEmpNum = snapshot['empNum'] ?? 0;
-            transaction.update(categoryRef, {'empNum': currentEmpNum + 1});
-          }
-        });
-      }
-      // Navigate to the success page
+      // Navigate to success page
       if (!mounted) return;
       Navigator.pushNamed(context, AppRoutes.empVerificationSuccessPage);
     } catch (e) {

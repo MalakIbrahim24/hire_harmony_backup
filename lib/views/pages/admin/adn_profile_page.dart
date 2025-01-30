@@ -171,10 +171,10 @@ class _AdnProfilePageState extends State<AdnProfilePage> {
                             },
                           ),
                           AdnProfileContainer(
-                            icon: Icons.logout_outlined,
                             title: 'Logout',
+                            icon: Icons.logout,
                             onTap: () async {
-                              await authCubit.signOut();
+                              await authCubit.signOut(context);
                             },
                           ),
                           const SizedBox(

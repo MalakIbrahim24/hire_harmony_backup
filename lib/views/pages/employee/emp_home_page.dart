@@ -68,6 +68,17 @@ class _EmpHomePageState extends State<EmpHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final String? loggedInUserId = FirebaseAuth.instance.currentUser?.uid;
+
+    // Firestore stream to listen for pending requests
+    final Stream<QuerySnapshot> pendingRequestsStream = FirebaseFirestore
+        .instance
+        .collection('users')
+        .doc(loggedInUserId)
+        .collection('recievedRequests')
+        .where('status', isEqualTo: 'pending')
+        .snapshots();
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -79,7 +90,7 @@ class _EmpHomePageState extends State<EmpHomePage> {
               colors: [
                 AppColors().navy,
                 AppColors().orange,
-              ], // Navy and Orange colors
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -98,7 +109,7 @@ class _EmpHomePageState extends State<EmpHomePage> {
                         const SizedBox(width: 10),
                         Text(
                           textAlign: TextAlign.center,
-                          'Welcome, $userName', // Display the fetched user name
+                          'Welcome, $userName',
                           style: GoogleFonts.montserratAlternates(
                             textStyle: const TextStyle(
                               fontSize: 16,
@@ -152,83 +163,95 @@ class _EmpHomePageState extends State<EmpHomePage> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                const SizedBox(height: 10),
-                GridView.count(
-                  crossAxisCount: 3,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    OverviewCard(
-                      title: 'Booking',
-                      icon: Icons.book_online,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const BookingScreen(),
-                          ),
-                        );
-                      },
-                      cardColor: AppColors().orangelight,
-                      iconColor: AppColors().navy,
-                    ),
-                    OverviewCard(
-                      title: 'Post Ad',
-                      icon: Icons.post_add,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const AdvertisementScreen(),
-                          ),
-                        );
-                      },
-                      cardColor: AppColors().orangelight,
-                      iconColor: AppColors().navy,
-                    ),
-                    OverviewCard(
-                      title: 'Contact Us ',
-                      icon: Icons.support_agent,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ContactUsPage(),
-                          ),
-                        );
-                      },
-                      cardColor: AppColors().orangelight,
-                      iconColor: AppColors().navy,
-                    ),
-                    OverviewCard(
-                      title: 'Items',
-                      icon: Icons.living_outlined,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const DisplayItems(),
-                          ),
-                        );
-                      },
-                      cardColor: AppColors().orangelight,
-                      iconColor: AppColors().navy,
-                    ),
-                    OverviewCard(
-                      title: 'Tickets',
-                      icon: Icons.list,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const TicketsPage(),
-                          ),
-                        );
-                      },
-                      cardColor: AppColors().orangelight,
-                      iconColor: AppColors().navy,
-                    ),
-                  ],
+                StreamBuilder<QuerySnapshot>(
+                  stream: pendingRequestsStream,
+                  builder: (context, snapshot) {
+                    int pendingCount = 0;
+
+                    if (snapshot.hasData) {
+                      pendingCount = snapshot.data!.docs.length;
+                    }
+
+                    return GridView.count(
+                      crossAxisCount: 3,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: [
+                        OverviewCard(
+                          title: 'Booking',
+                          icon: Icons.book_online,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const BookingScreen(),
+                              ),
+                            );
+                          },
+                          cardColor: AppColors().orangelight,
+                          iconColor: AppColors().navy,
+                          badgeCount: pendingCount, // ✅ Display badge here
+                        ),
+                        OverviewCard(
+                          title: 'Post Ad',
+                          icon: Icons.post_add,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const AdvertisementScreen(),
+                              ),
+                            );
+                          },
+                          cardColor: AppColors().orangelight,
+                          iconColor: AppColors().navy,
+                        ),
+                        OverviewCard(
+                          title: 'Contact Us',
+                          icon: Icons.support_agent,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ContactUsPage(),
+                              ),
+                            );
+                          },
+                          cardColor: AppColors().orangelight,
+                          iconColor: AppColors().navy,
+                        ),
+                        OverviewCard(
+                          title: 'Items',
+                          icon: Icons.living_outlined,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const DisplayItems(),
+                              ),
+                            );
+                          },
+                          cardColor: AppColors().orangelight,
+                          iconColor: AppColors().navy,
+                        ),
+                        OverviewCard(
+                          title: 'Tickets',
+                          icon: Icons.list,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const TicketsPage(),
+                              ),
+                            );
+                          },
+                          cardColor: AppColors().orangelight,
+                          iconColor: AppColors().navy,
+                        ),
+                      ],
+                    );
+                  },
                 ),
                 const SizedBox(height: 20),
                 const PrevWork(),
@@ -248,7 +271,7 @@ class OverviewCard extends StatelessWidget {
   final VoidCallback? onTap;
   final Color cardColor;
   final Color iconColor;
-  final bool showCounter; // Indicates whether to show the badge
+  final int badgeCount; // New: Count of pending requests
 
   const OverviewCard({
     super.key,
@@ -257,7 +280,7 @@ class OverviewCard extends StatelessWidget {
     this.onTap,
     required this.cardColor,
     required this.iconColor,
-    this.showCounter = false, // Default to false
+    this.badgeCount = 0, // Default: No badge
   });
 
   @override
@@ -265,7 +288,7 @@ class OverviewCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Stack(
-        alignment: Alignment.center, // Align all children to the center
+        alignment: Alignment.center,
         children: [
           Card(
             color: cardColor,
@@ -288,61 +311,29 @@ class OverviewCard extends StatelessWidget {
               ),
             ),
           ),
-          if (showCounter) // Show the badge if showCounter is true
+          // ✅ Show the red badge if there are pending requests
+          if (badgeCount > 0)
             Positioned(
-              top: 10,
+              top: 5,
               right: 10,
-              child: _PendingRequestsBadge(),
+              child: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: AppColors().orange,
+                  shape: BoxShape.circle,
+                ),
+                child: Text(
+                  '$badgeCount', // Display number of pending requests
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
         ],
       ),
-    );
-  }
-}
-
-class _PendingRequestsBadge extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final String? loggedInUserId = FirebaseAuth.instance.currentUser?.uid;
-
-    if (loggedInUserId == null) {
-      return const SizedBox(); // Return an empty widget if the user is not logged in
-    }
-
-    // Firestore query for pending requests count
-    final Stream<QuerySnapshot> pendingRequestsStream = FirebaseFirestore
-        .instance
-        .collection('users')
-        .doc(loggedInUserId)
-        .collection('recievedRequests')
-        .where('status', isEqualTo: 'pending')
-        .snapshots();
-
-    return StreamBuilder<QuerySnapshot>(
-      stream: pendingRequestsStream,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return const SizedBox(); // Do not show the badge if no data or empty
-        }
-
-        final pendingCount = snapshot.data!.docs.length;
-
-        return Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: AppColors().orange,
-            shape: BoxShape.circle,
-          ),
-          child: Text(
-            '$pendingCount',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        );
-      },
     );
   }
 }

@@ -119,7 +119,7 @@ class _buildMenuContainerState extends State<buildMenuContainer> {
         'text': 'Logout',
         'route': null,
         'action': () async {
-          await authCubit.signOut();
+          await authCubit.signOut(context);
         },
       },
     ];
