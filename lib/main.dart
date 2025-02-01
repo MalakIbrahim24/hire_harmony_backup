@@ -21,6 +21,17 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("Handling a background message: ${message.messageId}");
 }
 
+Future<String?> getFCMToken() async {
+  await Firebase.initializeApp(); // تأكد من تهيئة Firebase
+
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  // الحصول على الـ FCM Token
+  String? token = await messaging.getToken();
+  debugPrint(token.toString());
+  return token;
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -81,10 +92,10 @@ class MyApp extends StatelessWidget {
                 debugShowCheckedModeBanner: false,
                 title: 'Hire Harmony',
                 navigatorKey: navigatorKey,
-                 routes: {
-                   NotificationScreen.route: (context) =>
-                     const NotificationScreen(),
-                 },
+                routes: {
+                  NotificationScreen.route: (context) =>
+                      const NotificationScreen(),
+                },
                 initialRoute: initRoute,
                 onGenerateRoute: AppRouter.onGenerateRoute,
                 theme: Provider.of<ThemeProvider>(context).themeData,

@@ -7,9 +7,7 @@ import 'package:hire_harmony/api/firebase_api.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/pages/employee/advertisement_screen.dart';
 import 'package:hire_harmony/views/pages/employee/booking_screen.dart';
-import 'package:hire_harmony/views/pages/employee/contact_us_page.dart';
 import 'package:hire_harmony/views/pages/employee/display_items.dart';
-import 'package:hire_harmony/views/pages/employee/emp_notifications_page.dart';
 import 'package:hire_harmony/views/pages/employee/tickets_page.dart';
 import 'package:hire_harmony/views/pages/location_page.dart';
 import 'package:hire_harmony/views/widgets/employee/prev_work.dart';
@@ -89,7 +87,10 @@ class _EmpHomePageState extends State<EmpHomePage> {
             gradient: LinearGradient(
               colors: [
                 AppColors().navy,
+                AppColors().brown,
                 AppColors().orange,
+                AppColors().orangelight,
+                AppColors().white,
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -122,21 +123,14 @@ class _EmpHomePageState extends State<EmpHomePage> {
                         ),
                       ],
                     ),
-                    IconButton(
-                      icon: const Icon(
-                        Icons.notifications_active_outlined,
-                        color: Colors.white,
-                        size: 25,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0, right: 10),
+                      child: Image.asset(
+                        'lib/assets/images/logo_navy.PNG',
+                        width: 45, // Bigger logo for better visibility
+                        height: 45,
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const EmpNotificationsPage()),
-                        );
-                      },
-                    )
+                    ),
                   ],
                 ),
                 const SizedBox(height: 15),
@@ -148,7 +142,7 @@ class _EmpHomePageState extends State<EmpHomePage> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -173,6 +167,8 @@ class _EmpHomePageState extends State<EmpHomePage> {
                     }
 
                     return GridView.count(
+                      crossAxisSpacing: 1, // Reduced spacing between columns
+                      mainAxisSpacing: 2,
                       crossAxisCount: 3,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -208,20 +204,6 @@ class _EmpHomePageState extends State<EmpHomePage> {
                           iconColor: AppColors().navy,
                         ),
                         OverviewCard(
-                          title: 'Contact Us',
-                          icon: Icons.support_agent,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ContactUsPage(),
-                              ),
-                            );
-                          },
-                          cardColor: AppColors().orangelight,
-                          iconColor: AppColors().navy,
-                        ),
-                        OverviewCard(
                           title: 'Items',
                           icon: Icons.living_outlined,
                           onTap: () {
@@ -234,6 +216,10 @@ class _EmpHomePageState extends State<EmpHomePage> {
                           },
                           cardColor: AppColors().orangelight,
                           iconColor: AppColors().navy,
+                        ),
+                        Card(
+                          color: AppColors().white,
+                          elevation: 0,
                         ),
                         OverviewCard(
                           title: 'Tickets',
@@ -248,6 +234,10 @@ class _EmpHomePageState extends State<EmpHomePage> {
                           },
                           cardColor: AppColors().orangelight,
                           iconColor: AppColors().navy,
+                        ),
+                        Card(
+                          color: AppColors().white,
+                          elevation: 0,
                         ),
                       ],
                     );
@@ -293,14 +283,14 @@ class OverviewCard extends StatelessWidget {
           Card(
             color: cardColor,
             shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             elevation: 1,
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(icon, color: iconColor, size: 30),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 4),
                   Text(
                     title,
                     textAlign: TextAlign.center,

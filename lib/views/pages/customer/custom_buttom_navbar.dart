@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
@@ -16,6 +18,31 @@ class CustomButtomNavbar extends StatefulWidget {
 
 class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
   int currentPageIndex = 2;
+  int _pendingOrdersCount = 0;
+  @override
+  void initState() {
+    super.initState();
+    _listenForPendingOrders();
+  }
+
+  void _listenForPendingOrders() {
+    final String? loggedInUserId = FirebaseAuth.instance.currentUser?.uid;
+    if (loggedInUserId == null) return;
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(loggedInUserId)
+        .collection('orders')
+        .where('status', isEqualTo: 'in progress') // الطلبات غير المكتملة
+        .snapshots()
+        .listen((snapshot) {
+      if (mounted) {
+        setState(() {
+          _pendingOrdersCount = snapshot.docs.length;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,10 +87,57 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                     label: 'Messages',
                   ),
                   NavigationDestination(
-                    selectedIcon: Icon(Icons.list, color: AppColors().white),
-                    icon:
+                    selectedIcon: Stack(
+                      children: [
+                        Icon(Icons.list, color: AppColors().white),
+                        if (_pendingOrdersCount > 0)
+                          Positioned(
+                            right: -5,
+                            top: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Text(
+                                _pendingOrdersCount.toString(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    icon: Stack(
+                      children: [
                         Icon(Icons.list_alt_outlined, color: AppColors().navy),
-                    label: 'My Order',
+                        if (_pendingOrdersCount > 0)
+                          Positioned(
+                            right: -5,
+                            top: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Text(
+                                _pendingOrdersCount.toString(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    label: 'My Orders',
                   ),
                   NavigationDestination(
                     selectedIcon: Icon(
@@ -85,7 +159,7 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                       Icons.living_outlined,
                       color: AppColors().navy,
                     ),
-                    label: 'Community',
+                    label: 'Renting',
                   ),
                   NavigationDestination(
                     selectedIcon: Icon(

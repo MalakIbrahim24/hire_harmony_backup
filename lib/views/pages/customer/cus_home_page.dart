@@ -151,31 +151,41 @@ class _CusHomePageState extends State<CusHomePage> {
         ),
         backgroundColor: AppColors().orange,
         centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const CusNotificationsPage(),
-                ),
-              );
-            },
-            icon: const Icon(Icons.notifications),
-            color: AppColors().white,
-          )
-        ],
+        // actions: [
+        //   IconButton(
+        //     onPressed: () {
+        //       Navigator.push(
+        //         context,
+        //         MaterialPageRoute(
+        //           builder: (context) => const CusNotificationsPage(),
+        //         ),
+        //       );
+        //     },
+        //     icon: const Icon(Icons.notifications),
+        //     color: AppColors().white,
+        //   )
+        // ],
         title: Column(
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(
-                  Icons.location_on,
-                  color: AppColors().white,
+                Row(
+                  children: [
+                    Icon(
+                      Icons.location_on,
+                      color: AppColors().white,
+                    ),
+                    Text('Qalqiliya , palestine',
+                        style: GoogleFonts.montserratAlternates(
+                            color: AppColors().white, fontSize: 16)),
+                  ],
                 ),
-                Text('Qalqiliya , palestine',
-                    style: GoogleFonts.montserratAlternates(
-                        color: AppColors().white, fontSize: 16)),
+                Image.asset(
+                  'lib/assets/images/logo_white_brown_shadow.PNG',
+                  width: 50, // Bigger logo for better visibility
+                  height: 50,
+                ),
               ],
             ),
           ],
@@ -287,7 +297,7 @@ class _CusHomePageState extends State<CusHomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Popular Services on Hire Harmony',
+                      'Popular Categories on Hire Harmony',
                       style: GoogleFonts.montserratAlternates(
                         textStyle: TextStyle(
                           fontSize: 14,

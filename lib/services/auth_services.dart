@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hire_harmony/services/firestore_services.dart';
 import 'package:hire_harmony/utils/route/api_paths.dart';
@@ -20,7 +19,6 @@ abstract class AuthServices {
 class AuthServicesImpl implements AuthServices {
   final firebaseAuth = FirebaseAuth.instance;
   final firestoreService = FirestoreService.instance;
-  final _firestore = FirebaseFirestore.instance;
   @override
   User? getCurrentUser() {
     return firebaseAuth.currentUser;

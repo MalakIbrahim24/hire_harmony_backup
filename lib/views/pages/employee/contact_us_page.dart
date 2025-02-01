@@ -113,6 +113,14 @@ class _ContactUsPageState extends State<ContactUsPage> {
               ),
             ),
             Padding(
+              padding: const EdgeInsets.only(top: 18.0),
+              child: Image.asset(
+                'lib/assets/images/logo_navy.PNG',
+                width: 80, // Bigger logo for better visibility
+                height: 80,
+              ),
+            ),
+            Padding(
               padding: const EdgeInsets.all(18.0),
               child: Text(
                 "This program was developed by the developers of Orchida Soft Software Company",
@@ -128,7 +136,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
       ),
     );
   }
-
+  
   Widget buildAdminCard(BuildContext context,
       {required String name,
       required String role,

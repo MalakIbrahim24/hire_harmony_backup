@@ -549,6 +549,13 @@ class ActiveBookingsTab extends StatelessWidget {
 
       // Delete the request document
       await activeRequest.reference.delete();
+      // Delete the request from the sender's sentRequests collection
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(senderId)
+          .collection('sentRequests')
+          .doc(activeRequest.id)
+          .delete();
 
       if (!context.mounted) return;
 

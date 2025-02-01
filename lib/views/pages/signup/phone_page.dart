@@ -30,48 +30,62 @@ class _PhonePageState extends State<PhonePage> {
   bool isVerifyButtonEnabled = false;
   bool isSendOtpButtonEnabled = false;
   String verificationId = "";
-Future<void> incrementEmpNumForCategories(List<String> categories) async {
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  for (String categoryName in categories) {
-    categoryName = categoryName.trim(); // إزالة المسافات الإضافية
+  Future<void> incrementEmpNumForCategories(
+      List<String> categories, String employeeId) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    // البحث عن الكاتيجوري بناءً على الاسم
-    QuerySnapshot categorySnapshot = await firestore
-        .collection('categories')
-        .where('name', isEqualTo: categoryName)
-        .get();
+    for (String categoryName in categories) {
+      categoryName = categoryName.trim(); // إزالة المسافات الإضافية
 
-    if (categorySnapshot.docs.isEmpty) {
-      print("⚠️ الكاتيجوري '$categoryName' غير موجودة في Firestore.");
-      continue; // تخطي هذه الكاتيجوري
+      // البحث عن الكاتيجوري بناءً على الاسم
+      QuerySnapshot categorySnapshot = await firestore
+          .collection('categories')
+          .where('name', isEqualTo: categoryName)
+          .get();
+
+      if (categorySnapshot.docs.isEmpty) {
+        print("⚠️ الكاتيجوري '$categoryName' غير موجودة في Firestore.");
+        continue; // تخطي هذه الكاتيجوري
+      }
+
+      // الحصول على ID الخاص بالكاتيجوري
+      String categoryId = categorySnapshot.docs.first.id;
+
+      // جلب بيانات الكاتيجوري
+      DocumentSnapshot categoryDoc =
+          await firestore.collection('categories').doc(categoryId).get();
+
+      if (!categoryDoc.exists) {
+        print("⚠️ الوثيقة الخاصة بـ '$categoryName' غير موجودة.");
+        continue;
+      }
+
+      Map<String, dynamic> categoryData =
+          categoryDoc.data() as Map<String, dynamic>;
+
+      int currentEmpNum = (categoryData['empNum'] ?? 0) as int;
+
+      // جلب قائمة العمال الحالية أو إنشاء قائمة جديدة
+      List<String> currentWorkers = (categoryData['workers'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [];
+
+      // إضافة `employeeId` فقط إذا لم يكن موجودًا
+      if (!currentWorkers.contains(employeeId)) {
+        currentWorkers.add(employeeId);
+      }
+
+      // تحديث `empNum` وزيادة العدد + تحديث قائمة `workers`
+      await firestore.collection('categories').doc(categoryId).update({
+        'empNum': currentEmpNum + 1, // ✅ زيادة العدد بمقدار واحد
+        'workers': currentWorkers, // ✅ تحديث قائمة العمال
+      });
+
+      print("✅ تم تحديث `empNum` والـ `workers` للكاتيجوري '$categoryName'.");
     }
-
-    // الحصول على ID الخاص بالكاتيجوري
-    String categoryId = categorySnapshot.docs.first.id;
-
-    // جلب العدد الحالي من `empNum`
-    DocumentSnapshot categoryDoc =
-        await firestore.collection('categories').doc(categoryId).get();
-
-    if (!categoryDoc.exists) {
-      print("⚠️ الوثيقة الخاصة بـ '$categoryName' غير موجودة.");
-      continue;
-    }
-
-    Map<String, dynamic> categoryData =
-        categoryDoc.data() as Map<String, dynamic>;
-
-    int currentEmpNum = (categoryData['empNum'] ?? 0) as int;
-
-    // تحديث العدد بزيادة واحد عند إنشاء مستخدم جديد
-    await firestore.collection('categories').doc(categoryId).update({
-      'empNum': currentEmpNum + 1,
-    });
-
-    print("✅ تم تحديث `empNum` للكاتيجوري '$categoryName' إلى ${currentEmpNum + 1}");
   }
-}
 
   // Validate phone number format (basic validation)
   bool isValidPhoneNumber(String phoneNumber) {
@@ -192,7 +206,6 @@ Future<void> incrementEmpNumForCategories(List<String> categories) async {
     }
   }
 
-
   // Verify OTP and register the user
   Future<void> verifyOtpAndRegister(
       Map<String, dynamic> formData, List<String> categories) async {
@@ -264,7 +277,7 @@ Future<void> incrementEmpNumForCategories(List<String> categories) async {
           .set({
         'categories': categories, // Store categories as an array
       });
-      await incrementEmpNumForCategories(categories);
+      await incrementEmpNumForCategories(categories, user.uid);
 
       // Navigate to success page
       if (!mounted) return;

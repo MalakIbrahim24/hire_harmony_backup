@@ -48,6 +48,7 @@ class AppRoutes {
   static const String deletedAccounts = '/deleted-accounts';
   static const String employeesmaintenance = '/new-accounts-requests-page';
   static const String complaintsPage = '/complaints-page';
+  static const String empaccountDeletionScreen = '/emp_account-deletion-screen';
 
   // static const String servicesManagementForm = '/services-management-form';
 }

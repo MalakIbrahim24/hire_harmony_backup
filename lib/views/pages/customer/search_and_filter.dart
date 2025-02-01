@@ -114,7 +114,7 @@ class _SearchAndFilterState extends State<SearchAndFilter> {
             'img': data['img'] ?? '',
             'role': data['role'] ?? '',
             'availability': data['availability'] ?? 'Unavailable',
-            'location': data['location'].toString() ?? 'Unknown',
+            'location': data['location'].toString(),
             'rating': data['rating'] ?? 0,
             'reviewsNum': data['reviewsNum'] ?? 0,
           },

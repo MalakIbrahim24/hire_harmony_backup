@@ -34,6 +34,17 @@ class LoginPage extends StatelessWidget {
                   ),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.only(top: 35, right: 10),
+                child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                  Image.asset(
+                    'lib/assets/images/logo_navy.PNG',
+                    width: 65, // Bigger logo for better visibility
+                    height: 65,
+                  ),
+                ]),
+              ),
+
               // Main content inside a Padding widget
               const Padding(
                 padding: EdgeInsets.only(
@@ -42,7 +53,8 @@ class LoginPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Top section with logo and title
-                    SizedBox(height: 28),
+                    SizedBox(height: 70),
+
                     LoginForm(), // Login form
                   ],
                 ),

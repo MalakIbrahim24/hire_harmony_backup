@@ -85,3 +85,10 @@ flutter:
     - lib/assets/images/welcome.jpg
     - lib/assets/images/welcome3.jpg
     - lib/assets/categories.csv
+    - lib/assets/images/logo_white_brown_shadow.PNG
+    - lib/assets/images/logo_white_navy_shadow.PNG
+    - lib/assets/images/logo_orange.PNG
+    - lib/assets/images/logo_navy.PNG
+    - lib/assets/images/logo_white.PNG
+
+

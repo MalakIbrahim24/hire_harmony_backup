@@ -244,7 +244,7 @@ class _EmpProfilePageState extends State<EmpProfilePage> {
                           icon: Icons.info,
                           onTap: () {
                             Navigator.pushNamed(
-                                context, AppRoutes.accountDeletionScreen);
+                                context, AppRoutes.empaccountDeletionScreen);
                           },
                         ),
                         EmpBuildMenuContainer(

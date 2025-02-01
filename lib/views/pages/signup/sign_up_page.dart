@@ -60,7 +60,7 @@ class _SignUpPageState extends State<SignUpPage> {
               );
             } else {
               print(
-                  "صهخعصقعخلاصقعللالقخSkipping document with missing 'name' field: ${doc.id}");
+                  "Skipping document with missing 'name' field: ${doc.id}");
               return null; // Skip documents with missing 'name'
             }
           })

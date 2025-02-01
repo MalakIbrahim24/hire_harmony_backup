@@ -2,9 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
-import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:hire_harmony/views/pages/customer/view_emp_profile_page.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 
 class BestWorker extends StatefulWidget {
   const BestWorker({super.key});
@@ -239,7 +237,6 @@ class WorkerCard extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 5),
 
             // 🔹 زر عرض الملف الشخصي
             SizedBox(
@@ -249,7 +246,7 @@ class WorkerCard extends StatelessWidget {
                   backgroundColor: AppColors().navy,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 2),
                 ),
                 onPressed: () {
                   Navigator.push(

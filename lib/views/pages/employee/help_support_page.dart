@@ -114,6 +114,20 @@ class _HelpSupportPageState extends State<HelpSupportPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(
+              height: 60,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset(
+                'lib/assets/images/logo_white_navy_shadow.PNG',
+                width: 120, // Bigger logo for better visibility
+                height: 120,
+              ),
+            ),
+            const SizedBox(
+              height: 30,
+            ),
             const Text(
               'What Went Wrong?',
               style: TextStyle(
@@ -168,6 +182,9 @@ class _HelpSupportPageState extends State<HelpSupportPage> {
                           fontWeight: FontWeight.bold,
                           fontSize: 18.0),
                     ),
+            ),
+            const SizedBox(
+              height: 100,
             ),
           ],
         ),

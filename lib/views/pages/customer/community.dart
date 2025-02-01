@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:hire_harmony/utils/app_colors.dart';
 import 'view_emp_profile_page.dart'; // Import the ViewEmpProfilePage
 
 class Community extends StatefulWidget {
@@ -55,7 +57,13 @@ class _CommunityState extends State<Community> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Community'),
+        title: Text(
+          'Renting',
+          style: GoogleFonts.montserratAlternates(
+            color: AppColors().navy,
+            fontSize: 20,
+          ),
+        ),
         automaticallyImplyLeading: false,
       ),
       body: StreamBuilder<List<Map<String, dynamic>>>(

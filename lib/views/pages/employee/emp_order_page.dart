@@ -6,8 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
 class EmpOrderPage extends StatefulWidget {
-
-  const EmpOrderPage({super.key });
+  const EmpOrderPage({super.key});
 
   @override
   State<EmpOrderPage> createState() => _EmpOrderPageState();
@@ -15,33 +14,32 @@ class EmpOrderPage extends StatefulWidget {
 
 class _EmpOrderPageState extends State<EmpOrderPage> {
   @override
-void initState() {
-  super.initState();
+  void initState() {
+    super.initState();
+  }
 
-}
+  Future<void> _updateCompletedOrdersCount(String workerId) async {
+    final workerRef =
+        FirebaseFirestore.instance.collection('users').doc(workerId);
 
+    // جلب عدد الطلبات المكتملة الفعلي من الـ subcollection
+    final completedOrdersRef = workerRef.collection('completedOrders');
+    final completedOrdersSnapshot = await completedOrdersRef.get();
+    int completedOrdersCount =
+        completedOrdersSnapshot.size; // استخدام size بدل docs.length
 
+    // تحديث العدد في الـ user document
+    await workerRef.update({'completedOrdersCount': completedOrdersCount});
 
-Future<void> _updateCompletedOrdersCount(String workerId) async {
-  final workerRef = FirebaseFirestore.instance.collection('users').doc(workerId);
-
-  // جلب عدد الطلبات المكتملة الفعلي من الـ subcollection
-  final completedOrdersRef = workerRef.collection('completedOrders');
-  final completedOrdersSnapshot = await completedOrdersRef.get();
-  int completedOrdersCount = completedOrdersSnapshot.size; // استخدام size بدل docs.length
-
-  // تحديث العدد في الـ user document
-  await workerRef.update({'completedOrdersCount': completedOrdersCount});
-
-  print('✅ تم تحديث completedOrdersCount إلى: $completedOrdersCount للعامل $workerId');
-}
+    print(
+        '✅ تم تحديث completedOrdersCount إلى: $completedOrdersCount للعامل $workerId');
+  }
 
   Future<void> _markOrderAsCompleted(
       BuildContext context,
       String orderId,
       String customerId,
       String employeeId,
-
       Map<String, dynamic> orderData) async {
     try {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -50,9 +48,7 @@ Future<void> _updateCompletedOrdersCount(String workerId) async {
       final orderUpdateData = {
         ...orderData,
         'status': 'completed',
-        'reviewed' :'false',
-
-        
+        'reviewed': 'false',
       };
 
       // Move the order to `completedOrders` for customer
@@ -61,7 +57,7 @@ Future<void> _updateCompletedOrdersCount(String workerId) async {
           .doc(customerId)
           .collection('completedOrders')
           .doc(orderId)
-          .set(orderUpdateData );
+          .set(orderUpdateData);
 
       // Move the order to `completedOrders` for employee
 
@@ -71,6 +67,13 @@ Future<void> _updateCompletedOrdersCount(String workerId) async {
           .collection('completedOrders')
           .doc(orderId)
           .set(orderUpdateData);
+      // Remove the order from current `orders` collection
+      await firestore
+          .collection('users')
+          .doc(customerId)
+          .collection('orders')
+          .doc(orderId)
+          .delete();
 
       // Remove the order from current `orders` collection
       await firestore
@@ -88,8 +91,8 @@ Future<void> _updateCompletedOrdersCount(String workerId) async {
       await firestore.collection('chat_rooms').doc(chatId).update({
         'chatController': 'closed',
       });
- // 🔹 تحديث عدد الطلبات المكتملة للعامل بعد إتمام العملية
-await _updateCompletedOrdersCount(employeeId);
+      // 🔹 تحديث عدد الطلبات المكتملة للعامل بعد إتمام العملية
+      await _updateCompletedOrdersCount(employeeId);
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -97,8 +100,7 @@ await _updateCompletedOrdersCount(employeeId);
           backgroundColor: Colors.green,
         ),
       );
-          print('✅ تم اكتمال الطلب وتحديث العداد للعامل: $employeeId');
-
+      print('✅ تم اكتمال الطلب وتحديث العداد للعامل: $employeeId');
     } catch (e) {
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
