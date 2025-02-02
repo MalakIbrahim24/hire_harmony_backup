@@ -59,8 +59,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 data: doc['name'] as String,
               );
             } else {
-              print(
-                  "Skipping document with missing 'name' field: ${doc.id}");
+              print("Skipping document with missing 'name' field: ${doc.id}");
               return null; // Skip documents with missing 'name'
             }
           })

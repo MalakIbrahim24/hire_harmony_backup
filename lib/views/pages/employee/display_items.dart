@@ -15,6 +15,61 @@ class _DisplayItemsState extends State<DisplayItems> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Future<void> _deleteItem(String itemId) async {
+    try {
+      final userId = _auth.currentUser?.uid;
+      if (userId == null) return;
+
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('items')
+          .doc(itemId)
+          .delete();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Item deleted successfully."),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } catch (e) {
+      print("Error deleting item: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to delete item."),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _confirmDelete(String itemId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Confirm Delete"),
+          content: Text(
+              "Are you sure you want to delete this item? This action cannot be undone."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context), // Cancel
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close dialog
+                _deleteItem(itemId); // Delete item
+              },
+              child: Text("Delete", style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,20 +105,24 @@ class _DisplayItemsState extends State<DisplayItems> {
               );
             }
 
-            final advertisements = snapshot.data!.docs;
+            final items = snapshot.data!.docs;
 
             return ListView.builder(
               padding: const EdgeInsets.all(16.0),
-              itemCount: advertisements.length,
+              itemCount: items.length,
               itemBuilder: (context, index) {
-                final ad = advertisements[index].data() as Map<String, dynamic>;
+                final itemData = items[index].data() as Map<String, dynamic>;
+                final itemId = items[index].id; // Get Firestore item ID
+
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: AdvertisementCard(
-                    image: ad['image'] ?? '',
-                    title: ad['name'] ?? '',
-                    description: ad['description'] ?? '',
+                    image: itemData['image'] ?? '',
+                    title: itemData['name'] ?? '',
+                    description: itemData['description'] ?? '',
                     buttonText: "Learn More",
+                    onDelete: () =>
+                        _confirmDelete(itemId), // Pass delete function
                   ),
                 );
               },
@@ -92,6 +151,7 @@ class AdvertisementCard extends StatelessWidget {
   final String title;
   final String description;
   final String buttonText;
+  final VoidCallback onDelete;
 
   const AdvertisementCard({
     super.key,
@@ -99,6 +159,7 @@ class AdvertisementCard extends StatelessWidget {
     required this.title,
     required this.description,
     required this.buttonText,
+    required this.onDelete,
   });
 
   @override
@@ -111,55 +172,72 @@ class AdvertisementCard extends StatelessWidget {
           ClipRRect(
             borderRadius:
                 const BorderRadius.vertical(top: Radius.circular(16.0)),
-            child: Image.network(
-              image,
-              height: 150,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Container(
+            child: Stack(
+              children: [
+                Image.network(
+                  image,
                   height: 150,
                   width: double.infinity,
-                  color: Colors.grey.shade300,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                          : null,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      height: 150,
+                      width: double.infinity,
+                      color: Colors.grey.shade300,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    height: 150,
+                    width: double.infinity,
+                    color: Colors.grey.shade300,
+                    child: Icon(
+                      Icons.broken_image,
+                      color: Colors.grey.shade700,
+                      size: 50,
                     ),
                   ),
-                );
-              },
-              errorBuilder: (context, error, stackTrace) => Container(
-                height: 150,
-                width: double.infinity,
-                color: Colors.grey.shade300,
-                child: Icon(
-                  Icons.broken_image,
-                  color: Colors.grey.shade700,
-                  size: 50,
                 ),
-              ),
+              ],
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8.0),
+                    Text(
+                      description,
+                      style: TextStyle(fontSize: 14.0, color: Colors.grey[700]),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8.0),
-                Text(
-                  description,
-                  style: TextStyle(fontSize: 14.0, color: Colors.grey[700]),
+                Positioned(
+                  bottom: 8,
+                  right: 8,
+                  child: IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: onDelete, // Call delete function when pressed
+                  ),
                 ),
               ],
             ),

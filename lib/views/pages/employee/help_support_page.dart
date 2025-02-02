@@ -167,7 +167,7 @@ class _HelpSupportPageState extends State<HelpSupportPage> {
             const SizedBox(height: 16.0),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors().navy,
+                backgroundColor: AppColors().white,
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0)),
@@ -175,10 +175,10 @@ class _HelpSupportPageState extends State<HelpSupportPage> {
               onPressed: _isLoading ? null : _submitMessage,
               child: _isLoading
                   ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text(
+                  : Text(
                       'Submit',
                       style: TextStyle(
-                          color: Colors.white,
+                          color: AppColors().orange,
                           fontWeight: FontWeight.bold,
                           fontSize: 18.0),
                     ),

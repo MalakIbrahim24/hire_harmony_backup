@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hire_harmony/views/pages/salt/add_salt.dart';
+import 'package:hire_harmony/views/widgets/main_button.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 import 'package:hire_harmony/utils/app_colors.dart';
@@ -18,7 +20,7 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   TextEditingController nameController = TextEditingController();
-  TextEditingController locationController = TextEditingController();
+  // TextEditingController locationController = TextEditingController();
   TextEditingController mobileController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -52,7 +54,7 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
         setState(() {
           nameController.text = data['name'] ?? '';
           emailController.text = data['email'] ?? '';
-          locationController.text = data['location'] ?? '';
+          //locationController.text = data['location'] ?? '';
           mobileController.text = data['phone'] ?? '';
           imageUrl = data['img'] ?? '';
           isLoading = false;
@@ -292,15 +294,25 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
               controller: emailController,
               onSave: (value) => _updateField('email', value),
             ),
-            buildEditableTile(
-              label: 'Location',
-              controller: locationController,
-              onSave: (value) => _updateField('location', value),
-            ),
+            // buildEditableTile(
+            //   label: 'Location',
+            //   controller: locationController,
+            //   onSave: (value) => _updateField('location', value),
+            // ),
             buildEditableTile(
               label: 'Mobile Number',
               controller: mobileController,
               onSave: (value) => _updateField('phone', value),
+            ),
+
+            // 🔹 New Reset Password Button
+            MainButton(
+              color: Colors.white,
+              text: "Reset Password",
+              bgColor: AppColors().orange,
+              onPressed: () async {
+                await AddSalt().updatePassword(context);
+              },
             ),
           ],
         ),
@@ -338,7 +350,7 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
                   style: GoogleFonts.montserratAlternates(
                     textStyle: const TextStyle(
                       fontSize: 13,
-                      color: Colors.black, 
+                      color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

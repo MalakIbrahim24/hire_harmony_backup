@@ -1,12 +1,16 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/services/auth_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
+import 'package:hire_harmony/views/pages/salt/add_salt.dart';
 import 'package:hire_harmony/views/widgets/admin/adn_profile_container.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
@@ -22,6 +26,7 @@ class _AdnPersonalInfoPageState extends State<AdnPersonalInfoPage> {
   final AuthServices authServices = AuthServicesImpl();
 
   String? adminImageUrl;
+  String adminName = '';
 
   @override
   void initState() {
@@ -43,6 +48,7 @@ class _AdnPersonalInfoPageState extends State<AdnPersonalInfoPage> {
         final adminData = adminSnapshot.data() as Map<String, dynamic>;
         setState(() {
           adminImageUrl = adminData['img'] as String? ?? '';
+          adminName = adminData['name'] as String? ?? '';
         });
       }
     } catch (e) {
@@ -109,10 +115,6 @@ class _AdnPersonalInfoPageState extends State<AdnPersonalInfoPage> {
         backgroundColor: AppColors().red,
       );
     }
-  }
-
-  Future<void> _updatePassword() async {
-    // The password update logic remains unchanged
   }
 
   @override
@@ -186,7 +188,7 @@ class _AdnPersonalInfoPageState extends State<AdnPersonalInfoPage> {
                 ),
                 const SizedBox(height: 30),
                 Text(
-                  'Malak\'s Personal Information',
+                  '$adminName\'s\nPersonal Information',
                   style: GoogleFonts.montserratAlternates(
                     fontSize: 22,
                     fontWeight: FontWeight.w600,
@@ -202,10 +204,11 @@ class _AdnPersonalInfoPageState extends State<AdnPersonalInfoPage> {
                     child: ListView(
                       children: [
                         AdnProfileContainer(
-                          title: 'Reset Password',
-                          icon: Icons.lock_reset,
-                          onTap: _updatePassword,
-                        ),
+                            title: 'Reset Password',
+                            icon: Icons.lock_reset,
+                            onTap: () async {
+                              await AddSalt().updatePassword(context);
+                            }),
                         const SizedBox(height: 50),
                         AdnProfileContainer(
                           title: 'View Activity',
@@ -225,5 +228,172 @@ class _AdnPersonalInfoPageState extends State<AdnPersonalInfoPage> {
         ],
       ),
     );
+  }
+}
+
+class PasswordUpdateService {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // Hash password using SHA-256
+  String hashPassword(String password) {
+    var bytes = utf8.encode(password);
+    var digest = sha256.convert(bytes);
+    return digest.toString();
+  }
+
+  Future<void> updatePassword(BuildContext context) async {
+    final User? currentUser = _auth.currentUser;
+    if (currentUser == null) {
+      Fluttertoast.showToast(
+        msg: "User not logged in!",
+        textColor: Colors.white,
+        backgroundColor: Colors.red,
+      );
+      return;
+    }
+
+    final String adminUid = currentUser.uid;
+
+    // Fetch stored password hash from Firestore
+    final DocumentSnapshot adminSnapshot =
+        await _firestore.collection('users').doc(adminUid).get();
+
+    if (!adminSnapshot.exists) {
+      Fluttertoast.showToast(
+        msg: "Admin user not found!",
+        textColor: Colors.white,
+        backgroundColor: Colors.red,
+      );
+      return;
+    }
+
+    final Map<String, dynamic> adminData =
+        adminSnapshot.data() as Map<String, dynamic>;
+    final String storedPasswordHash = adminData['passwordHash'] ?? '';
+    final String email = adminData['email'] ?? '';
+
+    TextEditingController currentPasswordController = TextEditingController();
+    TextEditingController newPasswordController = TextEditingController();
+    TextEditingController confirmPasswordController = TextEditingController();
+
+    bool? confirmed = await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Update Password"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: currentPasswordController,
+                obscureText: true,
+                decoration:
+                    const InputDecoration(labelText: "Current Password"),
+              ),
+              TextField(
+                controller: newPasswordController,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: "New Password"),
+              ),
+              TextField(
+                controller: confirmPasswordController,
+                obscureText: true,
+                decoration:
+                    const InputDecoration(labelText: "Confirm New Password"),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text("Update"),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == null || !confirmed) {
+      Fluttertoast.showToast(
+        msg: "Password update canceled",
+        textColor: Colors.white,
+        backgroundColor: Colors.orange,
+      );
+      return;
+    }
+
+    String currentPassword = currentPasswordController.text.trim();
+    String newPassword = newPasswordController.text.trim();
+    String confirmPassword = confirmPasswordController.text.trim();
+
+    if (currentPassword.isEmpty ||
+        newPassword.isEmpty ||
+        confirmPassword.isEmpty) {
+      Fluttertoast.showToast(
+        msg: "All fields are required!",
+        textColor: Colors.white,
+        backgroundColor: Colors.red,
+      );
+      return;
+    }
+
+    // Hash the entered current password
+    final String enteredPasswordHash = hashPassword(currentPassword);
+
+    if (enteredPasswordHash != storedPasswordHash) {
+      Fluttertoast.showToast(
+        msg: "Incorrect current password!",
+        textColor: Colors.white,
+        backgroundColor: Colors.red,
+      );
+      return;
+    }
+
+    // Check if new passwords match
+    if (newPassword != confirmPassword) {
+      Fluttertoast.showToast(
+        msg: "New passwords do not match!",
+        textColor: Colors.white,
+        backgroundColor: Colors.red,
+      );
+      return;
+    }
+
+    try {
+      // Step 1: Reauthenticate user
+      AuthCredential credential = EmailAuthProvider.credential(
+        email: email,
+        password: currentPassword,
+      );
+      await currentUser.reauthenticateWithCredential(credential);
+
+      // Step 2: Update password in Firebase Authentication
+      await currentUser.updatePassword(newPassword);
+
+      // Step 3: Hash the new password before storing in Firestore
+      final String hashedNewPassword = hashPassword(newPassword);
+
+      // Step 4: Update Firestore with hashed password
+      await _firestore.collection('users').doc(adminUid).update({
+        'passwordHash': hashedNewPassword,
+      });
+
+      Fluttertoast.showToast(
+        msg: "Password updated successfully!",
+        textColor: Colors.white,
+        backgroundColor: Colors.green,
+      );
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Error updating password: $e",
+        textColor: Colors.white,
+        backgroundColor: Colors.red,
+      );
+    }
   }
 }

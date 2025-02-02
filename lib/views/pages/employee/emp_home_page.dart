@@ -218,7 +218,7 @@ class _EmpHomePageState extends State<EmpHomePage> {
                           iconColor: AppColors().navy,
                         ),
                         Card(
-                          color: AppColors().white,
+                          color: AppColors().transparent,
                           elevation: 0,
                         ),
                         OverviewCard(
@@ -236,7 +236,7 @@ class _EmpHomePageState extends State<EmpHomePage> {
                           iconColor: AppColors().navy,
                         ),
                         Card(
-                          color: AppColors().white,
+                          color: AppColors().transparent,
                           elevation: 0,
                         ),
                       ],

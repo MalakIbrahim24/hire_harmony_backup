@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -94,10 +95,18 @@ class _PhonePageState extends State<PhonePage> {
     return phoneRegex.hasMatch(phoneNumber);
   }
 
-  // Hash a password using SHA-256
-  String _hashPassword(String password) {
-    final bytes = utf8.encode(password);
-    final digest = sha256.convert(bytes);
+  // Generate a random salt
+  String _generateSalt() {
+    final Random random = Random.secure();
+    final List<int> saltBytes =
+        List.generate(16, (_) => random.nextInt(256)); // 16-byte salt
+    return base64Encode(saltBytes);
+  }
+
+// Hash password with a salt
+  String _hashPassword(String password, String salt) {
+    var bytes = utf8.encode(salt + password); // Append salt before hashing
+    var digest = sha256.convert(bytes);
     return digest.toString();
   }
 
@@ -238,7 +247,11 @@ class _PhonePageState extends State<PhonePage> {
       await user.linkWithCredential(emailCredential);
 
       // Hash the password
-      String hashedPassword = _hashPassword(formData['password']!);
+      // Generate a new salt
+      String salt = _generateSalt();
+
+// Hash the password with the salt
+      String hashedPassword = _hashPassword(formData['password']!, salt);
 
       // Upload images to Supabase
       final idImage = formData['idImage'] as File;
@@ -257,6 +270,7 @@ class _PhonePageState extends State<PhonePage> {
         'name': formData['name'],
         'email': formData['email'],
         'passwordHash': hashedPassword,
+        'salt': salt,
         'phone': '+970${_phoneController.text.trim()}',
         'role': 'employee',
         'idImageUrl': idImageUrl,
@@ -329,7 +343,11 @@ class _PhonePageState extends State<PhonePage> {
       await user.linkWithCredential(emailCredential);
 
       // Store user details in Firestore
-      String hashedPassword = _hashPassword(formData['password']!);
+      // Generate a new salt
+      String salt = _generateSalt();
+
+// Hash the password with the salt
+      String hashedPassword = _hashPassword(formData['password']!, salt);
 
       // Upload images to Supabase
 
@@ -338,6 +356,7 @@ class _PhonePageState extends State<PhonePage> {
         'name': formData['name'],
         'email': formData['email'],
         'passwordHash': hashedPassword,
+        'salt': salt,
         'phone': '+970${_phoneController.text.trim()}',
         'role': 'customer',
         'uid': user.uid,

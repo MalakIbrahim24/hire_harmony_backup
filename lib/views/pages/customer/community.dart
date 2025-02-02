@@ -58,7 +58,7 @@ class _CommunityState extends State<Community> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Renting',
+          'Bartering',
           style: GoogleFonts.montserratAlternates(
             color: AppColors().navy,
             fontSize: 20,

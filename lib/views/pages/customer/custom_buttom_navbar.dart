@@ -159,7 +159,7 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                       Icons.living_outlined,
                       color: AppColors().navy,
                     ),
-                    label: 'Renting',
+                    label: 'Mart',
                   ),
                   NavigationDestination(
                     selectedIcon: Icon(

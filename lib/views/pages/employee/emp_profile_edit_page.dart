@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -137,22 +140,48 @@ class _EmpProfileEditPageState extends State<EmpProfileEditPage> {
   }
 
   Future<void> _updatePassword(String userId, String newPassword) async {
-    final PasswordEncryptionService encryptionService =
-        PasswordEncryptionService();
-
-    // Encrypt the password
-    final encryptedPassword = encryptionService.encryptPassword(newPassword);
-
     try {
-      // Update password in Firestore
-      await _firestore
-          .collection('users')
-          .doc(userId)
-          .update({'password': encryptedPassword});
+      final User? user = _auth.currentUser;
+      if (user == null) {
+        print("❌ No authenticated user found.");
+        return;
+      }
+
+      // 🔹 Update password in Firebase Authentication
+      await user.updatePassword(newPassword);
+      print("✅ Password updated in Firebase Authentication.");
+
+      // 🔹 Generate a new salt
+      final String salt = _generateSalt();
+
+      // 🔹 Hash the new password with the salt
+      final String hashedPassword = _hashPassword(newPassword, salt);
+
+      // 🔹 Update Firestore with the hashed password and salt
+      await _firestore.collection('users').doc(userId).update({
+        'passwordHash': hashedPassword,
+        'salt': salt,
+      });
+
+      print("✅ Password hashed and stored in Firestore.");
     } catch (e) {
-      debugPrint("Error updating password in Firestore: $e");
+      debugPrint("❌ Error updating password: $e");
       throw Exception("Failed to update password.");
     }
+  }
+
+// Generates a secure random salt (Base64 encoded)
+  String _generateSalt() {
+    final Random random = Random.secure();
+    final List<int> saltBytes = List.generate(16, (_) => random.nextInt(256));
+    return base64Encode(saltBytes);
+  }
+
+// Hashes the password using SHA-256 and a salt
+  String _hashPassword(String password, String salt) {
+    final List<int> bytes = utf8.encode(salt + password);
+    final Digest digest = sha256.convert(bytes);
+    return digest.toString();
   }
 
   Future<String?> _uploadImageToSupabase(String imagePath) async {
