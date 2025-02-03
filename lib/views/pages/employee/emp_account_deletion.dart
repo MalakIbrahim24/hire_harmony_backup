@@ -372,13 +372,22 @@ class _AccountDeletionBodyState extends State<AccountDeletionBody> {
       await getUserCategories(user!.uid);
 
       // 🔹 حذف بيانات المستخدم من Firestore
+      final DocumentSnapshot userData =
+          await _firestore.collection('users').doc(user.uid).get();
+      await _firestore.collection('deleted_users').doc(user.uid).set({
+        'selectedReason': selectedReason,
+      }, SetOptions(merge: true));
+
+      await _firestore.collection('deleted_users').doc(user.uid).set(
+            userData.data() as Map<String, dynamic>,
+            SetOptions(merge: true),
+          );
+
       await FirestoreService.instance.deleteData(documentPath: 'users/$userId');
 
       // 🔹 حذف الحساب من Firebase Authentication
 
-      
-        await user.delete();
-      
+      await user.delete();
 
       // 🔹 توجيه المستخدم إلى صفحة تسجيل الدخول
       if (!mounted) return;

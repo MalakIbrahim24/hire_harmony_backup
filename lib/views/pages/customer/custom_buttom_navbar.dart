@@ -78,7 +78,7 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                   NavigationDestination(
                     selectedIcon: Icon(
                       Icons.message,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: AppColors().white,
                     ),
                     icon: Icon(
                       Icons.message_outlined,
@@ -89,10 +89,7 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                   NavigationDestination(
                     selectedIcon: Stack(
                       children: [
-                        Icon(
-                          Icons.list,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                        Icon(Icons.list, color: AppColors().white),
                         if (_pendingOrdersCount > 0)
                           Positioned(
                             right: -5,
@@ -146,10 +143,7 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                     label: 'My Orders',
                   ),
                   NavigationDestination(
-                    selectedIcon: Icon(
-                      Icons.home,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
+                    selectedIcon: Icon(Icons.home, color: AppColors().white),
                     icon: Icon(
                       Icons.home_outlined,
                       color: Theme.of(context).colorScheme.primary,
@@ -157,10 +151,7 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                     label: 'Home',
                   ),
                   NavigationDestination(
-                    selectedIcon: Icon(
-                      Icons.living,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
+                    selectedIcon: Icon(Icons.living, color: AppColors().white),
                     icon: Icon(
                       Icons.living_outlined,
                       color: Theme.of(context).colorScheme.primary,
@@ -168,10 +159,7 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                     label: 'Mart',
                   ),
                   NavigationDestination(
-                    selectedIcon: Icon(
-                      Icons.person,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
+                    selectedIcon: Icon(Icons.person, color: AppColors().white),
                     icon: Icon(
                       Icons.person_2_outlined,
                       color: Theme.of(context).colorScheme.primary,

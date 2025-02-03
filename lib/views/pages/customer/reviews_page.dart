@@ -25,6 +25,47 @@ class _ReviewPageState extends State<ReviewPage> {
   double rating = 0.0;
   bool isSubmitting = false;
   final _firestore = FirebaseFirestore.instance;
+  Future<void> updateEmployeeReviews(
+      String employeeId, int totalReviews, double newAverageRating) async {
+    try {
+      // التأكد من أن employeeId ليس فارغًا
+      if (employeeId.isEmpty) {
+        print("خطأ: employeeId فارغ!");
+        return;
+      }
+
+      // التأكد من أن القيم ليست فارغة أو غير صحيحة
+      print("🔍 تحديث معلومات الموظف: $employeeId");
+      print("📌 عدد التقييمات الجديد: $totalReviews");
+      print("⭐ التقييم الجديد: ${newAverageRating.toStringAsFixed(1)}");
+
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      // التحديث باستخدام update
+      await firestore.collection('users').doc(employeeId).update({
+        'reviewsNum': totalReviews.toString(), // تحويل العدد إلى نص
+        'rating':
+            newAverageRating.toStringAsFixed(1), // الاحتفاظ برقم عشري واحد
+      });
+
+      print("✅ التحديث تم بنجاح!");
+    } catch (e) {
+      print("⚠️ خطأ أثناء تحديث البيانات: $e");
+
+      // في حال فشل التحديث، جرب set مع merge
+      try {
+        FirebaseFirestore firestore = FirebaseFirestore.instance;
+        await firestore.collection('users').doc(employeeId).set({
+          'reviewsNum': totalReviews.toString(),
+          'rating': newAverageRating.toStringAsFixed(1),
+        }, SetOptions(merge: true));
+
+        print("✅ التحديث باستخدام set(merge: true) تم بنجاح!");
+      } catch (e) {
+        print("❌ فشل التحديث باستخدام set: $e");
+      }
+    }
+  }
 
   Future<void> _submitReview() async {
     if (_reviewController.text.trim().isEmpty || rating == 0.0) {
@@ -41,7 +82,7 @@ class _ReviewPageState extends State<ReviewPage> {
     try {
       String userId = FirebaseAuth.instance.currentUser!.uid;
 
-      // **التحقق مما إذا كان هناك مراجعة موجودة لنفس الطلب من نفس المستخدم**
+      // **Check if a review already exists for this order**
       QuerySnapshot existingReview = await _firestore
           .collection('users')
           .doc(widget.employeeId)
@@ -51,7 +92,6 @@ class _ReviewPageState extends State<ReviewPage> {
           .get();
 
       if (existingReview.docs.isNotEmpty) {
-        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text('You have already reviewed this order.')),
@@ -62,17 +102,35 @@ class _ReviewPageState extends State<ReviewPage> {
         return;
       }
 
-      // **جلب بيانات المستخدم والعامل**
+      // **Fetch user and employee data**
       DocumentSnapshot userDoc =
           await _firestore.collection('users').doc(userId).get();
       DocumentSnapshot empDoc =
           await _firestore.collection('users').doc(widget.employeeId).get();
 
-      if (!userDoc.exists || !empDoc.exists) {
-        debugPrint('Error: User or Employee document does not exist.');
+      if (!userDoc.exists) {
+        debugPrint('Error: User document does not exist.');
         return;
       }
 
+      // ✅ **Ensure `reviewsNum` and `rating` exist before accessing them**
+      Map<String, dynamic>? empData = empDoc.data() as Map<String, dynamic>?;
+
+      int totalReviews =
+          int.tryParse(empData?['reviewsNum']?.toString() ?? '0') ?? 0;
+      double currentRating =
+          double.tryParse(empData?['rating']?.toString() ?? '0.0') ?? 0.0;
+      double newReviewRating = rating;
+
+      totalReviews += 1;
+      double newAverageRating =
+          ((currentRating * (totalReviews - 1)) + newReviewRating) /
+              totalReviews;
+
+      debugPrint('Updated reviewsNum: $totalReviews');
+      debugPrint('Updated rating: ${newAverageRating.toStringAsFixed(1)}');
+
+      // **Submit the review**
       String userName = userDoc['name'] ?? 'Anonymous';
       String reviewId = _firestore.collection('reviews').doc().id;
 
@@ -83,14 +141,10 @@ class _ReviewPageState extends State<ReviewPage> {
         'orderId': widget.orderId,
         'name': userName,
         'review': _reviewController.text.trim(),
-        'rating':
-            rating.toStringAsFixed(1), // تخزين الريتينج كنص بفاصلة عشرية واحدة
+        'rating': rating.toStringAsFixed(1),
         'date': FieldValue.serverTimestamp(),
       };
 
-      debugPrint('Submitting Review Data: $reviewData');
-
-      // **إضافة الريفيو الجديد**
       await _firestore
           .collection('users')
           .doc(widget.employeeId)
@@ -103,46 +157,25 @@ class _ReviewPageState extends State<ReviewPage> {
           .doc(userId)
           .collection('completedOrders')
           .doc(widget.orderId)
-          .update({
-        'reviewed': true, // ✅ تحديث حالة الطلب ليصبح مراجعًا
-      });
+          .update({'reviewed': true});
 
       await _firestore
           .collection('users')
           .doc(widget.employeeId)
           .collection('completedOrders')
           .doc(widget.orderId)
-          .update({
-        'reviewed': true, // ✅ تحديث حالة الطلب ليصبح مراجعًا
-      });
+          .update({'reviewed': true});
 
-      // **تحويل `reviewsNum` و `rating` إلى أرقام وإعادة حساب المتوسط**
-      int totalReviews =
-          int.tryParse(empDoc['reviewsNum']?.toString() ?? '0') ?? 0;
-      double currentRating =
-          double.tryParse(empDoc['rating']?.toString() ?? '0.0') ?? 0.0;
-      double newReviewRating = rating;
-
-      // **حساب متوسط التقييم الجديد**
-      totalReviews += 1;
-      double newAverageRating =
-          ((currentRating * (totalReviews - 1)) + newReviewRating) /
-              totalReviews;
-
-      // **التأكد من أن القيم يتم تحديثها بشكل صحيح**
+      // ✅ **Ensure that `reviewsNum` and `rating` exist before updating**
       await _firestore.collection('users').doc(widget.employeeId).set(
-          {
-            'reviewsNum': totalReviews.toString(), // تخزين العدد كنص
-            'rating': newAverageRating
-                .toStringAsFixed(1), // تخزين الريتينج بفاصلة عشرية واحدة كنص
-          },
-          SetOptions(
-              merge: true)); // **استخدام `merge` لتجنب فقدان البيانات الأخرى**
+        {
+          'reviewsNum': totalReviews.toString(),
+          'rating': newAverageRating.toStringAsFixed(1),
+        },
+        SetOptions(merge: true),
+      );
 
-      debugPrint('Updated reviewsNum: ${totalReviews.toString()}');
-      debugPrint('Updated rating: ${newAverageRating.toStringAsFixed(1)}');
-
-      debugPrint('Review submitted successfully!');
+      debugPrint('✅ Review submitted successfully!');
       if (!mounted) return;
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(

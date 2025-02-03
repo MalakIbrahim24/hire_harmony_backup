@@ -14,10 +14,11 @@ class AccountDeletionScreen extends StatelessWidget {
       home: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.surface,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           elevation: 0,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: Theme.of(context).colorScheme.primary),
+            icon: Icon(Icons.arrow_back_ios,
+                color: Theme.of(context).colorScheme.primary),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -83,7 +84,7 @@ class _AccountDeletionBodyState extends State<AccountDeletionBody> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor:Theme.of(context).colorScheme.surface,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           shadowColor: Theme.of(context).colorScheme.tertiary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
@@ -286,9 +287,14 @@ class _AccountDeletionBodyState extends State<AccountDeletionBody> {
         // Continue with account deletion...
         final DocumentSnapshot userData =
             await _firestore.collection('users').doc(user.uid).get();
+        debugPrint(userData.toString());
+        await _firestore.collection('deleted_users').doc(user.uid).set({
+          'selectedReason': selectedReason,
+        }, SetOptions(merge: true));
 
         await _firestore.collection('deleted_users').doc(user.uid).set(
               userData.data() as Map<String, dynamic>,
+              SetOptions(merge: true),
             );
 
         await _firestore.collection('users').doc(user.uid).delete();

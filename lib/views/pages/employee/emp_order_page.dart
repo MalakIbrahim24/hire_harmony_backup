@@ -13,6 +13,7 @@ class EmpOrderPage extends StatefulWidget {
 }
 
 class _EmpOrderPageState extends State<EmpOrderPage> {
+  final _firestore = FirebaseFirestore.instance;
   @override
   void initState() {
     super.initState();
@@ -22,13 +23,17 @@ class _EmpOrderPageState extends State<EmpOrderPage> {
     final workerRef =
         FirebaseFirestore.instance.collection('users').doc(workerId);
 
-    // جلب عدد الطلبات المكتملة الفعلي من الـ subcollection
+    // Ensure the field exists without overwriting other data
+    await workerRef.set({'completedOrdersCount': 0}, SetOptions(merge: true));
+
+    // Get the actual count of completed orders from the subcollection
     final completedOrdersRef = workerRef.collection('completedOrders');
     final completedOrdersSnapshot = await completedOrdersRef.get();
-    int completedOrdersCount =
-        completedOrdersSnapshot.size; // استخدام size بدل docs.length
+    int completedOrdersCount = completedOrdersSnapshot.size;
 
-    // تحديث العدد في الـ user document
+    debugPrint("🔥 Completed Orders Count: $completedOrdersCount");
+
+    // Update ONLY the 'completedOrdersCount' field without affecting others
     await workerRef.update({'completedOrdersCount': completedOrdersCount});
 
     print(
@@ -85,8 +90,8 @@ class _EmpOrderPageState extends State<EmpOrderPage> {
 
       // Close the chat room
       final chatId = employeeId.compareTo(customerId) < 0
-          ? '$employeeId$customerId'
-          : '$customerId$employeeId';
+          ? '${employeeId}_$customerId'
+          : '${customerId}_$employeeId';
 
       await firestore.collection('chat_rooms').doc(chatId).update({
         'chatController': 'closed',
@@ -322,25 +327,23 @@ class _EmpOrderPageState extends State<EmpOrderPage> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const CircleAvatar(
                           radius: 24,
-                          backgroundImage: AssetImage(
-                              'assets/images/placeholder.png'), // Replace with local placeholder if needed
+                          backgroundImage: NetworkImage(
+                              'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg'), // Replace with local placeholder if needed
                         );
                       }
 
                       if (snapshot.hasError ||
                           !snapshot.hasData ||
                           snapshot.data!.data() == null) {
-                        return const CircleAvatar(
-                          radius: 24,
-                          backgroundImage: AssetImage(
-                              'assets/images/placeholder.png'), // Replace with local placeholder if needed
+                        return const Center(
+                          child: Text(
+                              'There is an error, feel free to contact us'),
                         );
                       }
 
                       final userData =
                           snapshot.data!.data() as Map<String, dynamic>;
-                      final imgUrl =
-                          userData['img'] ?? 'https://via.placeholder.com/150';
+                      final imgUrl = userData['img'];
 
                       return CircleAvatar(
                         radius: 24,
@@ -453,25 +456,23 @@ class _EmpOrderPageState extends State<EmpOrderPage> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const CircleAvatar(
                           radius: 24,
-                          backgroundImage: AssetImage(
-                              'assets/images/placeholder.png'), // Replace with local placeholder if needed
+                          backgroundImage: NetworkImage(
+                              'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg'), // Replace with local placeholder if needed
                         );
                       }
 
                       if (snapshot.hasError ||
                           !snapshot.hasData ||
                           snapshot.data!.data() == null) {
-                        return const CircleAvatar(
-                          radius: 24,
-                          backgroundImage: AssetImage(
-                              'assets/images/placeholder.png'), // Replace with local placeholder if needed
+                        return const Center(
+                          child: Text(
+                              'There is an error, feel free to contact us'),
                         );
                       }
 
                       final userData =
                           snapshot.data!.data() as Map<String, dynamic>;
-                      final imgUrl =
-                          userData['img'] ?? 'https://via.placeholder.com/150';
+                      final imgUrl = userData['img'];
 
                       return CircleAvatar(
                         radius: 24,

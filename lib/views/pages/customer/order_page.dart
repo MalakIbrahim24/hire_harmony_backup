@@ -295,12 +295,17 @@ class _OrderPageState extends State<OrderPage>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            orderName,
-                            style: GoogleFonts.montserratAlternates(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors().navy,
+                          Expanded(
+                            child: Text(
+                              orderName,
+                              maxLines: 5,
+                              softWrap: true, // السماح بالتفاف النص
+                              overflow: TextOverflow.visible,
+                              style: GoogleFonts.montserratAlternates(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors().navy,
+                              ),
                             ),
                           ),
                           Icon(
