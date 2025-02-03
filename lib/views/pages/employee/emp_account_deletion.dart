@@ -366,7 +366,7 @@ class _AccountDeletionBodyState extends State<AccountDeletionBody> {
           email: user.email!,
           password: password,
         );
-        await user?.reauthenticateWithCredential(credential);
+        await user.reauthenticateWithCredential(credential);
       }
 
       await getUserCategories(user!.uid);
@@ -376,13 +376,14 @@ class _AccountDeletionBodyState extends State<AccountDeletionBody> {
 
       // 🔹 حذف الحساب من Firebase Authentication
 
-      if (user != null) {
+      
         await user.delete();
-      }
+      
 
       // 🔹 توجيه المستخدم إلى صفحة تسجيل الدخول
       if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(
+        // ignore: use_build_context_synchronously
         context,
         AppRoutes.loginPage,
         (Route<dynamic> route) => route.settings.name == AppRoutes.welcomePage,
@@ -391,6 +392,7 @@ class _AccountDeletionBodyState extends State<AccountDeletionBody> {
       debugPrint('✅ الحساب تم حذفه بنجاح');
     } catch (e) {
       debugPrint('❌ خطأ أثناء حذف الحساب: $e');
+      // ignore: use_build_context_synchronously
       _showErrorDialog(context, 'فشل حذف الحساب، حاول مرة أخرى.');
     }
   }

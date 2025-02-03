@@ -108,7 +108,6 @@ class _ViewAllCategoriesPageState extends State<ViewAllCategoriesPage> {
                   itemBuilder: (context, index) {
                     final category = filteredCategories[index]['data']
                         as Map<String, dynamic>;
-                    final categoryId = filteredCategories[index]['id'];
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(

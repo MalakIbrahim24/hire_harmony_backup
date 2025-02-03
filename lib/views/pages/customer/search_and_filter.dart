@@ -20,7 +20,7 @@ class _SearchAndFilterState extends State<SearchAndFilter> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100.0),
+        preferredSize: const Size.fromHeight(80.0),
         child: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Theme.of(context).colorScheme.surface,
@@ -28,7 +28,7 @@ class _SearchAndFilterState extends State<SearchAndFilter> {
           flexibleSpace: SafeArea(
             child: Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
               child: Row(
                 children: [
                   IconButton(
@@ -80,11 +80,11 @@ class _SearchAndFilterState extends State<SearchAndFilter> {
                               });
                             },
                             child: SizedBox(
-                              width: 20,
+                              width: 60,
                               height: 25,
                               child: Center(
                                 child: Text(
-                                  "x",
+                                  "clear",
                                   style: TextStyle(
                                     color:
                                         Theme.of(context).colorScheme.primary,
@@ -216,14 +216,13 @@ class _SearchAndFilterState extends State<SearchAndFilter> {
                               const Icon(Icons.star,
                                   color: Colors.amber, size: 20),
                               const SizedBox(width: 8),
-                             Text(
-  '${employee['rating']?.toString() ?? '0.0'} (${employee['reviewsNum']?.toString() ?? '0'}) reviews',
-  style: TextStyle(
-    fontSize: 13,
-    color: Theme.of(context).colorScheme.primary,
-  ),
-),
-
+                              Text(
+                                '${employee['rating']?.toString() ?? '0.0'} (${employee['reviewsNum']?.toString() ?? '0'}) reviews',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
                             ],
                           ),
                         ],

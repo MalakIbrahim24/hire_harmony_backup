@@ -60,7 +60,7 @@ class _CommunityState extends State<Community> {
         title: Text(
           'Bartering',
           style: GoogleFonts.montserratAlternates(
-            color: AppColors().navy,
+            color: Theme.of(context).colorScheme.primary,
             fontSize: 20,
           ),
         ),

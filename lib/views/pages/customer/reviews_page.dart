@@ -51,6 +51,7 @@ class _ReviewPageState extends State<ReviewPage> {
           .get();
 
       if (existingReview.docs.isNotEmpty) {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text('You have already reviewed this order.')),
@@ -142,6 +143,7 @@ class _ReviewPageState extends State<ReviewPage> {
       debugPrint('Updated rating: ${newAverageRating.toStringAsFixed(1)}');
 
       debugPrint('Review submitted successfully!');
+      if (!mounted) return;
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Review submitted successfully!')),

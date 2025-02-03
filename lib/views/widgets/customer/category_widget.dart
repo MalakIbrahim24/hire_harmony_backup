@@ -42,7 +42,7 @@ class _CategoryWidgetState extends State<CategoryWidget> {
               final category =
                   categories[index]['data'] as Map<String, dynamic>;
               final categoryTitle = category['name'] ?? 'Unknown Title';
-              final categoryId = categories[index]['id']; // استخراج categoryId
+              // استخراج categoryId
 
               return InkWell(
                 onTap: () {

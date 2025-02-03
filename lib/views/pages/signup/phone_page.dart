@@ -218,7 +218,7 @@ class _PhonePageState extends State<PhonePage> {
   // Verify OTP and register the user
   Future<void> verifyOtpAndRegister(
       Map<String, dynamic> formData, List<String> categories) async {
-    const availability = 'available';
+    const availability = 'true';
     const state = 'accepted';
     const img =
         'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg';

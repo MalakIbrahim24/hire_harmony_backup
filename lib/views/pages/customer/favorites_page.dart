@@ -60,7 +60,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
             color: Theme.of(context).colorScheme.primary,
           ),
         ),
-      backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         iconTheme: IconThemeData(color: AppColors().navy),
       ),
@@ -81,8 +81,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
               child: Text(
                 'No favorites added yet!',
                 style: GoogleFonts.montserratAlternates(
-                color: Theme.of(context).colorScheme.primary,
-
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             );
@@ -123,8 +122,16 @@ class _FavoritesPageState extends State<FavoritesPage> {
                       favorite['img'] ?? 'https://via.placeholder.com/150',
                     ),
                   ),
-                  title: Text(favorite['name'] ?? 'Unnamed Employee'),
-                  subtitle: Text(favorite['location'] ?? 'Unknown location'),
+                  title: Text(
+                    favorite['name'] is String
+                        ? favorite['name']
+                        : 'Unnamed Employee',
+                  ),
+                  subtitle: Text(
+                    favorite['location'] is Map<String, dynamic>
+                        ? 'Lat: ${favorite['location']['latitude']}, Long: ${favorite['location']['longitude']}'
+                        : 'Unknown location',
+                  ),
                   trailing: IconButton(
                     icon: const Icon(
                       Icons.favorite,

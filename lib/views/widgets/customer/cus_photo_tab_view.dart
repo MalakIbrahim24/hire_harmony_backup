@@ -1,12 +1,11 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 
 class CusPhotoTabView extends StatefulWidget {
-  final String employeeId; // Pass employee ID to fetch their serviceImages
+  final String employeeId;
 
   const CusPhotoTabView({super.key, required this.employeeId});
 
@@ -20,34 +19,31 @@ class _CusPhotoTabViewState extends State<CusPhotoTabView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:Theme.of(context).colorScheme.surface,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Previous Work Photos',
-                  style: GoogleFonts.montserratAlternates(
-                    textStyle: TextStyle(
-                      fontSize: 14,
-                      color: AppColors().grey,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+            Text(
+              'Previous Work Photos',
+              style: GoogleFonts.montserratAlternates(
+                textStyle: TextStyle(
+                  fontSize: 14,
+                  color: AppColors().grey,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
+              ),
             ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
+            const SizedBox(height: 16),
+
+            /// Firestore Stream to Fetch Images
+            Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('users')
-                    .doc(widget.employeeId) // Use the employee's ID
+                    .doc(widget.employeeId)
                     .collection('serviceImages')
                     .snapshots(),
                 builder: (context, snapshot) {
@@ -55,45 +51,41 @@ class _CusPhotoTabViewState extends State<CusPhotoTabView> {
                     return const Center(child: CircularProgressIndicator());
                   }
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 70.0, horizontal: 100),
-                      child: Center(
-                        child: Text(
-                          "No photos added yet",
-                          style: TextStyle(color: Colors.grey),
-                        ),
+                    return const Center(
+                      child: Text(
+                        "No photos added yet",
+                        style: TextStyle(color: Colors.grey),
                       ),
                     );
                   }
 
-                  return Row(
-                    children: snapshot.data!.docs.map((doc) {
-                      // Safely retrieve the 'url' and 'title' fields
-                      Map<String, dynamic>? data =
-                          doc.data() as Map<String, dynamic>?;
+                  /// Convert Firestore documents to a list
+                  var photos = snapshot.data!.docs.map((doc) {
+                    Map<String, dynamic>? data =
+                        doc.data() as Map<String, dynamic>?;
 
-                      String imageUrl = data?['url'] ?? ''; // Default to empty string if missing
-                      String imageTitle = data != null && data.containsKey('title')
-                          ? data['title']
-                          : 'Untitled'; // Default to 'Untitled' if missing
+                    String imageUrl = data?['url'] ?? '';
+                    String imageTitle = data?['title'] ?? 'Untitled';
 
-                      return WorkPhotoCard(
-                        image: Image.network(
-                          imageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Center(
-                              child: Text(
-                                "Image not found",
-                                style: TextStyle(color: Colors.red),
-                              ),
-                            );
-                          },
-                        ),
-                        title: imageTitle,
-                      );
-                    }).toList(),
+                    return WorkPhotoCard(
+                      imageUrl: imageUrl,
+                      title: imageTitle,
+                    );
+                  }).toList();
+
+                  return GridView.builder(
+                    padding: const EdgeInsets.only(top: 8),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2, // Two images per row
+                      crossAxisSpacing: 10, // Space between columns
+                      mainAxisSpacing: 10, // Space between rows
+                      childAspectRatio: 1.0, // Square images
+                    ),
+                    itemCount: photos.length,
+                    itemBuilder: (context, index) {
+                      return photos[index]; // Display each photo in grid
+                    },
                   );
                 },
               ),
@@ -105,43 +97,50 @@ class _CusPhotoTabViewState extends State<CusPhotoTabView> {
   }
 }
 
-// WorkPhotoCard widget
+/// WorkPhotoCard Widget to Display Each Image
 class WorkPhotoCard extends StatelessWidget {
-  final Image image; // Image widget passed directly
-  final String title; // Title for the card
+  final String imageUrl;
+  final String title;
 
   const WorkPhotoCard({
     super.key,
-    required this.image,
+    required this.imageUrl,
     required this.title,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(right: 8),
-      width: 180,
-      height: 150,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
       ),
       child: Stack(
         children: [
-          // Display the image
+          /// Display the image
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: SizedBox(
+            child: Image.network(
+              imageUrl,
               width: double.infinity,
               height: double.infinity,
-              child: image, // Use the provided Image widget directly
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Center(
+                  child: Text(
+                    "Image not found",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                );
+              },
             ),
           ),
-          // Add title overlay at the bottom
+
+          /// Title overlay at the bottom
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
               width: double.infinity,
-              color: Colors.black.withValues(alpha: 0.6),
+              color: Colors.black.withOpacity(0.6),
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Text(
                 title,

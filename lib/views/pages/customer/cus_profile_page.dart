@@ -144,16 +144,16 @@ class _CusProfilePageState extends State<CusProfilePage> {
                     userData!['name'] ?? 'Unnamed User',
                     style: GoogleFonts.montserratAlternates(
                       fontSize: 20,
-                      color: AppColors().navy,
                       fontWeight: FontWeight.w500,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   Text(
                     userData!['email'] ?? 'No email provided',
                     style: GoogleFonts.montserratAlternates(
                       fontSize: 12,
-                      color: AppColors().navy,
                       fontWeight: FontWeight.w500,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   const SizedBox(height: 20),

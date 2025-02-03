@@ -28,15 +28,16 @@ class _AdvertisementScreenState extends State<AdvertisementScreen> {
           .delete();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("Advertisement deleted successfully."),
           backgroundColor: Colors.red,
         ),
       );
     } catch (e) {
       print("Error deleting advertisement: $e");
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("Failed to delete advertisement."),
           backgroundColor: Colors.red,
         ),
@@ -49,20 +50,20 @@ class _AdvertisementScreenState extends State<AdvertisementScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Confirm Delete"),
-          content: Text(
+          title: const Text("Confirm Delete"),
+          content: const Text(
               "Are you sure you want to delete this advertisement? This action cannot be undone."),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context), // Cancel
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
             ),
             TextButton(
               onPressed: () {
                 Navigator.pop(context); // Close dialog
                 _deleteAdvertisement(adId); // Delete advertisement
               },
-              child: Text("Delete", style: TextStyle(color: Colors.red)),
+              child: const Text("Delete", style: TextStyle(color: Colors.red)),
             ),
           ],
         );

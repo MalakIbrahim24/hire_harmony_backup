@@ -9,39 +9,49 @@ import 'package:hire_harmony/services/chat/chat_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/pages/notifcation_service.dart';
 
-class Chatepage extends StatelessWidget {
+class Chatepage extends StatefulWidget {
   final String reciverEmail;
   final String reciverID;
   final String? reciverName;
   final String? chatController;
 
-  final ChatServices _chatServices = ChatServices();
-  final AuthServices _authServices = AuthServicesImpl();
-  final TextEditingController _messageController = TextEditingController();
-  final ScrollController _scrollController =
-      ScrollController(); // ScrollController
-      String fcmToken = "";
-      
-  Chatepage(
+
+  const Chatepage(
       {super.key,
       required this.reciverEmail,
       required this.reciverID,
       this.reciverName,
       this.chatController});
 
+  @override
+  State<Chatepage> createState() => _ChatepageState();
+}
+
+class _ChatepageState extends State<Chatepage> {
+  final ChatServices _chatServices = ChatServices();
+
+  final AuthServices _authServices = AuthServicesImpl();
+
+  final TextEditingController _messageController = TextEditingController();
+
+  final ScrollController _scrollController =
+      ScrollController(); 
+ // ScrollController
+      String fcmToken = "";
+
    void sendMessage() async {
   if (_messageController.text.isNotEmpty) {
     try {
       // 1. إرسال الرسالة إلى Firestore
       await _chatServices.sendMessages(
-        reciverID,
+        widget.reciverID,
         _messageController.text,
       );
 
       // 2. الحصول على Token الخاص بالمستلم
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection("users")
-          .doc(reciverID)
+          .doc(widget.reciverID)
           .get();
 
       if (userDoc.exists && userDoc.data() != null) {
@@ -65,7 +75,6 @@ class Chatepage extends StatelessWidget {
     }
   }
 }
-
 
   void _scrollToBottom() {
     // Scroll to bottom
@@ -98,9 +107,9 @@ class Chatepage extends StatelessWidget {
     final String currentUserID = _authServices.getCurrentUser()!.uid;
 
     // Generate chatRoomID in a consistent order
-    final String chatRoomID = currentUserID.compareTo(reciverID) < 0
-        ? '${currentUserID}_$reciverID'
-        : '${reciverID}_$currentUserID';
+    final String chatRoomID = currentUserID.compareTo(widget.reciverID) < 0
+        ? '${currentUserID}_${widget.reciverID}'
+        : '${widget.reciverID}_$currentUserID';
 
     return FutureBuilder<String>(
       future: _getChatControllerStatus(chatRoomID),
@@ -124,7 +133,7 @@ class Chatepage extends StatelessWidget {
           return Scaffold(
             appBar: AppBar(
               title: Text(
-                reciverName ?? 'Unknown',
+                widget.reciverName ?? 'Unknown',
                 style: TextStyle(color: Theme.of(context).colorScheme.primary),
               ),
               backgroundColor: Theme.of(context).colorScheme.surface,
@@ -156,7 +165,7 @@ class Chatepage extends StatelessWidget {
           return Scaffold(
             appBar: AppBar(
               title: Text(
-                reciverName ?? 'Unknown',
+                widget.reciverName ?? 'Unknown',
                 style: TextStyle(color: Theme.of(context).colorScheme.primary),
               ),
               backgroundColor: Theme.of(context).colorScheme.surface,
@@ -191,7 +200,7 @@ class Chatepage extends StatelessWidget {
     final senderID = _authServices.getCurrentUser()!.uid;
 
     return StreamBuilder(
-      stream: _chatServices.getMessage(senderID, reciverID),
+      stream: _chatServices.getMessage(senderID, widget.reciverID),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Text("ERROR");

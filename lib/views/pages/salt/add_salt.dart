@@ -62,38 +62,41 @@ class AddSalt {
     TextEditingController confirmPasswordController = TextEditingController();
 
     bool? confirmed = await showDialog(
+      // ignore: use_build_context_synchronously
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Update Password"),
+          title: const Text("Update Password"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: currentPasswordController,
                 obscureText: true,
-                decoration: InputDecoration(labelText: "Current Password"),
+                decoration:
+                    const InputDecoration(labelText: "Current Password"),
               ),
               TextField(
                 controller: newPasswordController,
                 obscureText: true,
-                decoration: InputDecoration(labelText: "New Password"),
+                decoration: const InputDecoration(labelText: "New Password"),
               ),
               TextField(
                 controller: confirmPasswordController,
                 obscureText: true,
-                decoration: InputDecoration(labelText: "Confirm New Password"),
+                decoration:
+                    const InputDecoration(labelText: "Confirm New Password"),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: Text("Update"),
+              child: const Text("Update"),
             ),
           ],
         );

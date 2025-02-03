@@ -25,6 +25,19 @@ class _PhotoTabViewState extends State<PhotoTabView> {
         "PhotoTabView initialized with employeeId: ${widget.employeeId}");
   }
 
+  Future<void> _deletePhoto(String documentId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.employeeId)
+          .collection('serviceImages')
+          .doc(documentId)
+          .delete();
+    } catch (e) {
+      debugPrint("Error deleting photo: $e");
+    }
+  }
+
   Future<void> _addPhoto() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
@@ -198,10 +211,8 @@ class _PhotoTabViewState extends State<PhotoTabView> {
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return const Center(
-            child: Text(
-              "No photos added yet",
-              style: TextStyle(color: Colors.grey),
-            ),
+            child: Text("No photos added yet",
+                style: TextStyle(color: Colors.grey)),
           );
         }
 
@@ -211,13 +222,16 @@ class _PhotoTabViewState extends State<PhotoTabView> {
             children: snapshot.data!.docs.map((doc) {
               Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
 
-              String imageUrl = data?['url'] ??
-                  'https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg';
+              String imageUrl =
+                  data?['url'] ?? 'https://via.placeholder.com/150';
               String imageTitle = data?['title'] ?? 'Untitled';
+              String documentId = doc.id;
 
               return WorkPhotoCard(
                 imageUrl: imageUrl,
                 title: imageTitle,
+                documentId: documentId,
+                onDelete: () => _deletePhoto(documentId),
               );
             }).toList(),
           ),
@@ -227,15 +241,18 @@ class _PhotoTabViewState extends State<PhotoTabView> {
   }
 }
 
-// WorkPhotoCard widget
 class WorkPhotoCard extends StatelessWidget {
   final String imageUrl;
   final String title;
+  final String documentId;
+  final VoidCallback onDelete;
 
   const WorkPhotoCard({
     super.key,
     required this.imageUrl,
     required this.title,
+    required this.documentId,
+    required this.onDelete,
   });
 
   @override
@@ -244,9 +261,7 @@ class WorkPhotoCard extends StatelessWidget {
       margin: const EdgeInsets.only(right: 8),
       width: 180,
       height: 180,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-      ),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: Stack(
         children: [
           ClipRRect(
@@ -258,11 +273,41 @@ class WorkPhotoCard extends StatelessWidget {
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return const Center(
-                  child: Text(
-                    "Image not found",
-                    style: TextStyle(color: Colors.red),
+                  child: Text("Image not found",
+                      style: TextStyle(color: Colors.red)),
+                );
+              },
+            ),
+          ),
+          Positioned(
+            top: 5,
+            right: 5,
+            child: IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red),
+              onPressed: () async {
+                final confirmDelete = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text("Delete Photo"),
+                    content: const Text(
+                        "Are you sure you want to delete this photo?"),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text("Cancel"),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text("Delete",
+                            style: TextStyle(color: Colors.red)),
+                      ),
+                    ],
                   ),
                 );
+
+                if (confirmDelete == true) {
+                  onDelete();
+                }
               },
             ),
           ),
@@ -276,10 +321,9 @@ class WorkPhotoCard extends StatelessWidget {
                 title,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold),
               ),
             ),
           ),

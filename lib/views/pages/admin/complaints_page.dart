@@ -59,11 +59,13 @@ class _ComplaintsPageState extends State<ComplaintsPage> {
       await firestore.collection('chat_rooms').doc(chatRoomID).update({
         'chatController': 'closed',
       });
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Complaint marked as resolved!')),
       );
     } catch (e) {
       debugPrint("Error resolving complaint: $e");
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to resolve complaint: $e')),
       );
@@ -134,6 +136,7 @@ class _ComplaintsPageState extends State<ComplaintsPage> {
     final userDoc =
         await FirebaseFirestore.instance.collection('users').doc(userId).get();
     if (!userDoc.exists) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('User not found!')),
       );

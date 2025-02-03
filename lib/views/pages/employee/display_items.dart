@@ -28,7 +28,7 @@ class _DisplayItemsState extends State<DisplayItems> {
           .delete();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("Item deleted successfully."),
           backgroundColor: Colors.red,
         ),
@@ -36,7 +36,7 @@ class _DisplayItemsState extends State<DisplayItems> {
     } catch (e) {
       print("Error deleting item: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("Failed to delete item."),
           backgroundColor: Colors.red,
         ),
@@ -49,20 +49,20 @@ class _DisplayItemsState extends State<DisplayItems> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Confirm Delete"),
-          content: Text(
+          title: const Text("Confirm Delete"),
+          content: const Text(
               "Are you sure you want to delete this item? This action cannot be undone."),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context), // Cancel
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
             ),
             TextButton(
               onPressed: () {
                 Navigator.pop(context); // Close dialog
                 _deleteItem(itemId); // Delete item
               },
-              child: Text("Delete", style: TextStyle(color: Colors.red)),
+              child: const Text("Delete", style: TextStyle(color: Colors.red)),
             ),
           ],
         );

@@ -78,18 +78,21 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                   NavigationDestination(
                     selectedIcon: Icon(
                       Icons.message,
-                      color: AppColors().white,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     icon: Icon(
                       Icons.message_outlined,
-                      color: AppColors().navy,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     label: 'Messages',
                   ),
                   NavigationDestination(
                     selectedIcon: Stack(
                       children: [
-                        Icon(Icons.list, color: AppColors().white),
+                        Icon(
+                          Icons.list,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                         if (_pendingOrdersCount > 0)
                           Positioned(
                             right: -5,
@@ -114,7 +117,10 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                     ),
                     icon: Stack(
                       children: [
-                        Icon(Icons.list_alt_outlined, color: AppColors().navy),
+                        Icon(
+                          Icons.list_alt_outlined,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                         if (_pendingOrdersCount > 0)
                           Positioned(
                             right: -5,
@@ -142,33 +148,33 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                   NavigationDestination(
                     selectedIcon: Icon(
                       Icons.home,
-                      color: AppColors().white,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     icon: Icon(
                       Icons.home_outlined,
-                      color: AppColors().navy,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     label: 'Home',
                   ),
                   NavigationDestination(
                     selectedIcon: Icon(
                       Icons.living,
-                      color: AppColors().white,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     icon: Icon(
                       Icons.living_outlined,
-                      color: AppColors().navy,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     label: 'Mart',
                   ),
                   NavigationDestination(
                     selectedIcon: Icon(
                       Icons.person,
-                      color: AppColors().white,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     icon: Icon(
                       Icons.person_2_outlined,
-                      color: AppColors().navy,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     label: 'Profile',
                   ),

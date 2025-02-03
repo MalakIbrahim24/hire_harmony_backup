@@ -245,7 +245,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
                       itemCount: users.length,
                       itemBuilder: (context, index) {
                         final user = users[index];
-                        final userid = user['uid']?.toString() ?? '';
 
                         return Card(
                           margin: const EdgeInsets.symmetric(
