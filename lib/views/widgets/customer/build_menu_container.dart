@@ -94,11 +94,7 @@ class _buildMenuContainerState extends State<buildMenuContainer> {
         'text': 'Favorites',
         'route': const FavoritesPage(),
       },
-      {
-        'icon': Icons.info,
-        'text': 'Delete Account',
-        'route': const AccountDeletionScreen(),
-      },
+   
       {
         'icon': Icons.contact_page,
         'text': 'Contact us',
@@ -108,11 +104,6 @@ class _buildMenuContainerState extends State<buildMenuContainer> {
         'icon': Icons.settings,
         'text': 'Settings',
         'route': const SettingsPage(),
-      },
-      {
-        'icon': Icons.card_membership_outlined,
-        'text': 'Tickets',
-        'route': const TicketsPage(),
       },
       {
         'icon': Icons.logout,

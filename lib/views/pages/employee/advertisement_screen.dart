@@ -75,11 +75,9 @@ class _AdvertisementScreenState extends State<AdvertisementScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor: AppColors().white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: const Text("Advertisements"),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -101,8 +99,13 @@ class _AdvertisementScreenState extends State<AdvertisementScreen> {
             }
 
             if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return const Center(
-                child: Text("No advertisements yet. Add one!"),
+              return Center(
+                child: Text(
+                  "No advertisements yet. Add one!",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
               );
             }
 

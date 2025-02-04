@@ -23,7 +23,7 @@ class TicketsPage extends StatelessWidget {
             'Tickets',
             style: GoogleFonts.montserratAlternates(
               fontSize: 22,
-              color: AppColors().navy,
+              color: Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -58,18 +58,21 @@ class TicketsPage extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors().navy,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
-                icon: const Icon(Icons.add),
+                icon: Icon(
+                  Icons.add,
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                ),
                 label: Text(
                   'Add Ticket',
                   style: TextStyle(
                     fontSize: 18,
-                    color: AppColors().white,
+                    color: Theme.of(context).colorScheme.inversePrimary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -133,6 +136,9 @@ class TicketsList extends StatelessWidget {
           return Center(
             child: Text(
               'No ${state == 'resolved' ? 'resolved' : 'unresolved'} tickets found.',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
           );
         }
@@ -172,7 +178,7 @@ class TicketCard extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
       decoration: BoxDecoration(
-        color: AppColors().navy,
+        color: Theme.of(context).colorScheme.primary,
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: Column(
@@ -181,7 +187,7 @@ class TicketCard extends StatelessWidget {
           Text(
             description,
             style: TextStyle(
-              color: AppColors().white,
+              color: Theme.of(context).colorScheme.inversePrimary,
               fontSize: 14.0,
             ),
           ),
@@ -189,7 +195,8 @@ class TicketCard extends StatelessWidget {
           Text(
             'This ticket has been sent to the admin.',
             style: TextStyle(
-              color: AppColors().white.withAlpha(180),
+              color:
+                  Theme.of(context).colorScheme.inversePrimary.withAlpha(180),
               fontSize: 12.0,
               fontStyle: FontStyle.italic,
             ),
@@ -197,7 +204,8 @@ class TicketCard extends StatelessWidget {
           Text(
             response,
             style: TextStyle(
-              color: AppColors().white.withAlpha(180),
+              color:
+                  Theme.of(context).colorScheme.inversePrimary.withAlpha(180),
               fontSize: 12.0,
               fontStyle: FontStyle.italic,
             ),

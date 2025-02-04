@@ -198,9 +198,23 @@ class _LoginFormState extends State<LoginForm> {
                         context,
                         AppRoutes.adnnavPage);
                   } else if (state is AuthCusSuccess) {
+                    final user = await authServices.currentUser();
+                    final device = await getDeviceInfo();
+                    FirestoreService.instance.logActivity(
+                      uid: user!.uid,
+                      action: "Customer logged in",
+                      device: device,
+                    );
                     Navigator.pushReplacementNamed(
                         context, AppRoutes.customButtomNavbarPage);
                   } else if (state is AuthEmpSuccess) {
+                    final user = await authServices.currentUser();
+                    final device = await getDeviceInfo();
+                    FirestoreService.instance.logActivity(
+                      uid: user!.uid,
+                      action: "Employee logged in",
+                      device: device,
+                    );
                     Navigator.pushReplacementNamed(
                         context, AppRoutes.empNavbar);
                   } else if (state is AuthFailure) {

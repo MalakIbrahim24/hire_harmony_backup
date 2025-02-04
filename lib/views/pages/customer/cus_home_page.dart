@@ -25,12 +25,30 @@ class CusHomePage extends StatefulWidget {
 
 class _CusHomePageState extends State<CusHomePage> {
   final String? userId = FirebaseAuth.instance.currentUser?.uid;
+  String _userName = "User";
 
   @override
   void initState() {
     super.initState();
     _checkUserLocation();
-    updateCategoryWorkerCounts();
+    /* updateCategoryWorkerCounts();*/
+    _fetchUserName();
+  }
+
+  void _fetchUserName() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users') // Change this to your Firestore collection name
+          .doc(user.uid)
+          .get();
+
+      if (userDoc.exists) {
+        setState(() {
+          _userName = userDoc.data()?['name'] ?? "User"; // Fetch name field
+        });
+      }
+    }
   }
 
   Future<void> updateCategoryWorkerCounts() async {
@@ -171,13 +189,20 @@ class _CusHomePageState extends State<CusHomePage> {
               children: [
                 Row(
                   children: [
-                    Icon(
-                      Icons.location_on,
-                      color: AppColors().white,
+                    Text(
+                      'Hi $_userName',
+                      style: GoogleFonts.montserratAlternates(
+                        fontSize: 20,
+                        color: AppColors().white,
+                      ),
                     ),
-                    Text('Qalqiliya , palestine',
-                        style: GoogleFonts.montserratAlternates(
-                            color: AppColors().white, fontSize: 16)),
+                    RichText(
+                        text: TextSpan(
+                      style: GoogleFonts.montserratAlternates(
+                        fontSize: 16,
+                        color: AppColors().navy, // Default color
+                      ),
+                    )),
                   ],
                 ),
                 Image.asset(
@@ -366,8 +391,10 @@ class _CusHomePageState extends State<CusHomePage> {
                       const SizedBox(height: 16),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors().white,
-                          foregroundColor: AppColors().navy,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.surface,
+                          foregroundColor:
+                              Theme.of(context).colorScheme.primary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
@@ -395,7 +422,7 @@ class _CusHomePageState extends State<CusHomePage> {
                               style: GoogleFonts.montserratAlternates(
                                 textStyle: TextStyle(
                                   fontSize: 14,
-                                  color: AppColors().navy,
+                                  color: Theme.of(context).colorScheme.primary,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -423,27 +450,6 @@ class _CusHomePageState extends State<CusHomePage> {
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const ViewAllBestWorkersPage(),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        'View all >',
-                        style: GoogleFonts.montserratAlternates(
-                          textStyle: TextStyle(
-                            fontSize: 13,
-                            color: AppColors().orange,
-                            fontWeight: FontWeight.bold,
-                          ),
                         ),
                       ),
                     ),

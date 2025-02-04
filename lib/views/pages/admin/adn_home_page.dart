@@ -1,4 +1,6 @@
 import 'dart:ui';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,10 +17,29 @@ class AdnHomePage extends StatefulWidget {
 }
 
 class _AdnHomePageState extends State<AdnHomePage> {
+  String _userName = "User"; // Default name if not fetched
+
   @override
   void initState() {
     super.initState();
     BlocProvider.of<AdnHomeCubit>(context).loadData();
+    _fetchUserName();
+  }
+
+  void _fetchUserName() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users') // Change this to your Firestore collection name
+          .doc(user.uid)
+          .get();
+
+      if (userDoc.exists) {
+        setState(() {
+          _userName = userDoc.data()?['name'] ?? "User"; // Fetch name field
+        });
+      }
+    }
   }
 
   @override
@@ -46,7 +67,7 @@ class _AdnHomePageState extends State<AdnHomePage> {
               children: [
                 Positioned.fill(
                   child: Image.asset(
-                    'lib/assets/images/notf.jpg',
+                    'lib/assets/images/logo_navy.PNG',
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -72,7 +93,7 @@ class _AdnHomePageState extends State<AdnHomePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Hi Malak',
+                                  'Hi $_userName',
                                   style: GoogleFonts.montserratAlternates(
                                     fontSize: 28,
                                     color: AppColors().white,
@@ -100,65 +121,65 @@ class _AdnHomePageState extends State<AdnHomePage> {
                                 ),
                               ],
                             ),
-                            BlocBuilder<AdnHomeCubit, AdnHomeState>(
-                              builder: (context, state) {
-                                int unreadCount = 0;
-                                if (state is AdnHomeLoaded) {
-                                  unreadCount = state.unreadNotificationsCount;
-                                }
+                            // BlocBuilder<AdnHomeCubit, AdnHomeState>(
+                            //   builder: (context, state) {
+                            //     int unreadCount = 0;
+                            //     if (state is AdnHomeLoaded) {
+                            //       unreadCount = state.unreadNotificationsCount;
+                            //     }
 
-                                return InkWell(
-                                  onTap: () async {
-                                    await Navigator.pushNamed(context,
-                                        AppRoutes.adnnotificationsPage);
+                            // return InkWell(
+                            //   onTap: () async {
+                            //     await Navigator.pushNamed(context,
+                            //         AppRoutes.adnnotificationsPage);
 
-                                    // Reset unread count when returning
-                                    final cubit =
-                                        // ignore: use_build_context_synchronously
-                                        BlocProvider.of<AdnHomeCubit>(context);
-                                    cubit.resetUnreadNotifications();
-                                  },
-                                  child: Stack(
-                                    children: [
-                                      CircleAvatar(
-                                        backgroundColor: AppColors().navy,
-                                        child: const Icon(
-                                          Icons.notifications_active,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      if (unreadCount >
-                                          0) // Show badge only if unread count > 0
-                                        Positioned(
-                                          right: 0,
-                                          top: 0,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(6),
-                                            decoration: BoxDecoration(
-                                              color: Colors.red,
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            constraints: const BoxConstraints(
-                                              minWidth: 20,
-                                              minHeight: 20,
-                                            ),
-                                            child: Text(
-                                              '$unreadCount',
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
+                            //     // Reset unread count when returning
+                            //     final cubit =
+                            //         // ignore: use_build_context_synchronously
+                            //         BlocProvider.of<AdnHomeCubit>(context);
+                            //     cubit.resetUnreadNotifications();
+                            //   },
+                            //   child: Stack(
+                            //     children: [
+                            //       CircleAvatar(
+                            //         backgroundColor: AppColors().navy,
+                            //         child: const Icon(
+                            //           Icons.notifications_active,
+                            //           color: Colors.white,
+                            //         ),
+                            //       ),
+                            //       if (unreadCount >
+                            //           0) // Show badge only if unread count > 0
+                            //         Positioned(
+                            //           right: 0,
+                            //           top: 0,
+                            //           child: Container(
+                            //             padding: const EdgeInsets.all(6),
+                            //             decoration: BoxDecoration(
+                            //               color: Colors.red,
+                            //               borderRadius:
+                            //                   BorderRadius.circular(12),
+                            //             ),
+                            //             constraints: const BoxConstraints(
+                            //               minWidth: 20,
+                            //               minHeight: 20,
+                            //             ),
+                            //             child: Text(
+                            //               '$unreadCount',
+                            //               style: const TextStyle(
+                            //                 color: Colors.white,
+                            //                 fontSize: 12,
+                            //                 fontWeight: FontWeight.bold,
+                            //               ),
+                            //               textAlign: TextAlign.center,
+                            //             ),
+                            //           ),
+                            //         ),
+                            //     ],
+                            //   ),
+                            // );
+                            //},
+                            // ),
                           ],
                         ),
                         const SizedBox(height: 20),

@@ -1,6 +1,5 @@
 // ignore_for_file: file_names
 
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hire_harmony/component/chat_bubble.dart';
@@ -8,13 +7,13 @@ import 'package:hire_harmony/services/auth_services.dart';
 import 'package:hire_harmony/services/chat/chat_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/pages/notifcation_service.dart';
+import 'package:hire_harmony/views/widgets/shimmer_page.dart';
 
 class Chatepage extends StatefulWidget {
   final String reciverEmail;
   final String reciverID;
   final String? reciverName;
   final String? chatController;
-
 
   const Chatepage(
       {super.key,
@@ -34,47 +33,44 @@ class _ChatepageState extends State<Chatepage> {
 
   final TextEditingController _messageController = TextEditingController();
 
-  final ScrollController _scrollController =
-      ScrollController(); 
- // ScrollController
-      String fcmToken = "";
+  final ScrollController _scrollController = ScrollController();
+  // ScrollController
+  String fcmToken = "";
 
-   void sendMessage() async {
-  if (_messageController.text.isNotEmpty) {
-    try {
-      // 1. إرسال الرسالة إلى Firestore
-      await _chatServices.sendMessages(
-        widget.reciverID,
-        _messageController.text,
-      );
-
-      // 2. الحصول على Token الخاص بالمستلم
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection("users")
-          .doc(widget.reciverID)
-          .get();
-
-      if (userDoc.exists && userDoc.data() != null) {
-        fcmToken = userDoc.get("fcmToken") ?? "";
-
-        // 3. إرسال إشعار عبر FCM إذا كان هناك FCM Token
-        if (fcmToken.isNotEmpty) {
-          LocalNotificationService.sendNotification(
-            title: 'New message',
-            message: _messageController.text,
-            token: fcmToken,
-          );
-        }
-      }
-
-      // 4. مسح حقل الإدخال بعد الإرسال
+  void sendMessage() async {
+    if (_messageController.text.isNotEmpty) {
+      String message = _messageController.text;
       _messageController.clear();
       _scrollToBottom();
-    } catch (e) {
-      print("Error sending message: $e");
+      try {
+        // 1. إرسال الرسالة إلى Firestore
+        await _chatServices.sendMessages(widget.reciverID, message);
+
+        // 2. الحصول على Token الخاص بالمستلم
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection("users")
+            .doc(widget.reciverID)
+            .get();
+
+        if (userDoc.exists && userDoc.data() != null) {
+          fcmToken = userDoc.get("fcmToken") ?? "";
+
+          // 3. إرسال إشعار عبر FCM إذا كان هناك FCM Token
+          if (fcmToken.isNotEmpty) {
+            LocalNotificationService.sendNotification(
+              title: 'New message',
+              message: message,
+              token: fcmToken,
+            );
+          }
+        }
+
+        // 4. مسح حقل الإدخال بعد الإرسال
+      } catch (e) {
+        print("Error sending message: $e");
+      }
     }
   }
-}
 
   void _scrollToBottom() {
     // Scroll to bottom
@@ -115,10 +111,7 @@ class _ChatepageState extends State<Chatepage> {
       future: _getChatControllerStatus(chatRoomID),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('Loading Chat...')),
-            body: const Center(child: CircularProgressIndicator()),
-          );
+          const Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError) {
@@ -206,7 +199,7 @@ class _ChatepageState extends State<Chatepage> {
           return const Text("ERROR");
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Text("Loading ...");
+          return const ShimmerPage();
         }
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return const Text("No messages yet.");
@@ -249,10 +242,6 @@ class _ChatepageState extends State<Chatepage> {
       color: Colors.grey[200],
       child: Row(
         children: [
-          IconButton(
-            icon: Icon(Icons.attach_file, color: Colors.grey[600]),
-            onPressed: () {},
-          ),
           Expanded(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),

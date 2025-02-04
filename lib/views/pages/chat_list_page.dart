@@ -68,7 +68,7 @@ class _ChatListPageState extends State<ChatListPage> {
             'No conversations found.',
             style: GoogleFonts.montserratAlternates(
               fontSize: 18,
-              color: AppColors().navy,
+                        color: Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.bold,
             ),
           ),

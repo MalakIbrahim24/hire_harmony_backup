@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/pages/employee/add_item.dart';
+import 'package:hire_harmony/views/widgets/shimmer_page.dart';
+import 'package:shimmer/shimmer.dart';
 
 class DisplayItems extends StatefulWidget {
   const DisplayItems({super.key});
@@ -74,14 +76,21 @@ class _DisplayItemsState extends State<DisplayItems> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor: AppColors().white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: const Text("Items"),
-        backgroundColor: Colors.white,
+        title: Text(
+          "Items",
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
         foregroundColor: Colors.black,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -96,12 +105,17 @@ class _DisplayItemsState extends State<DisplayItems> {
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const ShimmerPage();
             }
 
             if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return const Center(
-                child: Text("No items yet. Add one!"),
+              return Center(
+                child: Text(
+                  "No items yet. Add one!",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
               );
             }
 

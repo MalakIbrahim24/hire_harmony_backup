@@ -86,7 +86,7 @@ class _AddAdvertisementPageState extends State<AddAdvertisementPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors().white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: const Text("Add Advertisement"),
       ),
@@ -101,7 +101,7 @@ class _AddAdvertisementPageState extends State<AddAdvertisementPage> {
                     ? Container(
                         height: 150,
                         width: double.infinity,
-                        color: Colors.grey.shade200,
+                        color: Theme.of(context).colorScheme.tertiary,
                         child: const Icon(Icons.add_a_photo, size: 50),
                       )
                     : Image.file(
@@ -124,8 +124,19 @@ class _AddAdvertisementPageState extends State<AddAdvertisementPage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors().orange,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                ),
                 onPressed: _uploadAdvertisement,
-                child: const Text("Add Advertisement"),
+                child: Text(
+                  "Add Advertisement",
+                  style: TextStyle(
+                    color: AppColors().white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),

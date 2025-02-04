@@ -3,8 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
+import 'package:hire_harmony/views/pages/chatePage.dart';
 //import 'package:hire_harmony/views/pages/chatePage.dart';
 //import 'package:hire_harmony/views/pages/chatePage.dart';
+import 'package:hire_harmony/views/pages/employee/reviews_page.dart';
+import 'package:hire_harmony/views/pages/map_page.dart';
 import 'package:hire_harmony/views/widgets/customer/cus_photo_tab_view.dart';
 import 'package:hire_harmony/views/widgets/employee/reviews_tab_view.dart';
 
@@ -128,15 +131,12 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
     }
 
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(30.0),
-        child: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.grey),
-            onPressed: () => Navigator.pop(context),
-          ),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.grey),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Stack(
@@ -173,7 +173,7 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                           style: GoogleFonts.montserratAlternates(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.inversePrimary,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -192,6 +192,61 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                             ),
                           ],
                         ),
+                        if (employeeData!.containsKey('Address') &&
+                            employeeData!['Address'] != null)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top: 8.0), // مسافة صغيرة قبل العنوان
+                            child: Center(
+                              child: Text(
+                                employeeData![
+                                    'Address'], // عرض العنوان من Firestore
+                                style: GoogleFonts.montserratAlternates(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors().orange,
+                                ),
+                              ),
+                            ),
+                          ),
+                        if (employeeData!.containsKey('location') &&
+                            employeeData!['location'] != null &&
+                            employeeData!['location']['latitude'] != null &&
+                            employeeData!['location']['longitude'] != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16.0),
+                            child: Center(
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MapScreen(
+                                          employeeId: widget.employeeId),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.location_on,
+                                    color: Colors.white),
+                                label: Text(
+                                  'See Location',
+                                  style: GoogleFonts.montserratAlternates(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors().orange,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(24),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -206,7 +261,7 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                         style: GoogleFonts.montserratAlternates(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.inversePrimary,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                       IconButton(
@@ -240,7 +295,7 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                           style: GoogleFonts.montserratAlternates(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.inversePrimary,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -252,8 +307,7 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
-                                color:
-                                    AppColors().orange.withValues(alpha: 0.1),
+                                color: AppColors().orange.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
                                     color: AppColors().orange, width: 1),
@@ -435,10 +489,8 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                                               .collection('recievedRequests')
                                               .doc(requestId)
                                               .set(requestData);
-                                          if (!mounted) return;
-                                          // ignore: use_build_context_synchronously
+
                                           Navigator.pop(context);
-                                          // ignore: use_build_context_synchronously
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
                                             const SnackBar(
@@ -448,7 +500,6 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                                         } catch (e) {
                                           debugPrint(
                                               'Error sending request: $e');
-                                          // ignore: use_build_context_synchronously
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
                                             const SnackBar(
@@ -469,8 +520,8 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                           }
                         : null, // ❌ تعطيل الزر إذا لم يكن متاحًا
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors().orange.withValues(
-                          alpha: isAvailable
+                      backgroundColor: AppColors().orange.withOpacity(
+                          isAvailable
                               ? 1.0
                               : 0.5), // ❌ تغيير اللون ليظهر كأنه غير نشط
                       padding: const EdgeInsets.symmetric(

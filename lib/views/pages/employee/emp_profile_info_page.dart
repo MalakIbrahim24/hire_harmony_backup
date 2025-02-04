@@ -49,6 +49,8 @@ class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
   bool _isEditing = false;
   String aboutMe = '';
   final TextEditingController _aboutMeController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+
   num reviewsNum = 0;
   List<Map<String, dynamic>> reviews = [];
   List<String> services = []; // Added missing services list
@@ -246,7 +248,10 @@ class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
           profileImageUrl =
               data['img']?.toString() ?? 'https://via.placeholder.com/150';
           name = data['name']?.toString() ?? 'Unknown Name';
-          location = data['location']?.toString() ?? 'Unknown Location';
+          location = data['Address']?.toString() ?? 'Unknown Location';
+          _locationController.text = location;
+// تحديث `TextEditingController`
+          // تحديث الحقل عند تحميل البيانات
           rating = data['rating']?.toString() ?? '0.0';
           aboutMe = data['about']?.toString() ?? 'No description available.';
           _aboutMeController.text = aboutMe;
@@ -268,7 +273,6 @@ class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
         await _firestore.collection('bestworker').doc(user.uid).update({
           'servNum': services.length.toString(),
         });
-        
 
         debugPrint('✅ servNum updated on data fetch: ${services.length}');
 
@@ -297,7 +301,8 @@ class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
             'rating': reviewData['rating']?.toString() ?? '0.0',
             'date': reviewData['date']?.toString() ?? '',
             'review': reviewData['review']?.toString() ?? '',
-            'image': reviewData['image']?.toString() ??'https://via.placeholder.com/50',
+            'image': reviewData['image']?.toString() ??
+                'https://via.placeholder.com/50',
           };
         }).toList();
         isLoading = false;
@@ -305,6 +310,26 @@ class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
     } catch (e) {
       debugPrint('Error fetching employee data: $e');
       setState(() => isLoading = false);
+    }
+  }
+
+  Future<void> _saveLocation() async {
+    try {
+      final User? user = _auth.currentUser;
+      if (user == null) return;
+
+      await _firestore.collection('users').doc(user.uid).set({
+        'Address': _locationController.text,
+      }, SetOptions(merge: true)); // يمنع الكتابة فوق البيانات الأخرى
+
+      setState(() {
+        location = _locationController.text;
+        _isEditing = false;
+      });
+
+      debugPrint("Location updated successfully: $location");
+    } catch (e) {
+      debugPrint('Error saving location: $e');
     }
   }
 
@@ -316,7 +341,7 @@ class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
         title: Text(
           'Profile',
           style: GoogleFonts.montserratAlternates(
-            color: Theme.of(context).colorScheme.inversePrimary,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,
@@ -330,7 +355,8 @@ class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
             ),
             onPressed: () {
               if (_isEditing) {
-                _saveAboutMe(); // حفظ التغييرات
+                _saveAboutMe();
+                _saveLocation();
               } else {
                 setState(() {
                   _isEditing = true; // تفعيل وضع التعديل
@@ -376,13 +402,23 @@ class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Text(
-                          location,
-                          style: GoogleFonts.montserratAlternates(
-                            fontSize: 14,
-                            color: Colors.grey,
-                          ),
-                        ),
+                        _isEditing
+                            ? TextField(
+                                controller: _locationController,
+                                decoration: InputDecoration(
+                                  hintText: 'Enter your location',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              )
+                            : Text(
+                                location,
+                                style: GoogleFonts.montserratAlternates(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
+                              ),
                         Text(
                           '$rating ($reviewsNum reviews)',
                           style: GoogleFonts.montserratAlternates(

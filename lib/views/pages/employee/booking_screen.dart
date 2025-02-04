@@ -14,19 +14,21 @@ class BookingScreen extends StatelessWidget {
     return DefaultTabController(
       length: 3, // عدد التبويبات
       child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: AppBar(
-          backgroundColor: Colors.white,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            icon: Icon(Icons.arrow_back,
+                color: Theme.of(context).colorScheme.primary),
             onPressed: () {
               Navigator.pop(context);
               // الرجوع للخلف
             },
           ),
-          title: const Text(
+          title: Text(
             'Booking',
-            style: TextStyle(color: Colors.black, fontSize: 18),
+            style: TextStyle(
+                color: Theme.of(context).colorScheme.primary, fontSize: 18),
           ),
           bottom: TabBar(
             dividerColor: AppColors().transparent,
@@ -867,13 +869,19 @@ class BookingHistoryTab extends StatelessWidget {
                             children: [
                               Text(
                                 name,
-                                style: const TextStyle(
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              Text(description),
+                              Text(
+                                description,
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
                               const SizedBox(height: 4),
                               Text(
                                 'Confirmed on $formattedDate at $formattedTime',

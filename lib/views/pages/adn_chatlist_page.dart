@@ -7,6 +7,7 @@ import 'package:hire_harmony/services/auth_services.dart';
 import 'package:hire_harmony/services/chat/chat_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/pages/chatePage.dart';
+import 'package:hire_harmony/views/widgets/shimmer_page.dart';
 
 class AdnChatlistPage extends StatefulWidget {
   const AdnChatlistPage({super.key});
@@ -45,7 +46,7 @@ class _AdnChatlistPageState extends State<AdnChatlistPage> {
       body: Stack(children: [
         Positioned.fill(
           child: Image.asset(
-            'lib/assets/images/notf.jpg',
+            'lib/assets/images/logo_navy.PNG',
             fit: BoxFit.cover,
           ),
         ),
@@ -72,7 +73,7 @@ class _AdnChatlistPageState extends State<AdnChatlistPage> {
           return const Center(child: Text('An error occurred.'));
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const ShimmerPage();
         }
         if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
           return ListView(
@@ -116,7 +117,7 @@ class _AdnChatlistPageState extends State<AdnChatlistPage> {
       builder: (context, snapshot) {
         if (!mounted) return const SizedBox.shrink();
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const ShimmerPage();
         }
 
         if (snapshot.data == null || snapshot.data!.data() == null) {

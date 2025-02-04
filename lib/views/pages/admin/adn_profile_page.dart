@@ -87,7 +87,7 @@ class _AdnProfilePageState extends State<AdnProfilePage> {
             body: Stack(children: [
               Positioned.fill(
                 child: Image.asset(
-                  'lib/assets/images/notf.jpg',
+                  'lib/assets/images/logo_navy.PNG',
                   fit: BoxFit.cover,
                 ),
               ),

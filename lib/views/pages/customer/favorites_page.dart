@@ -62,7 +62,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
-        iconTheme: IconThemeData(color: AppColors().navy),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.primary),
       ),
       body: StreamBuilder<List<Map<String, dynamic>>>(
         stream: _fetchFavorites(),
@@ -126,11 +126,44 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     favorite['name'] is String
                         ? favorite['name']
                         : 'Unnamed Employee',
+                    style: GoogleFonts.montserratAlternates(
+                      fontSize: 14,
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  subtitle: Text(
-                    favorite['location'] is Map<String, dynamic>
-                        ? 'Lat: ${favorite['location']['latitude']}, Long: ${favorite['location']['longitude']}'
-                        : 'Unknown location',
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 8), // مسافة بين النص والزر
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors().orange,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ViewEmpProfilePage(
+                                employeeId: favoriteId,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'View Profile',
+                          style: GoogleFonts.montserratAlternates(
+                            textStyle: TextStyle(
+                              fontSize: 14,
+                              color: AppColors().white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   trailing: IconButton(
                     icon: const Icon(

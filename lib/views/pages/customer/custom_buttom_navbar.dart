@@ -59,7 +59,7 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                     textStyle: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
-                      color: AppColors().navy,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ),
@@ -70,7 +70,10 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
                     currentPageIndex = index;
                   });
                 },
-                backgroundColor: AppColors().white.withValues(alpha: 0.85),
+                backgroundColor: Theme.of(context)
+                    .colorScheme
+                    .surface
+                    .withValues(alpha: 0.85),
                 indicatorColor: AppColors().orange,
                 selectedIndex: currentPageIndex,
                 elevation: 0,

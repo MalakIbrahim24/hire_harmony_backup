@@ -267,7 +267,7 @@ class _EmpOrderPageState extends State<EmpOrderPage> {
               'Error fetching $status orders. Please try again later.',
               style: GoogleFonts.montserratAlternates(
                 fontSize: 16,
-                color: AppColors().navy,
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -398,7 +398,7 @@ class _EmpOrderPageState extends State<EmpOrderPage> {
               'Error fetching orders. Please try again later.',
               style: GoogleFonts.montserratAlternates(
                 fontSize: 16,
-                color: AppColors().navy,
+                        color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),

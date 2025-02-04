@@ -62,15 +62,18 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  width: 160, // زيادة العرض قليلاً لتحسين تناسق النصوص
+                  width: 160, // زيادة العرض قليلاً لتحسين تناسق النصوصq
                   decoration: BoxDecoration(
-                    color: AppColors().white,
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius:
                         BorderRadius.circular(16), // جعل الحواف أكثر نعومة
 
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors().navy.withAlpha(150), // إضافة ظل خفيف
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withAlpha(100), // إضافة ظل خفيف
                         blurRadius: 6, // تقليل التمويه لإبقاء الظل ناعمًا
                         offset: const Offset(0, 4), // تحديد اتجاه الظل
                       ),
@@ -83,7 +86,7 @@ class _CategoryWidgetState extends State<CategoryWidget> {
                       style: GoogleFonts.montserrat(
                         textStyle: TextStyle(
                           fontSize: 13, // زيادة حجم النص قليلاً
-                          color: AppColors().navy,
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.w600, // جعل النص أكثر سماكة
                           letterSpacing:
                               0.5, // إضافة مسافة بين الحروف لتحسين القراءة

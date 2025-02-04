@@ -34,16 +34,17 @@ class ReviewsTapView extends StatelessWidget {
         debugPrint("Total reviews: ${reviews.length}");
 
         return ListView.builder(
-
           padding: const EdgeInsets.all(10),
           itemCount: reviews.length,
           itemBuilder: (context, index) {
             final data = reviews[index].data() as Map<String, dynamic>;
             final reviewerName = data['name'] ?? 'Anonymous';
             final reviewText = data['review'] ?? '';
-                final String reviewerId = data['customerId'] ?? ''; // 🔹 جلب ID المراجع
+            final String reviewerId =
+                data['customerId'] ?? ''; // 🔹 جلب ID المراجع
 
-            final double rating = double.tryParse(data['rating']?.toString() ?? '0.0') ?? 0.0;
+            final double rating =
+                double.tryParse(data['rating']?.toString() ?? '0.0') ?? 0.0;
 
             // تحويل Timestamp إلى تاريخ مقروء
             final Timestamp? timestamp = data['date'] as Timestamp?;
@@ -69,48 +70,61 @@ class ReviewsTapView extends StatelessWidget {
                         Row(
                           children: [
                             FutureBuilder<DocumentSnapshot>(
-  future: FirebaseFirestore.instance.collection('users').doc(reviewerId).get(),
-  builder: (context, snapshot) {
-    if (snapshot.connectionState == ConnectionState.waiting) {
-      return const CircleAvatar(
-        backgroundColor: Colors.grey, 
-        child: Icon(Icons.person, color: Colors.white),
-      );
-    }
+                              future: FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(reviewerId)
+                                  .get(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const CircleAvatar(
+                                    backgroundColor: Colors.grey,
+                                    child:
+                                        Icon(Icons.person, color: Colors.white),
+                                  );
+                                }
 
-    if (!snapshot.hasData || !snapshot.data!.exists) {
-      return CircleAvatar(
-        backgroundColor: AppColors().lightblue,
-        child: Text(
-          reviewerName.isNotEmpty ? reviewerName[0].toUpperCase() : 'A',
-          style: const TextStyle(color: Colors.white),
-        ),
-      );
-    }
+                                if (!snapshot.hasData ||
+                                    !snapshot.data!.exists) {
+                                  return CircleAvatar(
+                                    backgroundColor: AppColors().lightblue,
+                                    child: Text(
+                                      reviewerName.isNotEmpty
+                                          ? reviewerName[0].toUpperCase()
+                                          : 'A',
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                  );
+                                }
 
-    final userData = snapshot.data!.data() as Map<String, dynamic>;
-    final String imageUrl = userData['img'] ?? '';
+                                final userData = snapshot.data!.data()
+                                    as Map<String, dynamic>;
+                                final String imageUrl = userData['img'] ?? '';
 
-    return CircleAvatar(
-      backgroundColor: Colors.transparent,
-      backgroundImage: imageUrl.isNotEmpty
-          ? NetworkImage(imageUrl)
-          : null, // تحميل الصورة إذا كانت متاحة
-      child: imageUrl.isEmpty
-          ? Text(
-              reviewerName.isNotEmpty ? reviewerName[0].toUpperCase() : 'A',
-              style: const TextStyle(color: Colors.white),
-            )
-          : null, // إذا لم يكن هناك صورة، استخدم أول حرف من الاسم
-    );
-  },
-),
-
+                                return CircleAvatar(
+                                  backgroundColor: Colors.transparent,
+                                  backgroundImage: imageUrl.isNotEmpty
+                                      ? NetworkImage(imageUrl)
+                                      : null, // تحميل الصورة إذا كانت متاحة
+                                  child: imageUrl.isEmpty
+                                      ? Text(
+                                          reviewerName.isNotEmpty
+                                              ? reviewerName[0].toUpperCase()
+                                              : 'A',
+                                          style: const TextStyle(
+                                              color: Colors.white),
+                                        )
+                                      : null, // إذا لم يكن هناك صورة، استخدم أول حرف من الاسم
+                                );
+                              },
+                            ),
                             const SizedBox(width: 10),
                             Text(
                               reviewerName,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
+                                color: Theme.of(context).colorScheme.primary,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -143,7 +157,9 @@ class ReviewsTapView extends StatelessWidget {
                     // 🔹 نص التقييم
                     Text(
                       reviewText,
-                      style: const TextStyle(fontSize: 14),
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: Theme.of(context).colorScheme.primary),
                     ),
                   ],
                 ),

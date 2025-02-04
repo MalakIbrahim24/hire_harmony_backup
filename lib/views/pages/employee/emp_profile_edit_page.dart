@@ -50,7 +50,7 @@ class _EmpProfileEditPageState extends State<EmpProfileEditPage> {
       if (doc.exists) {
         setState(() {
           _nameController.text = doc['name'] ?? '';
-          _imageUrl = doc['img'] ?? 'https://via.placeholder.com/150';
+          _imageUrl = doc['img']!;
         });
       }
     } catch (e) {
@@ -256,7 +256,7 @@ class _EmpProfileEditPageState extends State<EmpProfileEditPage> {
                     backgroundImage: _tempImageUrl != null
                         ? FileImage(File(_tempImageUrl!))
                         : NetworkImage(
-                            _imageUrl ?? 'https://via.placeholder.com/150',
+                            _imageUrl ?? '',
                           ) as ImageProvider,
                   ),
                   const Icon(Icons.edit, color: Colors.white, size: 24),
@@ -266,6 +266,7 @@ class _EmpProfileEditPageState extends State<EmpProfileEditPage> {
             const SizedBox(height: 20),
             TextFormField(
               controller: _nameController,
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
               decoration: InputDecoration(
                 labelText: "Name",
                 border: OutlineInputBorder(
@@ -277,6 +278,7 @@ class _EmpProfileEditPageState extends State<EmpProfileEditPage> {
             TextFormField(
               controller: _passwordController,
               obscureText: !_isPasswordVisible,
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
               decoration: InputDecoration(
                 labelText: "New Password",
                 border: OutlineInputBorder(
@@ -300,6 +302,7 @@ class _EmpProfileEditPageState extends State<EmpProfileEditPage> {
             TextFormField(
               controller: _confirmPasswordController,
               obscureText: !_isConfirmPasswordVisible,
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
               decoration: InputDecoration(
                 labelText: "Confirm Password",
                 border: OutlineInputBorder(

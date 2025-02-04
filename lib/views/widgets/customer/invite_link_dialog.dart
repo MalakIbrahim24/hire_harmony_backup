@@ -23,7 +23,7 @@ class InviteLinkDialog extends StatelessWidget {
         children: [
           Text("Invite Link",
               style: GoogleFonts.montserratAlternates(
-                color: AppColors().navy,
+                color: Theme.of(context).colorScheme.primary,
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
               )),

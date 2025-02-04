@@ -18,7 +18,7 @@ class _DeletedAcountsState extends State<DeletedAcounts> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor: AppColors().transparent,
+      backgroundColor: AppColors().white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: Padding(
@@ -38,7 +38,7 @@ class _DeletedAcountsState extends State<DeletedAcounts> {
       body: Stack(children: [
         Positioned.fill(
           child: Image.asset(
-            'lib/assets/images/notf.jpg',
+            'lib/assets/images/logo_navy.PNG',
             fit: BoxFit.cover,
           ),
         ),

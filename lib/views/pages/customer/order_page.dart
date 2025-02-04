@@ -167,7 +167,7 @@ class _OrderPageState extends State<OrderPage>
               'No pending requests found.',
               style: GoogleFonts.montserratAlternates(
                 fontSize: 18,
-                color: AppColors().navy,
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -235,7 +235,7 @@ class _OrderPageState extends State<OrderPage>
               isCompleted ? 'No completed orders found.' : 'No orders found.',
               style: GoogleFonts.montserratAlternates(
                 fontSize: 18,
-                color: AppColors().navy,
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),

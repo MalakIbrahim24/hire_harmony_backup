@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/widgets/customer/build_menu_container.dart';
 import 'package:hire_harmony/views/widgets/customer/state_item.dart';
+import 'package:hire_harmony/views/widgets/shimmer_page.dart';
 
 class CusProfilePage extends StatefulWidget {
   const CusProfilePage({super.key});
@@ -120,14 +121,14 @@ class _CusProfilePageState extends State<CusProfilePage> {
           elevation: 0,
           title: Text(
             'Profile',
-            style: TextStyle(
+            style: GoogleFonts.montserratAlternates(
                 color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
         ),
         body: userData == null
-            ? const Center(child: CircularProgressIndicator())
+            ? const ShimmerPage()
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [

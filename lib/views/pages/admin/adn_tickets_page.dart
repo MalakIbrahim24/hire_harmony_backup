@@ -51,7 +51,7 @@ class AdnTicketsPage extends StatelessWidget {
             // Background Image
             Positioned.fill(
               child: Image.asset(
-                'lib/assets/images/notf.jpg',
+                'lib/assets/images/logo_navy.PNG',
                 fit: BoxFit.cover,
               ),
             ),

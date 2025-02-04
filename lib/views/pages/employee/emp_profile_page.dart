@@ -175,14 +175,17 @@ class _EmpProfilePageState extends State<EmpProfilePage> {
                 CircleAvatar(
                   radius: 50,
                   backgroundImage: NetworkImage(
-                    _imageUrl ?? 'https://via.placeholder.com/150',
+                    _imageUrl!,
                   ),
                 ),
                 const SizedBox(height: 10),
                 Text(
                   _nameController.text,
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
                 Text(
                   _emailController.text,
@@ -248,7 +251,7 @@ class _EmpProfilePageState extends State<EmpProfilePage> {
                           },
                         ),
                         EmpBuildMenuContainer(
-                          title: 'Setting',
+                          title: 'Settings',
                           icon: Icons.settings,
                           onTap: () {
                             Navigator.push(

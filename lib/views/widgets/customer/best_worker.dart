@@ -107,7 +107,7 @@ class WorkerCard extends StatelessWidget {
         height: 270, // 🔹 تثبيت ارتفاع البطاقة
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -164,7 +164,7 @@ class WorkerCard extends StatelessWidget {
                   textStyle: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: AppColors().navy,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ),
@@ -211,7 +211,7 @@ class WorkerCard extends StatelessWidget {
                           textStyle: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            color: AppColors().navy,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ),
@@ -228,7 +228,7 @@ class WorkerCard extends StatelessWidget {
                           textStyle: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
-                            color: AppColors().navy,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ),
@@ -243,7 +243,7 @@ class WorkerCard extends StatelessWidget {
               width: 140,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors().navy,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                   padding: const EdgeInsets.symmetric(vertical: 2),
@@ -261,10 +261,10 @@ class WorkerCard extends StatelessWidget {
                 child: Text(
                   'View Profile',
                   style: GoogleFonts.montserratAlternates(
-                    textStyle: const TextStyle(
+                    textStyle: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.inversePrimary,
                     ),
                   ),
                 ),

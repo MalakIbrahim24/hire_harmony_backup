@@ -117,6 +117,7 @@ class _LocationPageState extends State<LocationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+  backgroundColor: Theme.of(context).colorScheme.surface,
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
@@ -132,7 +133,7 @@ class _LocationPageState extends State<LocationPage> {
                   'Hire Harmony',
                   style: GoogleFonts.montserratAlternates(
                     fontSize: 36,
-                    color: AppColors().navy,
+                        color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

@@ -86,7 +86,7 @@ class _AddItemState extends State<AddItem> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors().white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: const Text("Add Item"),
       ),
@@ -101,7 +101,7 @@ class _AddItemState extends State<AddItem> {
                     ? Container(
                         height: 150,
                         width: double.infinity,
-                        color: Colors.grey.shade200,
+                        color: Theme.of(context).colorScheme.tertiary,
                         child: const Icon(Icons.add_a_photo, size: 50),
                       )
                     : Image.file(
@@ -124,8 +124,18 @@ class _AddItemState extends State<AddItem> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors().orange,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                ),
                 onPressed: _uploaditem,
-                child: const Text("Add item"),
+                child: Text(
+                  "Add item",
+                  style: TextStyle(
+                    color: AppColors().white,
+                  ),
+                ),
               ),
             ],
           ),

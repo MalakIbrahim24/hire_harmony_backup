@@ -84,12 +84,22 @@ class _PopulerServiceState extends State<PopulerService> {
                   margin:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withAlpha(100), // إضافة ظل خفيف
+                          blurRadius: 6, // تقليل التمويه لإبقاء الظل ناعمًا
+                          offset: const Offset(0, 4), // تحديد اتجاه الظل
+                        ),
+                      ],
+                    ),
                     width: 220,
                     padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: Colors.white,
-                    ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -105,7 +115,7 @@ class _PopulerServiceState extends State<PopulerService> {
                             textStyle: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
-                              color: AppColors().navy,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ),

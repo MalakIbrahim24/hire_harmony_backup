@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
-import 'view_emp_profile_page.dart'; // Import the ViewEmpProfilePage
+import 'package:hire_harmony/views/widgets/shimmer_page.dart';
+
+import 'view_emp_profile_page.dart';
 
 class Community extends StatefulWidget {
   const Community({super.key});
@@ -13,9 +15,24 @@ class Community extends StatefulWidget {
 
 class _CommunityState extends State<Community> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final TextEditingController _searchController = TextEditingController();
 
-  // Fetch items for all employees
-  Stream<List<Map<String, dynamic>>> _fetchAllEmployeeItems() async* {
+  List<Map<String, dynamic>> _allItems = [];
+  List<Map<String, dynamic>> _filteredItems = [];
+
+  bool _isLoading = true; // Track loading state
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAllEmployeeItems();
+  }
+
+  void _fetchAllEmployeeItems() async {
+    setState(() {
+      _isLoading = true; // Show loading indicator
+    });
+
     final employeesSnapshot = await _firestore
         .collection('users')
         .where('role', isEqualTo: 'employee')
@@ -49,7 +66,29 @@ class _CommunityState extends State<Community> {
       }
     }
 
-    yield allItems;
+    setState(() {
+      _allItems = allItems;
+      _filteredItems = allItems; // Initially show all items
+      _isLoading = false; // Hide loading indicator
+    });
+  }
+
+  void _filterItems(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        _filteredItems = _allItems;
+      });
+      return;
+    }
+
+    final filtered = _allItems
+        .where((item) =>
+            item['itemName'].toLowerCase().contains(query.toLowerCase()))
+        .toList();
+
+    setState(() {
+      _filteredItems = filtered;
+    });
   }
 
   @override
@@ -66,122 +105,148 @@ class _CommunityState extends State<Community> {
         ),
         automaticallyImplyLeading: false,
       ),
-      body: StreamBuilder<List<Map<String, dynamic>>>(
-        stream: _fetchAllEmployeeItems(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                'Error loading items: ${snapshot.error}',
-                style: const TextStyle(color: Colors.red),
+      body: Column(
+        children: [
+          // Search Bar
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: AppColors().orange,
+                ),
+                hintText: 'Search items...',
+                hintStyle: GoogleFonts.montserratAlternates(
+                  color: AppColors().grey2,
+                ),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-            );
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text('No items found in the community!'),
-            );
-          }
+              onChanged: _filterItems,
+            ),
+          ),
 
-          final items = snapshot.data!;
+          // Show loading indicator while fetching items
+          if (_isLoading)
+            const Expanded(
+              child: Center(
+                child: ShimmerPage(),
+              ),
+            )
+          else if (_filteredItems.isEmpty)
+            const Expanded(
+              child: Center(
+                child: Text('No items found!'),
+              ),
+            )
+          else
+            Expanded(
+              child: ListView.builder(
+                itemCount: _filteredItems.length,
+                itemBuilder: (context, index) {
+                  final item = _filteredItems[index];
 
-          return ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              final item = items[index];
-
-              return GestureDetector(
-                onTap: () {
-                  // Navigate to the ViewEmpProfilePage
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ViewEmpProfilePage(
-                        employeeId: item['employeeId'], // Pass the employeeId
-                      ),
-                    ),
-                  );
-                },
-                child: Card(
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 4,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Item Image (Full Width)
-                      ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          topRight: Radius.circular(12),
+                  return GestureDetector(
+                    onTap: () {
+                      // Navigate to the ViewEmpProfilePage
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ViewEmpProfilePage(
+                            employeeId: item['employeeId'], // Pass employeeId
+                          ),
                         ),
-                        child: Image.network(
-                          item['itemImg'],
-                          height: 200,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
+                      );
+                    },
+                    child: Card(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Item Name
-                            Text(
-                              item['itemName'],
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      elevation: 4,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Item Image (Full Width)
+                          ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(12),
+                              topRight: Radius.circular(12),
                             ),
-                            const SizedBox(height: 8),
-                            // Item About
-                            Text(
-                              item['itemAbout'],
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
+                            child: Image.network(
+                              item['itemImg'],
+                              height: 200,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
                             ),
-                            const SizedBox(height: 8),
-                            // Owner Information
-                            Row(
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                CircleAvatar(
-                                  backgroundImage:
-                                      NetworkImage(item['employeeImg']),
-                                  radius: 20,
+                                // Item Name
+                                Text(
+                                  item['itemName'],
+                                  style: GoogleFonts.montserratAlternates(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
                                 ),
-                                const SizedBox(width: 12),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                const SizedBox(height: 8),
+                                // Item About
+                                Text(
+                                  item['itemAbout'],
+                                  style: GoogleFonts.montserratAlternates(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                // Owner Information
+                                Row(
                                   children: [
-                                    Text(
-                                      'Owner: ${item['employeeName']}',
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                    CircleAvatar(
+                                      backgroundImage:
+                                          NetworkImage(item['employeeImg']),
+                                      radius: 20,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Owner: ${item['employeeName']}',
+                                          style:
+                                              GoogleFonts.montserratAlternates(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors().orange,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
+                    ),
+                  );
+                },
+              ),
+            ),
+        ],
       ),
     );
   }
