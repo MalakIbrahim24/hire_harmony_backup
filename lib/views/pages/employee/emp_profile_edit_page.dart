@@ -36,8 +36,9 @@ class _EmpProfileEditPageState extends State<EmpProfileEditPage> {
   @override
   void initState() {
     super.initState();
-    _fetchEmployeeData();
+    // _fetchEmployeeData();
   }
+
 
   Future<void> _fetchEmployeeData() async {
     try {

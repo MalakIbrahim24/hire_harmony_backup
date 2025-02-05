@@ -61,24 +61,39 @@ class _NewAccountsRequestsPageState extends State<EmployeesMaintenance> {
           return ListView.builder(
             itemCount: docs.length,
             itemBuilder: (context, index) {
-              final user = docs[index];
+              final user = docs[
+                  index]; // Move this line to be the FIRST thing inside itemBuilder
+              final userData = user.data()
+                  as Map<String, dynamic>?; // Now this has access to user
+
+              if (userData == null) return const SizedBox(); // Prevent crashes
+
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 child: ListTile(
                   leading: CircleAvatar(
-                    backgroundImage: NetworkImage(user['img']),
+                    backgroundImage: userData.containsKey('img')
+                        ? NetworkImage(userData['img'])
+                        : null,
                   ),
-                  title: Text(user['name']),
+                  title: Text(userData.containsKey('name')
+                      ? userData['name']
+                      : 'Unknown'),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(user['email']),
-                      if (user['similarity'] != null)
+                      Text(userData.containsKey('email')
+                          ? userData['email']
+                          : 'No email'),
+
+                      // Check "similarity" safely before using it
+                      if (userData.containsKey('similarity') &&
+                          userData['similarity'] != null)
                         Text(
-                          'Similarity: ${double.tryParse(user['similarity'].toString())?.toStringAsFixed(3) ?? '0.000'}%',
+                          'Similarity: ${double.tryParse(userData['similarity'].toString())?.toStringAsFixed(3) ?? '0.000'}%',
                           style: TextStyle(
-                            color: (double.tryParse(
-                                            user['similarity'].toString()) ??
+                            color: (double.tryParse(userData['similarity']
+                                            .toString()) ??
                                         0) <
                                     80
                                 ? AppColors().orange
@@ -89,7 +104,7 @@ class _NewAccountsRequestsPageState extends State<EmployeesMaintenance> {
                     ],
                   ),
                   trailing: SizedBox(
-                    width: 100, // Set the desired width of the button
+                    width: 100,
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.push(

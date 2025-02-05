@@ -41,15 +41,11 @@ class EmployeeServicesPage extends StatelessWidget {
           ),
         ),
       ),
-      body: StreamBuilder<List<Service>>(
-        stream: FirestoreService.instance.getDataStream<Service>(
-          collectionPath: 'users/$employeeId/services',
-          builder: (data, documentId) => Service(
-            id: documentId,
-            name: data['name'] ?? '',
-            description: data['description'] ?? '',
-            image: '',
-          ),
+      body: StreamBuilder<Map<String, dynamic>?>(
+        stream: FirestoreService.instance.documentStream<Map<String, dynamic>>(
+          path: 'users/$employeeId',
+          builder: (data, documentId) =>
+              data, // Return data as Map<String, dynamic>
         ),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -57,7 +53,7 @@ class EmployeeServicesPage extends StatelessWidget {
               child: Text('Error: ${snapshot.error}'),
             );
           }
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          if (!snapshot.hasData || snapshot.data == null) {
             return Center(
               child: Text(
                 'No services found for $employeeName',
@@ -68,7 +64,32 @@ class EmployeeServicesPage extends StatelessWidget {
             );
           }
 
-          final services = snapshot.data!;
+          // Extract services list safely
+          final userData = snapshot.data!;
+          final List<dynamic> servicesRaw =
+              userData.containsKey('services') ? userData['services'] : [];
+
+          // Convert to List<Service>
+          final List<Service> services = servicesRaw
+              .map((service) => Service(
+                    id: service, // Using name as ID for simplicity
+                    name: service.toString(),
+                    description: '', // No description field in Firestore
+                    image: '',
+                  ))
+              .toList();
+
+          if (services.isEmpty) {
+            return Center(
+              child: Text(
+                'No services available for $employeeName',
+                style: GoogleFonts.montserratAlternates(
+                  color: AppColors().white,
+                ),
+              ),
+            );
+          }
+
           return ListView.builder(
             padding: const EdgeInsets.all(16.0),
             itemCount: services.length,
@@ -78,9 +99,7 @@ class EmployeeServicesPage extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(vertical: 8),
                 shape: RoundedRectangleBorder(
                   side: BorderSide(
-                    color: AppColors()
-                        .navy
-                        .withValues(alpha: 0.2), // Light navy border
+                    color: AppColors().navy.withOpacity(0.2),
                     width: 1,
                   ),
                   borderRadius: BorderRadius.circular(10),
@@ -100,7 +119,9 @@ class EmployeeServicesPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        service.description,
+                        service.description.isNotEmpty
+                            ? service.description
+                            : 'No description available',
                         style: GoogleFonts.montserratAlternates(
                           fontSize: 14,
                           color: AppColors().navy,
@@ -112,7 +133,7 @@ class EmployeeServicesPage extends StatelessWidget {
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
-                                AppColors().orange.withValues(alpha: 0.8),
+                                AppColors().orange.withOpacity(0.8),
                             foregroundColor: AppColors().white,
                           ),
                           onPressed: () async {
@@ -140,19 +161,18 @@ class EmployeeServicesPage extends StatelessWidget {
                             );
 
                             if (shouldDelete == true) {
-                              await FirestoreService.instance.deleteDataa(
-                                documentPath:
-                                    'users/$employeeId/services/${service.id}',
-                                serviceName: service.name,
-                                employeeId: employeeId,
-                                employeeName: employeeName,
+                              await FirestoreService.instance.removeFromArray(
+                                documentPath: 'users/$employeeId',
+                                fieldName: 'services',
+                                value: service
+                                    .name, // Removes service from Firestore array
                               );
 
                               Fluttertoast.showToast(
                                 msg: "Service deleted successfully",
                                 textColor: AppColors().white,
                                 backgroundColor:
-                                    AppColors().orange.withValues(alpha: 0.8),
+                                    AppColors().orange.withOpacity(0.8),
                               );
                             }
                           },

@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hire_harmony/utils/theme_provider.dart';
-import 'package:hire_harmony/views/widgets/customer/build_menu_container.dart';
 import 'package:hire_harmony/views/widgets/customer/build_settings_container.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +25,7 @@ class SettingsPage extends StatelessWidget {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.tertiary,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
             ),
             margin: const EdgeInsets.all(25),

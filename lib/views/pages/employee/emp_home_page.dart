@@ -81,7 +81,7 @@ class _EmpHomePageState extends State<EmpHomePage> {
       key: _scaffoldKey,
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100),
+        preferredSize: const Size.fromHeight(80),
         child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -89,14 +89,14 @@ class _EmpHomePageState extends State<EmpHomePage> {
                 AppColors().navy,
                 AppColors().brown,
                 AppColors().orange,
-                AppColors().orangelight,
-                AppColors().white,
+                Theme.of(context).colorScheme.inversePrimary,
+                Theme.of(context).colorScheme.inversePrimary,
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           child: SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,7 +126,7 @@ class _EmpHomePageState extends State<EmpHomePage> {
                     Padding(
                       padding: const EdgeInsets.only(top: 10.0, right: 10),
                       child: Image.asset(
-                        'lib/assets/images/logo_navy.PNG',
+                        'lib/assets/images/logo_orange.PNG',
                         width: 45, // Bigger logo for better visibility
                         height: 45,
                       ),
@@ -175,7 +175,7 @@ class _EmpHomePageState extends State<EmpHomePage> {
                       children: [
                         OverviewCard(
                           title: 'Booking',
-                          icon: Icons.book_online,
+                          icon: Icons.book_online_outlined,
                           onTap: () {
                             Navigator.push(
                               context,
@@ -184,8 +184,8 @@ class _EmpHomePageState extends State<EmpHomePage> {
                               ),
                             );
                           },
-                          cardColor: AppColors().orangelight,
-                          iconColor: AppColors().navy,
+                          cardColor: Theme.of(context).colorScheme.surface,
+                          iconColor: Theme.of(context).colorScheme.primary,
                           badgeCount: pendingCount, // ✅ Display badge here
                         ),
                         OverviewCard(
@@ -200,8 +200,8 @@ class _EmpHomePageState extends State<EmpHomePage> {
                               ),
                             );
                           },
-                          cardColor: AppColors().orangelight,
-                          iconColor: AppColors().navy,
+                          cardColor: Theme.of(context).colorScheme.surface,
+                          iconColor: Theme.of(context).colorScheme.primary,
                         ),
                         OverviewCard(
                           title: 'Items',
@@ -214,8 +214,8 @@ class _EmpHomePageState extends State<EmpHomePage> {
                               ),
                             );
                           },
-                          cardColor: AppColors().orangelight,
-                          iconColor: AppColors().navy,
+                          cardColor: Theme.of(context).colorScheme.surface,
+                          iconColor: Theme.of(context).colorScheme.primary,
                         ),
                         Card(
                           color: AppColors().transparent,
@@ -232,8 +232,8 @@ class _EmpHomePageState extends State<EmpHomePage> {
                               ),
                             );
                           },
-                          cardColor: AppColors().orangelight,
-                          iconColor: AppColors().navy,
+                          cardColor: Theme.of(context).colorScheme.surface,
+                          iconColor: Theme.of(context).colorScheme.primary,
                         ),
                         Card(
                           color: AppColors().transparent,
@@ -281,10 +281,11 @@ class OverviewCard extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           Card(
+            shadowColor: Theme.of(context).colorScheme.primary,
             color: cardColor,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            elevation: 1,
+            elevation: 2,
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -295,7 +296,8 @@ class OverviewCard extends StatelessWidget {
                     title,
                     textAlign: TextAlign.center,
                     style: GoogleFonts.montserratAlternates(
-                        fontSize: 14, color: AppColors().navy),
+                        fontSize: 14,
+                        color: Theme.of(context).colorScheme.primary),
                   ),
                 ],
               ),

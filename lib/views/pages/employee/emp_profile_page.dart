@@ -11,6 +11,7 @@ import 'package:hire_harmony/views/pages/settings_page.dart';
 import 'package:hire_harmony/views/widgets/customer/state_item.dart';
 import 'package:hire_harmony/views/widgets/employee/emp_build_menu_container.dart';
 import 'package:hire_harmony/views/widgets/main_button.dart';
+import 'package:hire_harmony/views/widgets/shimmer_page.dart';
 
 class EmpProfilePage extends StatefulWidget {
   const EmpProfilePage({super.key});
@@ -26,6 +27,7 @@ class _EmpProfilePageState extends State<EmpProfilePage> {
   String? _imageUrl;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  Map<String, dynamic>? userData;
 
   int orderCount = 0;
   int ticketCount = 0;
@@ -50,10 +52,11 @@ class _EmpProfilePageState extends State<EmpProfilePage> {
 
       if (doc.exists) {
         setState(() {
+          userData = doc.data() as Map<String, dynamic>;
           _nameController.text = doc['name'] ?? '';
           _emailController.text = doc['email'] ?? '';
           _imageUrl = doc['img'] ??
-              'https://via.placeholder.com/150'; // Placeholder if no image
+              'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg'; // Placeholder if no image
         });
       }
     } catch (e) {
@@ -168,113 +171,118 @@ class _EmpProfilePageState extends State<EmpProfilePage> {
                 ),
               ],
             ),
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: 20),
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: NetworkImage(
-                    _imageUrl!,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  _nameController.text,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                Text(
-                  _emailController.text,
-                  style: const TextStyle(color: Colors.grey),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors().grey,
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
+            body: userData == null
+                ? const ShimmerPage()
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 20),
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundImage: NetworkImage(
+                          _imageUrl!,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        _nameController.text,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      Text(
+                        _emailController.text,
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                      const SizedBox(height: 20),
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors().grey,
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            StatItem(
+                                label: 'Orders \n Completed',
+                                value: orderCount.toString()),
+                            StatItem(
+                                label: 'Tickets',
+                                value: ticketCount.toString()),
+                            StatItem(
+                                label: 'Pending \n Requests',
+                                value: pendingRequestCount.toString()),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              EmpBuildMenuContainer(
+                                title: 'Profile',
+                                icon: Icons.person,
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.empProfileInfoPage,
+                                  );
+                                },
+                              ),
+                              EmpBuildMenuContainer(
+                                title: 'Contact us',
+                                icon: Icons.contact_page,
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, AppRoutes.contactUsPage);
+                                },
+                              ),
+                              EmpBuildMenuContainer(
+                                title: 'Delete Account',
+                                icon: Icons.info,
+                                onTap: () {
+                                  Navigator.pushNamed(context,
+                                      AppRoutes.empaccountDeletionScreen);
+                                },
+                              ),
+                              EmpBuildMenuContainer(
+                                title: 'Settings',
+                                icon: Icons.settings,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const SettingsPage(),
+                                    ),
+                                  );
+                                },
+                              ),
+                              EmpBuildMenuContainer(
+                                title: 'Logout',
+                                icon: Icons.logout,
+                                onTap: () async {
+                                  await authCubit.signOut(context);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      StatItem(
-                          label: 'Orders \n Completed',
-                          value: orderCount.toString()),
-                      StatItem(label: 'Tickets', value: ticketCount.toString()),
-                      StatItem(
-                          label: 'Pending \n Requests',
-                          value: pendingRequestCount.toString()),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        EmpBuildMenuContainer(
-                          title: 'Profile',
-                          icon: Icons.person,
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              AppRoutes.empProfileInfoPage,
-                            );
-                          },
-                        ),
-                        EmpBuildMenuContainer(
-                          title: 'Contact us',
-                          icon: Icons.contact_page,
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, AppRoutes.contactUsPage);
-                          },
-                        ),
-                        EmpBuildMenuContainer(
-                          title: 'Delete Account',
-                          icon: Icons.info,
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, AppRoutes.empaccountDeletionScreen);
-                          },
-                        ),
-                        EmpBuildMenuContainer(
-                          title: 'Settings',
-                          icon: Icons.settings,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SettingsPage(),
-                              ),
-                            );
-                          },
-                        ),
-                        EmpBuildMenuContainer(
-                          title: 'Logout',
-                          icon: Icons.logout,
-                          onTap: () async {
-                            await authCubit.signOut(context);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ),
         );
       },

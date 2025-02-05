@@ -43,7 +43,6 @@ import 'package:hire_harmony/views/pages/employee/emp_id_verification_page.dart'
 import 'package:hire_harmony/views/pages/signup/phone_page.dart';
 import 'package:hire_harmony/views/pages/signup/sign_up_choice.dart';
 import 'package:hire_harmony/views/pages/welcome_page.dart';
-import 'package:hire_harmony/views/widgets/customer/view_all_best_workers_page.dart';
 import 'package:hire_harmony/views/widgets/customer/view_all_categories.dart';
 
 class AppRouter {
@@ -110,11 +109,7 @@ class AppRouter {
           builder: (_) => const ViewAllPopularServicesPage(),
           settings: settings,
         );
-      case AppRoutes.viewAllBestWorkersPage:
-        return MaterialPageRoute(
-          builder: (_) => const ViewAllBestWorkersPage(),
-          settings: settings,
-        );
+
       case AppRoutes.viewEmpProfilePage:
         return MaterialPageRoute(
           builder: (_) => ViewEmpProfilePage(
@@ -153,9 +148,8 @@ class AppRouter {
 
       case AppRoutes.empProfileInfoPage:
         return MaterialPageRoute(
-          builder: (_) =>  EmpProfileInfoPage(
-             employeeId: FirebaseAuth.instance.currentUser!.uid
-          ),
+          builder: (_) => EmpProfileInfoPage(
+              employeeId: FirebaseAuth.instance.currentUser!.uid),
           settings: settings,
         );
       case AppRoutes.accountDeletionScreen:
@@ -168,7 +162,7 @@ class AppRouter {
           builder: (_) => const ContactUsPage(),
           settings: settings,
         );
-           case AppRoutes.empaccountDeletionScreen:
+      case AppRoutes.empaccountDeletionScreen:
         return MaterialPageRoute(
           builder: (_) => const EmpAccountDeletionScreen(),
           settings: settings,
@@ -178,7 +172,7 @@ class AppRouter {
           builder: (_) => const admin.AdnHomePage(),
           settings: settings,
         );
-         case AppRoutes.complaintsPage:
+      case AppRoutes.complaintsPage:
         return MaterialPageRoute(
           builder: (_) => const ComplaintsPage(),
           settings: settings,
@@ -219,7 +213,7 @@ class AppRouter {
           builder: (_) => const SignUpChoice(),
           settings: settings,
         );
-        case AppRoutes.employeesmaintenance:
+      case AppRoutes.employeesmaintenance:
         return MaterialPageRoute(
           builder: (_) => const EmployeesMaintenance(),
           settings: settings,
@@ -279,7 +273,9 @@ class AppRouter {
         );
       case AppRoutes.chat:
         return MaterialPageRoute(
-          builder: (_) => const ChatPage(reciverEmail: 'moe@gmail.com',),
+          builder: (_) => const ChatPage(
+            reciverEmail: 'moe@gmail.com',
+          ),
           settings: settings,
         );
 

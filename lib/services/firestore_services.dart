@@ -285,6 +285,21 @@ class FirestoreService {
     });
   }
 
+   Future<void> removeFromArray({
+    required String documentPath,
+    required String fieldName,
+    required dynamic value,
+  }) async {
+    try {
+      await _firestore.doc(documentPath).update({
+        fieldName: FieldValue.arrayRemove([value]), // Removes value from array
+      });
+    } catch (e) {
+      print('Error removing from array: $e');
+      rethrow;
+    }
+  }
+
   // // Log Added Service
   // Future<void> logAddedService(String serviceName) async {
   //   try {
