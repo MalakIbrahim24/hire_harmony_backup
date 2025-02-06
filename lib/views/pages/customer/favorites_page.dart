@@ -1,7 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hire_harmony/services/customer_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/pages/customer/view_emp_profile_page.dart';
 
@@ -13,47 +12,14 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class _FavoritesPageState extends State<FavoritesPage> {
-  final String? loggedInUserId = FirebaseAuth.instance.currentUser?.uid;
-
-  Stream<List<Map<String, dynamic>>> _fetchFavorites() async* {
-    if (loggedInUserId == null) {
-      throw Exception('No user is currently signed in.');
-    }
-
-    yield* FirebaseFirestore.instance
-        .collection('users')
-        .doc(loggedInUserId)
-        .collection('favourites')
-        .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
-  }
-
-  Future<void> _toggleFavorite(String favoriteId) async {
-    if (loggedInUserId == null) return;
-
-    final favoriteRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(loggedInUserId)
-        .collection('favourites')
-        .doc(favoriteId);
-
-    try {
-      final doc = await favoriteRef.get();
-      if (doc.exists) {
-        // If it exists, remove it
-        await favoriteRef.delete();
-      }
-    } catch (e) {
-      debugPrint('Error toggling favorite: $e');
-    }
-  }
+  final CustomerServices _customerServices = CustomerServices();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        centerTitle: true, // Center the title
+        centerTitle: true,
         title: Text(
           'Favorites',
           style: GoogleFonts.montserratAlternates(
@@ -65,7 +31,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
         iconTheme: IconThemeData(color: Theme.of(context).colorScheme.primary),
       ),
       body: StreamBuilder<List<Map<String, dynamic>>>(
-        stream: _fetchFavorites(),
+        stream: _customerServices.fetchFavorites(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -104,7 +70,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => ViewEmpProfilePage(
-                            employeeId: favoriteId, // Pass the employee ID
+                            employeeId: favoriteId,
                           ),
                         ),
                       );
@@ -135,7 +101,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 8), // مسافة بين النص والزر
+                      const SizedBox(height: 8),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors().orange,
@@ -172,7 +138,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     ),
                     onPressed: () {
                       if (favoriteId != null && favoriteId is String) {
-                        _toggleFavorite(favoriteId);
+                        _customerServices.toggleFavorite(favoriteId);
                       }
                     },
                   ),

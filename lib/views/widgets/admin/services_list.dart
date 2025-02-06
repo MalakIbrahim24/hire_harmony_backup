@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/services/firestore_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class ServicesList extends StatelessWidget {
   final String userId; // User ID to access the document
@@ -14,6 +16,14 @@ class ServicesList extends StatelessWidget {
     required this.subCollection,
     required this.action,
   });
+
+  /// Converts Firestore Timestamp to readable date format
+  String formatTimestamp(dynamic timestamp) {
+    if (timestamp is Timestamp) {
+      return DateFormat('dd MMM yyyy, HH:mm:ss').format(timestamp.toDate());
+    }
+    return 'N/A';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,11 +54,12 @@ class ServicesList extends StatelessWidget {
           itemCount: services.length,
           itemBuilder: (context, index) {
             final service = services[index];
+
             return Card(
               margin: const EdgeInsets.symmetric(vertical: 8),
               shape: RoundedRectangleBorder(
                 side: BorderSide(
-                  color: AppColors().navy.withValues(alpha: 0.2),
+                  color: AppColors().navy.withOpacity(0.2),
                   width: 1,
                 ),
                 borderRadius: BorderRadius.circular(10),
@@ -76,7 +87,7 @@ class ServicesList extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Deleted At: ${service[action] ?? 'N/A'}',
+                      'Deleted At: ${formatTimestamp(service[action])}',
                       style: GoogleFonts.montserratAlternates(
                         fontSize: 14,
                         color: AppColors().navy,

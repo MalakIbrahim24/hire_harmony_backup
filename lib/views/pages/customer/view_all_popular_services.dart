@@ -1,37 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hire_harmony/services/customer_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hire_harmony/views/pages/customer/employees_under_category_page.dart';
 
 class ViewAllPopularServicesPage extends StatelessWidget {
-  const ViewAllPopularServicesPage({super.key});
-
-  Future<List<Map<String, dynamic>>>
-      fetchTopCategoriesWithMostEmployees() async {
-    final categoriesCollection =
-        FirebaseFirestore.instance.collection('categories');
-
-    final categoriesSnapshot = await categoriesCollection
-        .orderBy('empNum', descending: true) // ترتيب تنازلي حسب عدد الموظفين
-        .limit(5) // جلب فقط أعلى 5 كاتيجوري
-        .get();
-
-    final topCategories = <Map<String, dynamic>>[];
-
-    for (final categoryDoc in categoriesSnapshot.docs) {
-      final categoryData = categoryDoc.data();
-      final categoryId = categoryDoc.id;
-
-      topCategories.add({
-        'id': categoryId,
-        'name': categoryData['name'] ?? 'Unknown Category',
-        'empNum': categoryData['empNum'] ?? 0,
-      });
-    }
-
-    return topCategories;
-  }
+  ViewAllPopularServicesPage({super.key});
+  final CustomerServices _customerServices = CustomerServices();
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +47,7 @@ class ViewAllPopularServicesPage extends StatelessWidget {
         ),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: fetchTopCategoriesWithMostEmployees(),
+        future: _customerServices.fetchTopCategories(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

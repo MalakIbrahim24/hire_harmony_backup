@@ -1,17 +1,13 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/widgets/admin/services_list.dart';
 
 class EditedServicesPage extends StatefulWidget {
-  final String uid; // Pass the user ID to this page
+  final String uid; // User ID
 
-  const EditedServicesPage({
-    super.key,
-    required this.uid, // Make it a required parameter
-  });
+  const EditedServicesPage({super.key, required this.uid});
 
   @override
   State<EditedServicesPage> createState() => _EditedServicesPageState();
@@ -29,18 +25,19 @@ class _EditedServicesPageState extends State<EditedServicesPage> {
         ),
       ),
       body: Stack(children: [
+        // Background Image
         Positioned.fill(
           child: Image.asset(
             'lib/assets/images/logo_navy.PNG',
             fit: BoxFit.cover,
           ),
         ),
-        // Blur Filter
+        // Blur Effect
         Positioned.fill(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
             child: Container(
-              color: AppColors().navy.withValues(alpha: 0.3),
+              color: AppColors().navy.withOpacity(0.3),
             ),
           ),
         ),
@@ -57,9 +54,9 @@ class _EditedServicesPageState extends State<EditedServicesPage> {
               ),
               Expanded(
                 child: ServicesList(
-                  userId: widget.uid, // Pass the correct userId
+                  userId: widget.uid, // Pass correct userId
                   subCollection: 'deletedServices', // Sub-collection path
-                  action: 'deleted_at',
+                  action: 'deleted_at', // Firestore timestamp field
                 ),
               ),
             ],

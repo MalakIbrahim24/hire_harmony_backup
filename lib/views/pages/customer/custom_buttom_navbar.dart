@@ -1,7 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hire_harmony/services/customer_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/pages/chat_list_page.dart';
 import 'package:hire_harmony/views/pages/customer/community.dart';
@@ -17,28 +16,17 @@ class CustomButtomNavbar extends StatefulWidget {
 }
 
 class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
+  final CustomerServices _customerServices = CustomerServices();
   int currentPageIndex = 2;
   int _pendingOrdersCount = 0;
+
   @override
   void initState() {
     super.initState();
-    _listenForPendingOrders();
-  }
-
-  void _listenForPendingOrders() {
-    final String? loggedInUserId = FirebaseAuth.instance.currentUser?.uid;
-    if (loggedInUserId == null) return;
-
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(loggedInUserId)
-        .collection('orders')
-        .where('status', isEqualTo: 'in progress') // الطلبات غير المكتملة
-        .snapshots()
-        .listen((snapshot) {
+    _customerServices.listenForPendingOrders().listen((count) {
       if (mounted) {
         setState(() {
-          _pendingOrdersCount = snapshot.docs.length;
+          _pendingOrdersCount = count;
         });
       }
     });
@@ -173,15 +161,6 @@ class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
               ),
             ),
       body: <Widget>[
-        /*  BlocProvider(
-          create: (context) {
-            final cubit = ChatCubit();
-            cubit.getMessages();
-            return cubit;
-          },
-          child: const ChatPage(reciverEmail: 'moe@gmail.com',),
-        ),
-        */
         const ChatListPage(),
         const OrderPage(),
         const CusHomePage(),
