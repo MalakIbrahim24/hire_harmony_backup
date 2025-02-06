@@ -1,19 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hire_harmony/api/firebase_api.dart';
+import 'package:hire_harmony/services/customer_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/pages/customer/search_and_filter.dart';
 import 'package:hire_harmony/views/pages/customer/view_all_popular_services.dart';
-import 'package:hire_harmony/views/pages/location_page.dart';
 import 'package:hire_harmony/views/widgets/customer/best_worker.dart';
 import 'package:hire_harmony/views/widgets/customer/category_widget.dart';
 import 'package:hire_harmony/views/widgets/customer/custom_carousel_indicator.dart';
 import 'package:hire_harmony/views/widgets/customer/invite_link_dialog.dart';
 import 'package:hire_harmony/views/widgets/customer/populer_service.dart';
-import 'package:hire_harmony/views/widgets/customer/view_all_best_workers_page.dart';
 import 'package:hire_harmony/views/widgets/customer/view_all_categories.dart';
 
 class CusHomePage extends StatefulWidget {
@@ -24,136 +19,21 @@ class CusHomePage extends StatefulWidget {
 }
 
 class _CusHomePageState extends State<CusHomePage> {
-  final String? userId = FirebaseAuth.instance.currentUser?.uid;
+  final CustomerServices _customerServices = CustomerServices();
   String _userName = "User";
 
   @override
   void initState() {
     super.initState();
-    _checkUserLocation();
-    /* updateCategoryWorkerCounts();*/
-    _fetchUserName();
+    _customerServices.checkUserLocation(context);
+    _loadUserName();
   }
 
-  void _fetchUserName() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users') // Change this to your Firestore collection name
-          .doc(user.uid)
-          .get();
-
-      if (userDoc.exists) {
-        setState(() {
-          _userName = userDoc.data()?['name'] ?? "User"; // Fetch name field
-        });
-      }
-    }
-  }
-
-  Future<void> updateCategoryWorkerCounts() async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-    // استرجاع جميع الكاتيجوري
-    QuerySnapshot categoriesSnapshot =
-        await firestore.collection('categories').get();
-
-    // خريطة لحفظ عدد العمال لكل كاتيجوري
-    Map<String, int> categoryWorkerCount = {};
-
-    // تحضير جميع الكاتيجوري من قاعدة البيانات
-    for (var categoryDoc in categoriesSnapshot.docs) {
-      String categoryId = categoryDoc.id;
-      categoryWorkerCount[categoryId] = 0; // تعيين العدد مبدئيًا 0
-    }
-
-    // استرجاع جميع المستخدمين
-    QuerySnapshot usersSnapshot = await firestore.collection('users').get();
-
-    for (var userDoc in usersSnapshot.docs) {
-      String userId = userDoc.id;
-
-      // جلب كوليكشن `empcategories` لكل مستخدم
-      QuerySnapshot empCategoriesSnapshot = await firestore
-          .collection('users')
-          .doc(userId)
-          .collection('empcategories')
-          .get();
-
-      if (empCategoriesSnapshot.docs.isEmpty) {
-        print("❌ المستخدم $userId ليس لديه أي كاتيجوري في empcategories");
-      } else {
-        print(
-            "✅ المستخدم $userId لديه ${empCategoriesSnapshot.docs.length} كاتيجوري في empcategories");
-      }
-
-      for (var empCategoryDoc in empCategoriesSnapshot.docs) {
-        Map<String, dynamic> categoryData =
-            empCategoryDoc.data() as Map<String, dynamic>;
-
-        if (!categoryData.containsKey('categories')) {
-          print(
-              "⚠️ تحذير: الوثيقة ${empCategoryDoc.id} في `empcategories` لا تحتوي على حقل 'categories'");
-          continue;
-        }
-
-        List<dynamic> categoryNames = categoryData['categories'] ?? [];
-
-        if (categoryNames.isEmpty) {
-          print("⚠️ تحذير: قائمة الكاتيجوري فارغة للمستخدم $userId");
-          continue;
-        }
-
-        // التكرار على كل الكاتيجوري التي ينتمي إليها العامل
-        for (String categoryName in categoryNames) {
-          categoryName = categoryName.trim(); // إزالة أي مسافات زائدة
-
-          print("🔍 المستخدم $userId ينتمي إلى الكاتيجوري: $categoryName");
-
-          // البحث عن كاتيجوري بهذا الاسم في القائمة
-          for (var categoryDoc in categoriesSnapshot.docs) {
-            Map<String, dynamic> categoryDocData =
-                categoryDoc.data() as Map<String, dynamic>;
-
-            String categoryDocName =
-                categoryDocData['name']?.toString().trim() ?? '';
-
-            if (categoryDocName == categoryName) {
-              String categoryId = categoryDoc.id;
-              categoryWorkerCount[categoryId] =
-                  (categoryWorkerCount[categoryId] ?? 0) + 1;
-              print(
-                  "✅ تم إضافة المستخدم $userId إلى الكاتيجوري $categoryDocName (ID: $categoryId)");
-            }
-          }
-        }
-      }
-    }
-
-    // طباعة النتائج للتحقق من التعداد
-    print("🔹 عدد العمال لكل كاتيجوري: $categoryWorkerCount");
-
-    // تحديث كل كاتيجوري بعدد العمال المرتبطين بها
-    for (var entry in categoryWorkerCount.entries) {
-      await firestore.collection('categories').doc(entry.key).update({
-        'empNum': entry.value,
-      });
-    }
-
-    print("✅ تم تحديث أعداد العمال لكل كاتيجوري بنجاح!");
-  }
-
-  Future<void> _checkUserLocation() async {
-    await Future.delayed(const Duration(seconds: 10)); // الانتظار لمدة 10 ثوانٍ
-
-    // افترض أن لديك Firebase API تتحقق من الموقع
-    final isLocationSaved = await FirebaseApi().isUserLocationSaved(userId!);
-    debugPrint(isLocationSaved.toString());
-
-    if (!isLocationSaved) {
-      // تحويل المستخدم إلى صفحة الموقع باستخدام GetX
-      await Get.to(() => const LocationPage());
-    }
+  void _loadUserName() async {
+    String name = await _customerServices.fetchUserName();
+    setState(() {
+      _userName = name;
+    });
   }
 
   @override
@@ -168,20 +48,6 @@ class _CusHomePageState extends State<CusHomePage> {
         ),
         backgroundColor: AppColors().orange,
         centerTitle: true,
-        // actions: [
-        //   IconButton(
-        //     onPressed: () {
-        //       Navigator.push(
-        //         context,
-        //         MaterialPageRoute(
-        //           builder: (context) => const CusNotificationsPage(),
-        //         ),
-        //       );
-        //     },
-        //     icon: const Icon(Icons.notifications),
-        //     color: AppColors().white,
-        //   )
-        // ],
         title: Column(
           children: [
             Row(
@@ -335,8 +201,7 @@ class _CusHomePageState extends State<CusHomePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                const ViewAllPopularServicesPage(),
+                            builder: (context) => ViewAllPopularServicesPage(),
                           ),
                         );
                       },

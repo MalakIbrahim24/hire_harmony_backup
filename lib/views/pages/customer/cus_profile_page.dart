@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hire_harmony/services/customer_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/widgets/customer/build_menu_container.dart';
 import 'package:hire_harmony/views/widgets/customer/state_item.dart';
@@ -15,99 +14,33 @@ class CusProfilePage extends StatefulWidget {
 }
 
 class _CusProfilePageState extends State<CusProfilePage> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final CustomerServices _customerServices = CustomerServices();
 
   Map<String, dynamic>? userData;
   int orderCount = 0;
   int ticketCount = 0;
   int pendingRequestCount = 0;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchUserData();
-    _fetchOrderCount();
-    _fetchTicketCount();
-    _fetchPendingRequestCount();
+    _loadUserData();
   }
 
-  Future<void> _fetchUserData() async {
-    final User? currentUser = _auth.currentUser;
+  Future<void> _loadUserData() async {
+    final user = await _customerServices.fetchUserData();
+    final orders = await _customerServices.fetchOrderCount();
+    final tickets = await _customerServices.fetchTicketCount();
+    final pendingRequests = await _customerServices.fetchPendingRequestCount();
 
-    if (currentUser != null) {
-      try {
-        final DocumentSnapshot userDoc =
-            await _firestore.collection('users').doc(currentUser.uid).get();
-        if (userDoc.exists) {
-          setState(() {
-            userData = userDoc.data() as Map<String, dynamic>;
-          });
-        }
-      } catch (e) {
-        debugPrint('Error fetching user data: $e');
-      }
-    }
-  }
-
-  Future<void> _fetchOrderCount() async {
-    final User? currentUser = _auth.currentUser;
-
-    if (currentUser != null) {
-      try {
-        final QuerySnapshot ordersSnapshot = await _firestore
-            .collection('users')
-            .doc(currentUser.uid)
-            .collection('completedOrders')
-            .get();
-
-        setState(() {
-          orderCount = ordersSnapshot.size;
-        });
-      } catch (e) {
-        debugPrint('Error fetching orders count: $e');
-      }
-    }
-  }
-
-  Future<void> _fetchTicketCount() async {
-    final User? currentUser = _auth.currentUser;
-
-    if (currentUser != null) {
-      try {
-        final QuerySnapshot ticketsSnapshot = await _firestore
-            .collection('ticketsSent')
-            .where('uid', isEqualTo: currentUser.uid)
-            .get();
-
-        setState(() {
-          ticketCount = ticketsSnapshot.size;
-        });
-      } catch (e) {
-        debugPrint('Error fetching tickets count: $e');
-      }
-    }
-  }
-
-  Future<void> _fetchPendingRequestCount() async {
-    final User? currentUser = _auth.currentUser;
-
-    if (currentUser != null) {
-      try {
-        final QuerySnapshot requestsSnapshot = await _firestore
-            .collection('users')
-            .doc(currentUser.uid)
-            .collection('sentRequests')
-            .where('status', isEqualTo: 'pending')
-            .get();
-
-        setState(() {
-          pendingRequestCount = requestsSnapshot.size;
-        });
-      } catch (e) {
-        debugPrint('Error fetching pending requests count: $e');
-      }
-    }
+    setState(() {
+      userData = user;
+      orderCount = orders;
+      ticketCount = tickets;
+      pendingRequestCount = pendingRequests;
+      isLoading = false;
+    });
   }
 
   @override
@@ -127,7 +60,7 @@ class _CusProfilePageState extends State<CusProfilePage> {
           ),
           centerTitle: true,
         ),
-        body: userData == null
+        body: isLoading
             ? const ShimmerPage()
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -135,14 +68,14 @@ class _CusProfilePageState extends State<CusProfilePage> {
                   const SizedBox(height: 20),
                   CircleAvatar(
                     radius: 50,
-                    backgroundImage: userData!['img'] != null
+                    backgroundImage: userData?['img'] != null
                         ? NetworkImage(userData!['img'])
                         : const AssetImage('lib/assets/images/customer.png')
                             as ImageProvider,
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    userData!['name'] ?? 'Unnamed User',
+                    userData?['name'] ?? 'Unnamed User',
                     style: GoogleFonts.montserratAlternates(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
@@ -150,7 +83,7 @@ class _CusProfilePageState extends State<CusProfilePage> {
                     ),
                   ),
                   Text(
-                    userData!['email'] ?? 'No email provided',
+                    userData?['email'] ?? 'No email provided',
                     style: GoogleFonts.montserratAlternates(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,

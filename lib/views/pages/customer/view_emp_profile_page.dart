@@ -2,11 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hire_harmony/services/customer_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
-import 'package:hire_harmony/views/pages/chatePage.dart';
 //import 'package:hire_harmony/views/pages/chatePage.dart';
 //import 'package:hire_harmony/views/pages/chatePage.dart';
-import 'package:hire_harmony/views/pages/employee/reviews_page.dart';
 import 'package:hire_harmony/views/pages/map_page.dart';
 import 'package:hire_harmony/views/widgets/customer/cus_photo_tab_view.dart';
 import 'package:hire_harmony/views/widgets/employee/reviews_tab_view.dart';
@@ -26,94 +25,98 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<String> services = []; // تخزين قائمة الخدمات
   bool isAvailable = false; // افتراضيًا، الموظف غير متاح
+  final CustomerServices _customerServices = CustomerServices();
 
   Map<String, dynamic>? employeeData;
-  bool isFavorite = false; // Track if the employee is favorited
+  bool isFavorite = false;
   final String? loggedInUserId = FirebaseAuth.instance.currentUser?.uid;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _fetchEmployeeData();
-    _checkIfFavorited(); // Check if the employee is in the favorites list
+    _loadData();
   }
 
-  Future<void> _fetchEmployeeData() async {
-    try {
-      final doc =
-          await _firestore.collection('users').doc(widget.employeeId).get();
-      if (doc.exists) {
-        setState(() {
-          employeeData = doc.data() as Map<String, dynamic>;
+  Future<void> _loadData() async {
+    employeeData = await _customerServices.fetchEmployeeData(widget.employeeId);
+    isFavorite = await _customerServices.isFavorite(widget.employeeId);
 
-          // ✅ جلب قائمة الخدمات (services)
-          if (employeeData!['services'] is List) {
-            services = List<String>.from(employeeData!['services']);
-          } else {
-            services = [];
-          }
-          isAvailable = employeeData!['availability'] ?? false;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error fetching employee data: $e');
+    if (employeeData != null) {
+      services = List<String>.from(employeeData!['services'] ?? []);
+      isAvailable = employeeData!['availability'] ?? false;
     }
-  }
 
-  Future<void> _checkIfFavorited() async {
-    try {
-      if (loggedInUserId == null) {
-        throw Exception('No user is currently signed in.');
-      }
-
-      final doc = await _firestore
-          .collection('users')
-          .doc(loggedInUserId)
-          .collection('favourites')
-          .doc(widget.employeeId)
-          .get();
-
-      setState(() {
-        isFavorite =
-            doc.exists; // If the document exists, the employee is favorited
-      });
-    } catch (e) {
-      debugPrint('Error checking favorite status: $e');
-    }
+    setState(() {});
   }
 
   Future<void> _toggleFavorite() async {
-    try {
-      if (loggedInUserId == null) {
-        throw Exception('No user is currently signed in.');
-      }
+    await _customerServices.toggleFavoriteEmp(
+        widget.employeeId, isFavorite, employeeData);
+    setState(() => isFavorite = !isFavorite);
+  }
 
-      final favoritesCollection = FirebaseFirestore.instance
-          .collection('users')
-          .doc(loggedInUserId)
-          .collection('favourites');
+  Future<void> _sendRequest() async {
+    TextEditingController titleController = TextEditingController();
+    TextEditingController descriptionController = TextEditingController();
 
-      if (isFavorite) {
-        // Remove from favorites
-        await favoritesCollection.doc(widget.employeeId).delete();
-      } else {
-        // Add to favorites with employeeId as the document ID
-        await favoritesCollection.doc(widget.employeeId).set({
-          'uid': widget.employeeId, // Use the employee's ID
-          'name': employeeData?['name'] ?? 'Unnamed',
-          'img': employeeData?['img'] ?? '',
-          'location': employeeData?['location'] ?? 'Unknown',
-          'rating': employeeData?['rating'] ?? 0,
-        });
-      }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Send Request',
+            style:
+                GoogleFonts.montserratAlternates(fontWeight: FontWeight.bold),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                  controller: titleController,
+                  decoration:
+                      const InputDecoration(hintText: 'Enter the title here')),
+              const SizedBox(height: 8),
+              TextField(
+                  controller: descriptionController,
+                  decoration: const InputDecoration(
+                      hintText: 'Enter your description here')),
+            ],
+          ),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(context),
+                child:
+                    const Text('Cancel', style: TextStyle(color: Colors.red))),
+            TextButton(
+              onPressed: () async {
+                if (!mounted) return;
+                bool success = await _customerServices.sendRequest(
+                  widget.employeeId,
+                  titleController.text.trim(),
+                  descriptionController.text.trim(),
+                );
 
-      setState(() {
-        isFavorite = !isFavorite; // Toggle the state
-      });
-    } catch (e) {
-      debugPrint('Error toggling favorite: $e');
-    }
+                // ignore: use_build_context_synchronously
+                Navigator.pop(context);
+                if (success) {
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Request sent successfully!')));
+                } else {
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Failed to send request.')));
+                }
+              },
+              child: Text('Confirm',
+                  style: GoogleFonts.montserratAlternates(
+                      color: AppColors().orange)),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -265,12 +268,13 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                         ),
                       ),
                       IconButton(
-                        icon: Icon(
-                          isFavorite ? Icons.favorite : Icons.favorite_border,
-                          color: isFavorite ? Colors.red : Colors.grey,
-                        ),
-                        onPressed: _toggleFavorite,
-                      ),
+                          icon: Icon(
+                            isFavorite ? Icons.favorite : Icons.favorite_border,
+                            color: isFavorite ? Colors.red : Colors.grey,
+                          ),
+                          onPressed: () {
+                            _toggleFavorite();
+                          })
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -307,7 +311,8 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
-                                color: AppColors().orange.withOpacity(0.1),
+                                color:
+                                    AppColors().orange.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
                                     color: AppColors().orange, width: 1),
@@ -389,139 +394,11 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                   const SizedBox(width: 16),
                   ElevatedButton(
                     onPressed: isAvailable
-                        ? () {
-                            // ✅ يكون قابلًا للنقر فقط إذا كان الموظف متاحًا
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                TextEditingController descriptionController =
-                                    TextEditingController();
-                                TextEditingController titleController =
-                                    TextEditingController();
-                                return AlertDialog(
-                                  title: Text(
-                                    'Send Request',
-                                    style: GoogleFonts.montserratAlternates(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        'Enter a description for your request:',
-                                        style: GoogleFonts.montserratAlternates(
-                                            fontSize: 14),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      TextField(
-                                        controller: titleController,
-                                        decoration: const InputDecoration(
-                                            hintText: 'Enter the title here'),
-                                        maxLines: 3,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      TextField(
-                                        controller: descriptionController,
-                                        decoration: const InputDecoration(
-                                            hintText:
-                                                'Enter your description here'),
-                                        maxLines: 3,
-                                      ),
-                                    ],
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: Text('Cancel',
-                                          style:
-                                              GoogleFonts.montserratAlternates(
-                                                  color: Colors.red)),
-                                    ),
-                                    TextButton(
-                                      onPressed: () async {
-                                        if (loggedInUserId == null) {
-                                          debugPrint(
-                                              'No user is currently signed in.');
-                                          Navigator.pop(context);
-                                          return;
-                                        }
-                                        String description =
-                                            descriptionController.text.trim();
-                                        String name =
-                                            titleController.text.trim();
-
-                                        if (description.isEmpty) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                                content: Text(
-                                                    'Description cannot be empty.')),
-                                          );
-                                          return;
-                                        }
-
-                                        try {
-                                          final String requestId = _firestore
-                                              .collection('dummy')
-                                              .doc()
-                                              .id;
-
-                                          final requestData = {
-                                            'requestId': requestId,
-                                            'senderId': loggedInUserId,
-                                            'receiverId': widget.employeeId,
-                                            'description': description,
-                                            'timestamp':
-                                                FieldValue.serverTimestamp(),
-                                            'status': 'pending',
-                                            'name': name,
-                                          };
-
-                                          await _firestore
-                                              .collection('users')
-                                              .doc(loggedInUserId)
-                                              .collection('sentRequests')
-                                              .doc(requestId)
-                                              .set(requestData);
-                                          await _firestore
-                                              .collection('users')
-                                              .doc(widget.employeeId)
-                                              .collection('recievedRequests')
-                                              .doc(requestId)
-                                              .set(requestData);
-
-                                          Navigator.pop(context);
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                                content: Text(
-                                                    'Request sent successfully!')),
-                                          );
-                                        } catch (e) {
-                                          debugPrint(
-                                              'Error sending request: $e');
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                                content: Text(
-                                                    'Failed to send request.')),
-                                          );
-                                        }
-                                      },
-                                      child: Text('Confirm',
-                                          style:
-                                              GoogleFonts.montserratAlternates(
-                                                  color: AppColors().orange)),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          }
+                        ? _sendRequest
                         : null, // ❌ تعطيل الزر إذا لم يكن متاحًا
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors().orange.withOpacity(
-                          isAvailable
+                      backgroundColor: AppColors().orange.withValues(
+                          alpha: isAvailable
                               ? 1.0
                               : 0.5), // ❌ تغيير اللون ليظهر كأنه غير نشط
                       padding: const EdgeInsets.symmetric(

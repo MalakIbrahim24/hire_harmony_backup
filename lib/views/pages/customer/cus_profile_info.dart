@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hire_harmony/services/customer_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/pages/customer/cus_edit_profile_page.dart';
 import 'package:hire_harmony/views/pages/map_page.dart';
@@ -10,13 +9,11 @@ class CusProfileInfo extends StatefulWidget {
   const CusProfileInfo({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _CusProfileInfoState createState() => _CusProfileInfoState();
+  State<CusProfileInfo> createState() => _CusProfileInfoState();
 }
 
 class _CusProfileInfoState extends State<CusProfileInfo> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final CustomerServices _customerServices = CustomerServices();
 
   Map<String, dynamic>? userData;
   bool isLoading = true;
@@ -25,39 +22,27 @@ class _CusProfileInfoState extends State<CusProfileInfo> {
   @override
   void initState() {
     super.initState();
-    _fetchUserData();
+    _loadUserData();
   }
 
-  Future<void> _fetchUserData() async {
-    final User? currentUser = _auth.currentUser;
-
-    if (currentUser == null) {
-      setState(() {
-        isLoading = false;
-        errorMessage = "No user is currently logged in.";
-      });
-      return;
-    }
-
-    try {
-      final DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(currentUser.uid).get();
-
-      if (userDoc.exists) {
+  Future<void> _loadUserData() async {
+    final data = await _customerServices.fetchUserData();
+    if (data != null) {
+      if (data.containsKey('error')) {
         setState(() {
-          userData = userDoc.data() as Map<String, dynamic>;
           isLoading = false;
+          errorMessage = data['error'];
         });
       } else {
         setState(() {
+          userData = data;
           isLoading = false;
-          errorMessage = "User data not found.";
         });
       }
-    } catch (e) {
+    } else {
       setState(() {
         isLoading = false;
-        errorMessage = "Error fetching user data: $e";
+        errorMessage = "User data not found.";
       });
     }
   }
@@ -116,7 +101,7 @@ class _CusProfileInfoState extends State<CusProfileInfo> {
                   builder: (context) => const CusEditProfilePage(),
                 ),
               ).then((_) {
-                _fetchUserData(); // Refresh the user data after editing
+                _loadUserData(); // Refresh the user data after editing
               });
             },
           ),
@@ -207,15 +192,15 @@ class _CusProfileInfoState extends State<CusProfileInfo> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => MapScreen(
-                                      employeeId: _auth.currentUser!.uid),
+                                  builder: (context) =>
+                                      MapScreen(employeeId: userData?['uid']),
                                 ),
                               );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                     content:
-                                        Text("❌no location for this user.")),
+                                        Text("❌ No location for this user.")),
                               );
                             }
                           },

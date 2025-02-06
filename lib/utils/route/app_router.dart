@@ -30,8 +30,8 @@ import 'package:hire_harmony/views/pages/employee/emp_profile_info_page.dart';
 //import 'package:hire_harmony/views/pages/forms/emp_sign_up_form.dart';
 import 'package:hire_harmony/views/pages/signup/sign_up_page.dart';
 import 'package:hire_harmony/views/pages/customer/cus_verification_success_page.dart';
-import 'package:hire_harmony/views/pages/customer/cus_messages_page.dart';
-import 'package:hire_harmony/views/pages/customer/cus_notifications_page.dart';
+// import 'package:hire_harmony/views/pages/customer/cus_messages_page.dart';
+// import 'package:hire_harmony/views/pages/customer/cus_notifications_page.dart';
 import 'package:hire_harmony/views/pages/customer/custom_buttom_navbar.dart';
 import 'package:hire_harmony/views/pages/customer/cus_home_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_verification_success_page.dart';
@@ -84,16 +84,16 @@ class AppRouter {
           builder: (_) => const CusHomePage(),
           settings: settings,
         );
-      case AppRoutes.cusMessagesPage:
-        return MaterialPageRoute(
-          builder: (_) => const CusMessagesPage(),
-          settings: settings,
-        );
-      case AppRoutes.cusNotificationsPage:
-        return MaterialPageRoute(
-          builder: (_) => const CusNotificationsPage(),
-          settings: settings,
-        );
+      // case AppRoutes.cusMessagesPage:
+      //   return MaterialPageRoute(
+      //     builder: (_) => const CusMessagesPage(),
+      //     settings: settings,
+      //   );
+      // case AppRoutes.cusNotificationsPage:
+      //   return MaterialPageRoute(
+      //     builder: (_) => const CusNotificationsPage(),
+      //     settings: settings,
+      //   );
       case AppRoutes.customButtomNavbarPage:
         return MaterialPageRoute(
           builder: (_) => const CustomButtomNavbar(),
@@ -106,7 +106,7 @@ class AppRouter {
         );
       case AppRoutes.viewAllPopularServicesPage:
         return MaterialPageRoute(
-          builder: (_) => const ViewAllPopularServicesPage(),
+          builder: (_) => ViewAllPopularServicesPage(),
           settings: settings,
         );
 

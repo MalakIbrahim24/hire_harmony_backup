@@ -36,26 +36,26 @@ class AddSalt {
       return;
     }
 
-    final String adminUid = currentUser.uid;
+    final String userUid = currentUser.uid;
 
     // Fetch stored password hash & salt from Firestore
-    final DocumentSnapshot adminSnapshot =
-        await _firestore.collection('users').doc(adminUid).get();
+    final DocumentSnapshot userSnapshot =
+        await _firestore.collection('users').doc(userUid).get();
 
-    if (!adminSnapshot.exists) {
+    if (!userSnapshot.exists) {
       Fluttertoast.showToast(
-        msg: "Admin user not found!",
+        msg: "user not found!",
         textColor: Colors.white,
         backgroundColor: Colors.red,
       );
       return;
     }
 
-    final Map<String, dynamic> adminData =
-        adminSnapshot.data() as Map<String, dynamic>;
-    final String storedPasswordHash = adminData['passwordHash'] ?? '';
-    final String storedSalt = adminData['salt'] ?? ''; // Retrieve salt
-    final String email = adminData['email'] ?? '';
+    final Map<String, dynamic> userData =
+        userSnapshot.data() as Map<String, dynamic>;
+    final String storedPasswordHash = userData['passwordHash'] ?? '';
+    final String storedSalt = userData['salt'] ?? ''; // Retrieve salt
+    final String email = userData['email'] ?? '';
 
     TextEditingController currentPasswordController = TextEditingController();
     TextEditingController newPasswordController = TextEditingController();
@@ -130,6 +130,10 @@ class AddSalt {
     // Verify current password with stored salt
     final String enteredPasswordHash =
         hashPassword(currentPassword, storedSalt);
+    debugPrint("Salt being used: '$storedSalt'");
+    debugPrint(currentPassword);
+    debugPrint(enteredPasswordHash);
+    debugPrint(storedPasswordHash);
 
     if (enteredPasswordHash != storedPasswordHash) {
       Fluttertoast.showToast(
@@ -166,7 +170,7 @@ class AddSalt {
       final String hashedNewPassword = hashPassword(newPassword, newSalt);
 
       // Step 4: Store new salt and hashed password in Firestore
-      await _firestore.collection('users').doc(adminUid).update({
+      await _firestore.collection('users').doc(userUid).update({
         'passwordHash': hashedNewPassword,
         'salt': newSalt, // Store the new salt
       });

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hire_harmony/services/customer_services.dart';
 import 'package:hire_harmony/views/pages/customer/reviews_page.dart';
 import 'package:intl/intl.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
@@ -16,6 +17,7 @@ class OrderPage extends StatefulWidget {
 class _OrderPageState extends State<OrderPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final CustomerServices _customerServices = CustomerServices();
 
   @override
   void initState() {
@@ -27,24 +29,6 @@ class _OrderPageState extends State<OrderPage>
   void dispose() {
     _tabController.dispose();
     super.dispose();
-  }
-
-  Future<String> getEmployeeNameById(String userId) async {
-    try {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-
-      if (userDoc.exists) {
-        return userDoc['name'] ?? 'Unknown';
-      } else {
-        return 'Unknown';
-      }
-    } catch (e) {
-      print("Error fetching employee name: $e");
-      return 'Error';
-    }
   }
 
   @override
@@ -323,7 +307,8 @@ class _OrderPageState extends State<OrderPage>
 
                       // ✅ اسم الموظف
                       FutureBuilder<String>(
-                        future: getEmployeeNameById(employeeId),
+                        future:
+                            _customerServices.getEmployeeNameById(employeeId),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
@@ -426,7 +411,7 @@ class _OrderPageState extends State<OrderPage>
                   ),
                 ),
                 subtitle: FutureBuilder<String>(
-                  future: getEmployeeNameById(employeeId),
+                  future: _customerServices.getEmployeeNameById(employeeId),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Text(
