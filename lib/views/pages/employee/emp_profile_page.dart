@@ -177,12 +177,13 @@ class _EmpProfilePageState extends State<EmpProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const SizedBox(height: 20),
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundImage: NetworkImage(
-                          _imageUrl!,
-                        ),
-                      ),
+                     CircleAvatar(
+  radius: 50,
+  backgroundImage: _imageUrl != null
+      ? NetworkImage(_imageUrl!) as ImageProvider
+      : const AssetImage('lib/assets/images/teacher.jpg'),
+),
+
                       const SizedBox(height: 10),
                       Text(
                         _nameController.text,

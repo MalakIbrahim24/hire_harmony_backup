@@ -1,11 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hire_harmony/services/employee_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 
 class HelpSupportPage extends StatefulWidget {
-  final String? adminId; // Admin ID to send the complaint
+  final String? adminId;
 
   const HelpSupportPage({super.key, this.adminId});
 
@@ -15,7 +15,7 @@ class HelpSupportPage extends StatefulWidget {
 
 class _HelpSupportPageState extends State<HelpSupportPage> {
   final TextEditingController _messageController = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final EmployeeService employeeService = EmployeeService(); // ✅ استدعاء `EmployeeService`
   bool _isLoading = false;
 
   @override
@@ -25,64 +25,15 @@ class _HelpSupportPageState extends State<HelpSupportPage> {
   }
 
   Future<void> _submitMessage() async {
-    final message = _messageController.text.trim();
-    if (message.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Please enter a message before submitting.')),
-      );
-      return;
-    }
-
-    final String? currentUserId = _auth.currentUser?.uid;
-    if (currentUserId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User not logged in!')),
-      );
-      return;
-    }
-
-    if (widget.adminId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Admin ID not found. Cannot send complaint.')),
-      );
-      return;
-    }
-
     setState(() => _isLoading = true);
 
-    try {
-      final String? loggedInUserId = FirebaseAuth.instance.currentUser?.uid;
-      final DocumentSnapshot adminSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(loggedInUserId)
-          .get();
-      final name = adminSnapshot['name'];
-      // Store complaint in the admin's "complaints" collection
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.adminId)
-          .collection('complaints')
-          .add({
-        'userId': currentUserId,
-        'message': message,
-        'timestamp': FieldValue.serverTimestamp(),
-        'name': name,
-      });
+    await employeeService.submitComplaint(
+      context: context,
+      messageController: _messageController,
+      adminId: widget.adminId,
+    );
 
-      _messageController.clear();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Complaint sent successfully!')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error sending complaint: $e')),
-      );
-    } finally {
-      setState(() => _isLoading = false);
-    }
+    setState(() => _isLoading = false);
   }
 
   @override
@@ -114,26 +65,23 @@ class _HelpSupportPageState extends State<HelpSupportPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(
-              height: 60,
-            ),
+            const SizedBox(height: 60),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Image.asset(
                 'lib/assets/images/logo_white_navy_shadow.PNG',
-                width: 120, // Bigger logo for better visibility
+                width: 120,
                 height: 120,
               ),
             ),
-            const SizedBox(
-              height: 30,
-            ),
+            const SizedBox(height: 30),
             const Text(
               'What Went Wrong?',
               style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
             const SizedBox(height: 16.0),
             Container(
@@ -156,7 +104,7 @@ class _HelpSupportPageState extends State<HelpSupportPage> {
                 minLines: 1,
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 15.0, vertical: 10.0),
+                    horizontal: 15.0, vertical: 10.0),
                   border: InputBorder.none,
                   hintText: 'You can write your problem here...',
                   hintStyle: TextStyle(color: AppColors().grey3, fontSize: 14),
@@ -178,14 +126,13 @@ class _HelpSupportPageState extends State<HelpSupportPage> {
                   : Text(
                       'Submit',
                       style: TextStyle(
-                          color: AppColors().orange,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18.0),
+                        color: AppColors().orange,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.0,
+                      ),
                     ),
             ),
-            const SizedBox(
-              height: 100,
-            ),
+            const SizedBox(height: 100),
           ],
         ),
       ),

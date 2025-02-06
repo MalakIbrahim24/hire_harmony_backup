@@ -1,11 +1,7 @@
 import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hire_harmony/services/employee_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
 class AddItem extends StatefulWidget {
   const AddItem({super.key});
@@ -17,70 +13,27 @@ class AddItem extends StatefulWidget {
 class _AddItemState extends State<AddItem> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final EmployeeService _employeeService = EmployeeService();
   File? _selectedImage;
 
+  // ✅ اختيار الصورة
   Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
+    final pickedImage = await _employeeService.pickImage();
+    if (pickedImage != null) {
       setState(() {
-        _selectedImage = File(image.path);
+        _selectedImage = pickedImage;
       });
     }
   }
 
-  Future<void> _uploaditem() async {
-    if (_selectedImage == null ||
-        _titleController.text.isEmpty ||
-        _descriptionController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Please fill all fields and select an image.')),
-      );
-      return;
-    }
-
-    try {
-      final fileName =
-          '${DateTime.now().millisecondsSinceEpoch}_${_selectedImage!.path.split('/').last}';
-
-      // Upload image to Supabase
-      final String filePath = await supabase.Supabase.instance.client.storage
-          .from('serviceImages')
-          .upload('items/$fileName', _selectedImage!);
-
-      // Get public URL
-      final imageUrl = supabase.Supabase.instance.client.storage
-          .from('serviceImages')
-          .getPublicUrl(filePath.replaceFirst('serviceImages/', ''));
-
-      // Save item details in Firestore
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .collection('items')
-            .add({
-          'name': _titleController.text,
-          'description': _descriptionController.text,
-          'image': imageUrl,
-        });
-
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Item added successfully!')),
-        );
-        // ignore: use_build_context_synchronously
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      debugPrint('Error uploading item: $e');
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to upload item.')),
-      );
-    }
+  // ✅ رفع العنصر باستخدام EmployeeService
+  Future<void> _uploadItem() async {
+    await _employeeService.uploadItem(
+      context: context,
+      selectedImage: _selectedImage,
+      title: _titleController.text,
+      description: _descriptionController.text,
+    );
   }
 
   @override
@@ -126,10 +79,9 @@ class _AddItemState extends State<AddItem> {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors().orange,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 ),
-                onPressed: _uploaditem,
+                onPressed: _uploadItem,
                 child: Text(
                   "Add item",
                   style: TextStyle(

@@ -4,13 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/api/firebase_api.dart';
+import 'package:hire_harmony/services/employee_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/pages/employee/advertisement_screen.dart';
 import 'package:hire_harmony/views/pages/employee/booking_screen.dart';
 import 'package:hire_harmony/views/pages/employee/display_items.dart';
 import 'package:hire_harmony/views/pages/employee/tickets_page.dart';
 import 'package:hire_harmony/views/pages/location_page.dart';
+import 'package:hire_harmony/views/widgets/employee/overview_card.dart';
 import 'package:hire_harmony/views/widgets/employee/prev_work.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EmpHomePage extends StatefulWidget {
   const EmpHomePage({super.key});
@@ -23,18 +28,19 @@ class _EmpHomePageState extends State<EmpHomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String userName = "User"; // Default user name
   final String? userId = FirebaseAuth.instance.currentUser?.uid;
+  final EmployeeService employeeService = EmployeeService(); // ✅ استدعاء `EmployeeService`
 
-  @override
-  void initState() {
-    super.initState();
-    _checkUserLocation();
-    fetchUserName(); // Fetch user name when the page initializes
-  }
+
+@override
+void initState() {
+  super.initState();
+  _checkUserLocation();
+}
+
 
   Future<void> _checkUserLocation() async {
-    await Future.delayed(const Duration(seconds: 10)); // الانتظار لمدة 10 ثوانٍ
+    await Future.delayed(const Duration(seconds: 4));
 
-    // افترض أن لديك Firebase API تتحقق من الموقع
     final isLocationSaved = await FirebaseApi().isUserLocationSaved(userId!);
 
     if (!isLocationSaved) {
@@ -43,26 +49,6 @@ class _EmpHomePageState extends State<EmpHomePage> {
     }
   }
 
-  Future<void> fetchUserName() async {
-    try {
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        // Fetch the user's document from Firestore
-        DocumentSnapshot userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
-
-        if (userDoc.exists) {
-          setState(() {
-            userName = userDoc['name'] ?? "User"; // Update the username
-          });
-        }
-      }
-    } catch (e) {
-      debugPrint("Error fetching user name: $e");
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,9 +94,32 @@ class _EmpHomePageState extends State<EmpHomePage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         const SizedBox(width: 10),
-                        Text(
+                         // ✅ استخدام FutureBuilder لتحميل اسم المستخدم
+                  FutureBuilder<String>(
+                    future: employeeService.fetchUserName(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Text(
+                          'Loading...',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return const Text(
+                          'Error loading name',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      } else {
+                        return Text(
+                          'Welcome, ${snapshot.data ?? "User"}',
                           textAlign: TextAlign.center,
-                          'Welcome, $userName',
                           style: GoogleFonts.montserratAlternates(
                             textStyle: const TextStyle(
                               fontSize: 16,
@@ -120,7 +129,10 @@ class _EmpHomePageState extends State<EmpHomePage> {
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                        ),
+                        );
+                      }
+                    },
+                  ),
                       ],
                     ),
                     Padding(
@@ -255,112 +267,3 @@ class _EmpHomePageState extends State<EmpHomePage> {
   }
 }
 
-class OverviewCard extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final VoidCallback? onTap;
-  final Color cardColor;
-  final Color iconColor;
-  final int badgeCount; // New: Count of pending requests
-
-  const OverviewCard({
-    super.key,
-    required this.title,
-    required this.icon,
-    this.onTap,
-    required this.cardColor,
-    required this.iconColor,
-    this.badgeCount = 0, // Default: No badge
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Card(
-            shadowColor: Theme.of(context).colorScheme.primary,
-            color: cardColor,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            elevation: 2,
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(icon, color: iconColor, size: 30),
-                  const SizedBox(height: 4),
-                  Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.montserratAlternates(
-                        fontSize: 14,
-                        color: Theme.of(context).colorScheme.primary),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // ✅ Show the red badge if there are pending requests
-          if (badgeCount > 0)
-            Positioned(
-              top: 5,
-              right: 10,
-              child: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: AppColors().orange,
-                  shape: BoxShape.circle,
-                ),
-                child: Text(
-                  '$badgeCount', // Display number of pending requests
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class WorkPhotoCard extends StatelessWidget {
-  final String image;
-  final String title;
-
-  const WorkPhotoCard({super.key, required this.image, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(right: 16),
-      width: 150,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.grey.shade200,
-      ),
-      child: Column(
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
-            child: Image.network(image, height: 100, fit: BoxFit.cover),
-          ),
-          const SizedBox(height: 5),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              title,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-}

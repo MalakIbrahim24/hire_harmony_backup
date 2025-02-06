@@ -28,15 +28,7 @@ class _VerificationSuccessPageState extends State<EmpVerificationSuccessPage> {
           backgroundColor: Theme.of(context).colorScheme.surface,
       body: Column(
         children: [
-          /*
-          PreferredSize(
-            preferredSize: const Size.fromHeight(25.0),
-            child: Divider(
-              thickness: 1,
-              color: AppColors().grey,
-            ),
-          ),
-          */
+        
           const SizedBox(
             height: 170,
           ),

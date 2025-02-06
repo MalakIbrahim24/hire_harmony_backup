@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/widgets/employee/add_ticket.dart';
+import 'package:hire_harmony/views/widgets/employee/ticket_card.dart';
 
 class TicketsPage extends StatelessWidget {
   const TicketsPage({super.key});
@@ -162,56 +163,3 @@ class TicketsList extends StatelessWidget {
   }
 }
 
-class TicketCard extends StatelessWidget {
-  final String description;
-  final String response;
-
-  const TicketCard({
-    super.key,
-    required this.description,
-    required this.response,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary,
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            description,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.inversePrimary,
-              fontSize: 14.0,
-            ),
-          ),
-          const SizedBox(height: 16.0),
-          Text(
-            'This ticket has been sent to the admin.',
-            style: TextStyle(
-              color:
-                  Theme.of(context).colorScheme.inversePrimary.withAlpha(180),
-              fontSize: 12.0,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-          Text(
-            response,
-            style: TextStyle(
-              color:
-                  Theme.of(context).colorScheme.inversePrimary.withAlpha(180),
-              fontSize: 12.0,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

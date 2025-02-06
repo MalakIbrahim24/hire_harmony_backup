@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:hire_harmony/utils/app_colors.dart';
-import 'package:hire_harmony/views/pages/employee/help_support_page.dart';
+import 'package:hire_harmony/views/widgets/employee/build_admin_card.dart';
 
 class ContactUsPage extends StatefulWidget {
   const ContactUsPage({super.key});
@@ -14,11 +12,21 @@ class ContactUsPage extends StatefulWidget {
 class _ContactUsPageState extends State<ContactUsPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Stream<QuerySnapshot> fetchAdmins() {
-    return _firestore
+  /// ✅ **دالة لجلب بيانات الإداريين**
+  Future<List<Map<String, dynamic>>> fetchAdmins() async {
+    final snapshot = await _firestore
         .collection('users')
         .where('role', isEqualTo: 'admin')
-        .snapshots();
+        .limit(10)
+        .get();
+
+    if (snapshot.docs.isEmpty) {
+      debugPrint("❌ No admins found in Firestore");
+    } else {
+      debugPrint("✅ Admins fetched successfully: ${snapshot.docs.length}");
+    }
+
+    return snapshot.docs.map((doc) => {'id': doc.id, ...doc.data()}).toList();
   }
 
   @override
@@ -67,15 +75,17 @@ class _ContactUsPageState extends State<ContactUsPage> {
               ),
             ),
             const SizedBox(height: 18),
+
+            /// ✅ **استخدام `FutureBuilder` بدلاً من `StreamBuilder` لتقليل استهلاك Firebase**
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: fetchAdmins(),
+              child: FutureBuilder<List<Map<String, dynamic>>>(
+                future: fetchAdmins(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return const Center(
                       child: Text(
                         "No admins found",
@@ -84,28 +94,21 @@ class _ContactUsPageState extends State<ContactUsPage> {
                     );
                   }
 
-                  final adminUsers = snapshot.data!.docs;
+                  final adminUsers = snapshot.data!;
 
                   return ListView.builder(
                     itemCount: adminUsers.length,
                     itemBuilder: (context, index) {
-                      final adminData =
-                          adminUsers[index].data() as Map<String, dynamic>;
-
-                      final adminName = adminData['name'] ?? 'Unknown Admin';
-                      final adminRole = adminData['role'] ?? 'Admin';
-                      final adminImage = adminData['img'] ??
-                          'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg';
-                      final adminId = adminUsers[index].id;
-                      final adminJob = adminData['job'] ?? 'New Admin';
+                      final adminData = adminUsers[index];
 
                       return buildAdminCard(
                         context,
-                        name: adminName,
-                        role: adminRole,
-                        image: adminImage,
-                        adminId: adminId,
-                        adminJob: adminJob,
+                        name: adminData['name'] ?? 'Unknown Admin',
+                        role: adminData['role'] ?? 'Admin',
+                        image: adminData['img'] ??
+                            'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg',
+                        adminId: adminData['id'],
+                        adminJob: adminData['job'] ?? 'New Admin',
                       );
                     },
                   );
@@ -116,7 +119,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
               padding: const EdgeInsets.only(top: 18.0),
               child: Image.asset(
                 'lib/assets/images/logo_navy.PNG',
-                width: 80, // Bigger logo for better visibility
+                width: 80,
                 height: 80,
               ),
             ),
@@ -130,97 +133,6 @@ class _ContactUsPageState extends State<ContactUsPage> {
                   fontSize: 13,
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-  
-  Widget buildAdminCard(BuildContext context,
-      {required String name,
-      required String role,
-      required String image,
-      required String adminId,
-      required String adminJob}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
-      child: Container(
-        height: 140,
-        decoration: BoxDecoration(
-          color: AppColors().orange,
-          border: Border.all(color: AppColors().orangelight, width: 1),
-          borderRadius: BorderRadius.circular(14.0),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CircleAvatar(
-                  radius: 40,
-                  backgroundImage: NetworkImage(image),
-                ),
-                const SizedBox(width: 50),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: GoogleFonts.montserratAlternates(
-                        textStyle: TextStyle(
-                          fontSize: 17,
-                          color: AppColors().white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      adminJob,
-                      style: GoogleFonts.montserratAlternates(
-                        textStyle: TextStyle(
-                          fontSize: 13,
-                          color: AppColors().white,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors().white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14.0,
-                          vertical: 8.0,
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                HelpSupportPage(adminId: adminId),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        "Send",
-                        style: TextStyle(
-                          color: AppColors().navy,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
             ),
           ],
         ),

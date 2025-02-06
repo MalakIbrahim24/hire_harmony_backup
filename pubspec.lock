@@ -345,6 +345,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.3"
+  equatable:
+    dependency: "direct main"
+    description:
+      name: equatable
+      sha256: "567c64b3cb4cf82397aac55f4f0cbd3ca20d77c6c03bedbc4ceaddc08904aef7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.7"
   eva_icons_flutter:
     dependency: "direct main"
     description:
@@ -518,22 +526,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.4.1"
-  flutter_face_api:
-    dependency: "direct main"
-    description:
-      name: flutter_face_api
-      sha256: "9e2739efa07385edd6dacaeab7050074874f4f2b7e2cd752fb427d12eb9dfd80"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.4.875"
-  flutter_face_core_basic:
-    dependency: "direct main"
-    description:
-      name: flutter_face_core_basic
-      sha256: ed75e0907b02aa6c062f8f9c798a5e3ed36f4bf78cfbb10e5d03872755ec49f1
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.4.242"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -1305,13 +1297,13 @@ packages:
     source: hosted
     version: "2.1.0"
   shared_preferences:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shared_preferences
-      sha256: a752ce92ea7540fc35a0d19722816e04d0e72828a4200e83a98cf1a1eb524c9a
+      sha256: "688ee90fbfb6989c980254a56cb26ebe9bb30a3a2dff439a78894211f73de67a"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.5"
+    version: "2.5.1"
   shared_preferences_android:
     dependency: transitive
     description:

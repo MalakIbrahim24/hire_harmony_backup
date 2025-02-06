@@ -25,7 +25,6 @@ import 'package:hire_harmony/views/pages/customer/view_emp_profile_page.dart';
 import 'package:hire_harmony/views/pages/employee/contact_us_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_account_deletion.dart';
 import 'package:hire_harmony/views/pages/employee/emp_navbar.dart';
-import 'package:hire_harmony/views/pages/employee/emp_notifications_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_profile_info_page.dart';
 //import 'package:hire_harmony/views/pages/forms/emp_sign_up_form.dart';
 import 'package:hire_harmony/views/pages/signup/sign_up_page.dart';
@@ -109,7 +108,7 @@ class AppRouter {
           builder: (_) => const ViewAllPopularServicesPage(),
           settings: settings,
         );
-
+      
       case AppRoutes.viewEmpProfilePage:
         return MaterialPageRoute(
           builder: (_) => ViewEmpProfilePage(
@@ -121,11 +120,7 @@ class AppRouter {
           builder: (_) => const EmpHomePage(),
           settings: settings,
         );
-      case AppRoutes.empNotificationsPage:
-        return MaterialPageRoute(
-          builder: (_) => const EmpNotificationsPage(),
-          settings: settings,
-        );
+     
       // case AppRoutes.empphonePage:
       //   return MaterialPageRoute(
       //     builder: (_) => const EmpPhonePage(),
@@ -140,12 +135,12 @@ class AppRouter {
           settings: settings,
         );
 
-      case AppRoutes.empidverificationPage:
+     /* case AppRoutes.empidverificationPage:
         return MaterialPageRoute(
           builder: (_) => const EmpIdVerificationPage(),
           settings: settings,
         );
-
+*/
       case AppRoutes.empProfileInfoPage:
         return MaterialPageRoute(
           builder: (_) => EmpProfileInfoPage(

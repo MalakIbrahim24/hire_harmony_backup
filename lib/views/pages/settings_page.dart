@@ -17,6 +17,13 @@ class SettingsPage extends StatelessWidget {
           style: TextStyle(
               fontSize: 20, color: Theme.of(context).colorScheme.primary),
         ),
+         leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios,
+                color: Theme.of(context).colorScheme.primary),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.tertiary,
         elevation: 0,

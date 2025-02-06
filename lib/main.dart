@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:get/get_instance/get_instance.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:hire_harmony/api/firebase_api.dart';
 import 'package:hire_harmony/api/notification_screen.dart';
+import 'package:hire_harmony/services/employee/cubit/employee_cubit.dart';
 import 'package:hire_harmony/src/controller/location_controller.dart';
 import 'package:hire_harmony/utils/route/app_router.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
@@ -49,7 +51,11 @@ void main() async {
 
   await FirebaseApi().initNotifications();
   Get.put(LocationController()); 
-
+// ✅ **تفعيل التخزين المؤقت Firestore لتقليل استهلاك القراءات**
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true, // ✅ حفظ البيانات محليًا
+    cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED, // ✅ عدم تحديد حد للتخزين
+  );
   runApp(ChangeNotifierProvider(
     create: (context) => ThemeProvider(),
     child: const MyApp(),
@@ -66,6 +72,10 @@ class MyApp extends StatelessWidget {
         BlocProvider<AuthCubit>(
           // create: (context) => AuthCubit(),
           create: (context) => AuthCubit()..getCurrentUser(),
+          
+        ),
+         BlocProvider<EmployeeCubit>(
+          create: (context) => EmployeeCubit(), // ✅ إضافة EmployeeCubit
         ),
       ],
       child: Builder(

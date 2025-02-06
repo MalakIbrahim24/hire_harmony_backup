@@ -29,10 +29,9 @@ class _EmpNavbarState extends State<EmpNavbar> {
                 labelTextStyle: WidgetStateProperty.all(
                   GoogleFonts.montserratAlternates(
                     textStyle: TextStyle(
-                      fontSize: 12, // Customize font size
-                      fontWeight: FontWeight.w500, // Customize font weight
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500, 
                       color: Theme.of(context).colorScheme.primary,
-// Customize font color
                     ),
                   ),
                 ),
