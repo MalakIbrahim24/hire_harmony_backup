@@ -13,9 +13,7 @@ import 'package:hire_harmony/views/pages/employee/tickets_page.dart';
 import 'package:hire_harmony/views/pages/location_page.dart';
 import 'package:hire_harmony/views/widgets/employee/overview_card.dart';
 import 'package:hire_harmony/views/widgets/employee/prev_work.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 class EmpHomePage extends StatefulWidget {
   const EmpHomePage({super.key});
@@ -100,7 +98,7 @@ void initState() {
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Text(
-                          'Loading...',
+                          'Welcome , ...',
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,

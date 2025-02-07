@@ -285,40 +285,23 @@ class EmployeeService {
   }
 
 
+Future<String> fetchUserName() async {
+  try {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc =
+          await _firestore.collection('users').doc(user.uid).get();
 
-  /// ✅ **دالة لجلب اسم المستخدم مع التخزين المؤقت لتقليل القراءة من Firestore**
-  Future<String> fetchUserName() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      // ✅ **إذا كان الاسم مخزنًا محليًا، استخدمه مباشرة دون Firestore**
-      String? cachedUserName = prefs.getString('userName');
-      if (cachedUserName != null) {
-        debugPrint("✅ Loaded username from cache: $cachedUserName");
-        return cachedUserName;
+      if (userDoc.exists) {
+        return userDoc['name'] ?? "User";
       }
-
-      // ✅ **إذا لم يكن الاسم مخزنًا، اجلبه من Firestore وخزنه محليًا**
-      User? user = _auth.currentUser;
-      if (user != null) {
-        DocumentSnapshot userDoc =
-            await _firestore.collection('users').doc(user.uid).get();
-
-        if (userDoc.exists) {
-          String userName = userDoc['name'] ?? "User";
-
-          // ✅ **تخزين الاسم محليًا لتجنب استدعاءات Firestore المتكررة**
-          await prefs.setString('userName', userName);
-          debugPrint("✅ Stored username in cache: $userName");
-
-          return userName;
-        }
-      }
-    } catch (e) {
-      debugPrint("❌ Error fetching user name: $e");
     }
-    return "User"; // ✅ القيمة الافتراضية عند حدوث خطأ
+  } catch (e) {
+    debugPrint("❌ Error fetching user name: $e");
   }
+  return "User"; // ✅ القيمة الافتراضية عند حدوث خطأ
+}
+
 
  /// ✅ **دالة لتحديث عدد الطلبات المكتملة فقط عند الحاجة**
   Future<void> updateCompletedOrdersCount(String workerId) async {
@@ -343,87 +326,115 @@ class EmployeeService {
     }
   }
 
-  /// ✅ **دالة لاكمال الطلب باستخدام `batch write` لتقليل عمليات الكتابة**
   Future<void> markOrderAsCompleted(
-      BuildContext context,
-      String orderId,
-      String customerId,
-      String employeeId,
-      Map<String, dynamic> orderData) async {
-    try {
-      final batch = _firestore.batch();
+    BuildContext context,
+    String orderId,
+    String customerId,
+    String employeeId,
+    Map<String, dynamic> orderData) async {
+  try {
+    final batch = FirebaseFirestore.instance.batch();
 
-      final customerOrderRef = _firestore
-          .collection('users')
-          .doc(customerId)
-          .collection('completedOrders')
-          .doc(orderId);
+    // 🔹 جلب بيانات الموظف (العامل) من Firestore
+    final employeeDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(employeeId)
+        .get();
 
-      final employeeOrderRef = _firestore
-          .collection('users')
-          .doc(employeeId)
-          .collection('completedOrders')
-          .doc(orderId);
+    final employeeName = employeeDoc.exists ? employeeDoc['name'] ?? 'Unknown' : 'Unknown';
 
-      final customerOrderDeleteRef = _firestore
-          .collection('users')
-          .doc(customerId)
-          .collection('orders')
-          .doc(orderId);
+   final orderDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(customerId)
+        .collection('orders')
+        .doc(orderId)
+        .get();
+    final employeeRef = FirebaseFirestore.instance.collection('users').doc(employeeId);
 
-      final employeeOrderDeleteRef = _firestore
-          .collection('users')
-          .doc(employeeId)
-          .collection('orders')
-          .doc(orderId);
+final description = orderDoc.exists ? orderDoc['description'] ?? 'No description provided' : 'No description provided';
+// 🔹 جلب العدد الحالي
+    final empSnapshot = await employeeRef.get();
+    int completedOrdersCount = (empSnapshot['completedOrdersCount'] ?? 0) + 1;
 
-      // ✅ إضافة الطلب إلى `completedOrders` لكلا الطرفين
-      batch.set(customerOrderRef, {...orderData, 'status': 'completed'});
-      batch.set(employeeOrderRef, {...orderData, 'status': 'completed'});
+final updatedOrderData = {
+  ...orderData,
+  'status': 'completed',
+  'reciverId': employeeId,
+  'employeeName': employeeName,
+  'description': description, // ✅ جلب الوصف الحقيقي من الطلب الأصلي
+};
 
-      // ✅ حذف الطلب من `orders`
-      batch.delete(customerOrderDeleteRef);
-      batch.delete(employeeOrderDeleteRef);
 
-      // ✅ تحديث `chatController` فقط إذا لم يكن مغلقًا بالفعل
-      final chatId = employeeId.compareTo(customerId) < 0
-          ? '${employeeId}_$customerId'
-          : '${customerId}_$employeeId';
+    final customerOrderRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(customerId)
+        .collection('completedOrders')
+        .doc(orderId);
 
-      final chatRef = _firestore.collection('chat_rooms').doc(chatId);
-      final chatSnapshot = await chatRef.get();
-      if (chatSnapshot.exists &&
-          chatSnapshot.data()?['chatController'] != 'closed') {
-        batch.update(chatRef, {'chatController': 'closed'});
-      }
+    final employeeOrderRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(employeeId)
+        .collection('completedOrders')
+        .doc(orderId);
+// ✅ تحديث `completedOrdersCount` مباشرة عند إضافة الطلب
+    batch.set(
+      employeeRef,
+      {'completedOrdersCount': completedOrdersCount},
+      SetOptions(merge: true),
+    );
 
-      // 🔹 تنفيذ جميع العمليات في مرة واحدة
-      await batch.commit();
+    // ✅ تخزين الطلب المكتمل مع معلومات الموظف
+    batch.set(customerOrderRef, updatedOrderData);
+    batch.set(employeeOrderRef, updatedOrderData);
 
-      // ✅ تحديث عدد الطلبات المكتملة محليًا وفقط إذا تغير العدد
-      await updateCompletedOrdersCount(employeeId);
+    // ✅ حذف الطلب من `orders`
+    batch.delete(FirebaseFirestore.instance
+        .collection('users')
+        .doc(customerId)
+        .collection('orders')
+        .doc(orderId));
 
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Order marked as completed.'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-      debugPrint('✅ Order marked as completed and batch operation committed.');
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-      debugPrint("❌ Error marking order as completed: $e");
+    batch.delete(FirebaseFirestore.instance
+        .collection('users')
+        .doc(employeeId)
+        .collection('orders')
+        .doc(orderId));
+
+    // ✅ إغلاق الدردشة إذا كانت مفتوحة
+    final chatId = employeeId.compareTo(customerId) < 0
+        ? '${employeeId}_$customerId'
+        : '${customerId}_$employeeId';
+
+    final chatRef = FirebaseFirestore.instance.collection('chat_rooms').doc(chatId);
+    final chatSnapshot = await chatRef.get();
+    if (chatSnapshot.exists && chatSnapshot.data()?['chatController'] != 'closed') {
+      batch.update(chatRef, {'chatController': 'closed'});
     }
+
+    await batch.commit();
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Order marked as completed.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+    debugPrint('✅ Order marked as completed and batch operation committed.');
+  } catch (e) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+    debugPrint("❌ Error marking order as completed: $e");
   }
+}
+
   // ✅ Fetch orders based on status (in progress / completed)
 Stream<List<Map<String, dynamic>>> fetchOrders(String userId, String status) {
   return _firestore

@@ -719,16 +719,21 @@ class CustomerServices {
   /// 🔹 Fetch name of an employee by their ID
   Future<String> getEmployeeNameById(String userId) async {
     try {
+      debugPrint("🔍 Checking Firestore for user ID: $userId"); // ✅ تحقق من ID
+
       DocumentSnapshot userDoc =
           await _firestore.collection('users').doc(userId).get();
 
       if (userDoc.exists) {
-        return userDoc['name'] ?? 'Unknown';
+        final name = userDoc['name'] ?? 'Unknown';
+        debugPrint("✅ Employee name found: $name"); // ✅ طباعة الاسم للتحقق
+        return name;
       } else {
+        debugPrint("❌ Employee not found in Firestore!");
         return 'Unknown';
       }
     } catch (e) {
-      print("❌ Error fetching employee name: $e");
+      debugPrint("❌ Error fetching employee name: $e");
       return 'Error';
     }
   }
@@ -887,20 +892,26 @@ class CustomerServices {
       'date': FieldValue.serverTimestamp(),
     });
 
-    // Update the order as reviewed
+    // ✅ تحديث الطلب في `completedOrders` لكل من العميل والعامل
+    final Map<String, dynamic> reviewData = {
+      'reviewed': true,
+      'reviewText': reviewText.trim(),
+      'rating': rating.toStringAsFixed(1),
+    };
+
     await _firestore
         .collection('users')
         .doc(userId)
         .collection('completedOrders')
         .doc(orderId)
-        .update({'reviewed': true});
+        .update(reviewData);
 
     await _firestore
         .collection('users')
         .doc(employeeId)
         .collection('completedOrders')
         .doc(orderId)
-        .update({'reviewed': true});
+        .update(reviewData);
 
     // Update employee's rating and review count
     await _firestore.collection('users').doc(employeeId).set(

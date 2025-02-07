@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/services/employee_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';

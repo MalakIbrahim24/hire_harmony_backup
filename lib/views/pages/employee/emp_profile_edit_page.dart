@@ -1,6 +1,5 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/services/employee_services.dart';
@@ -16,9 +15,6 @@ class EmpProfileEditPage extends StatefulWidget {
 }
 
 class _EmpProfileEditPageState extends State<EmpProfileEditPage> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
@@ -32,46 +28,49 @@ class _EmpProfileEditPageState extends State<EmpProfileEditPage> {
 
   final EmployeeService _employeeService = EmployeeService();
 
-@override
-void initState() {
-  super.initState();
-  _loadEmployeeData();
-}
+  @override
+  void initState() {
+    super.initState();
+    _loadEmployeeData();
+  }
 
-Future<void> _loadEmployeeData() async {
-  final data = await _employeeService.fetchEmployeeData();
-  if (data != null) {
+  Future<void> _loadEmployeeData() async {
+    final data = await _employeeService.fetchEmployeeData();
     setState(() {
       _nameController.text = data['name'] ?? '';
       _imageUrl = data['img'] ?? '';
     });
   }
-}
 
   void _saveProfileUpdates() async {
-  try {
-    await _employeeService.saveProfileUpdates(
-      name: _nameController.text,
-      imagePath: _tempImageUrl,
-      newPassword: _passwordController.text.isNotEmpty ? _passwordController.text : null,
-      confirmPassword: _confirmPasswordController.text.isNotEmpty ? _confirmPasswordController.text : null,
-    );
+    try {
+      await _employeeService.saveProfileUpdates(
+        name: _nameController.text,
+        imagePath: _tempImageUrl,
+        newPassword: _passwordController.text.isNotEmpty
+            ? _passwordController.text
+            : null,
+        confirmPassword: _confirmPasswordController.text.isNotEmpty
+            ? _confirmPasswordController.text
+            : null,
+      );
 
-    setState(() {
-      _imageUrl = _tempImageUrl ?? _imageUrl;
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Profile updated successfully!"), backgroundColor: Colors.green),
-    );
-    Navigator.pop(context);
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
-    );
+      setState(() {
+        _imageUrl = _tempImageUrl ?? _imageUrl;
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text("Profile updated successfully!"),
+            backgroundColor: Colors.green),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+      );
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {

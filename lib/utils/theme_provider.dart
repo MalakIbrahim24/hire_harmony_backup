@@ -38,8 +38,8 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   // حفظ الثيم في SharedPreferences
-  Future<void> _saveTheme(bool isDark) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isDarkMode', isDark);
-  }
+  // Future<void> _saveTheme(bool isDark) async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   await prefs.setBool('isDarkMode', isDark);
+  // }
 }

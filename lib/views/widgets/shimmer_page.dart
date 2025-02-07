@@ -19,7 +19,7 @@ class _ShimmerPageState extends State<ShimmerPage> {
       child: Column(
         children: [
           Shimmer.fromColors(
-            baseColor: AppColors().orange!,
+            baseColor: AppColors().orange,
             highlightColor: Colors.grey[100]!,
             child: Container(
               height: 20,

@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -22,7 +21,7 @@ class ViewEmpProfilePage extends StatefulWidget {
 class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  // final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<String> services = []; // تخزين قائمة الخدمات
   bool isAvailable = false; // افتراضيًا، الموظف غير متاح
   final CustomerServices _customerServices = CustomerServices();

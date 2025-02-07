@@ -7,7 +7,7 @@ class AccountDeletionScreen extends StatefulWidget {
   const AccountDeletionScreen({super.key});
 
   @override
-  _AccountDeletionScreenState createState() => _AccountDeletionScreenState();
+  State <AccountDeletionScreen>  createState() => _AccountDeletionScreenState();
 }
 
 class _AccountDeletionScreenState extends State<AccountDeletionScreen> {

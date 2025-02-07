@@ -8,6 +8,7 @@ environment:
   sdk: ^3.5.1
 
 dependencies:
+  flip_card: ^0.6.0
   badges: ^3.1.2
   bloc: ^8.1.4
   cached_network_image: ^3.4.1
@@ -101,5 +102,7 @@ flutter:
     - lib/assets/images/logo_orange.PNG
     - lib/assets/images/logo_navy.PNG
     - lib/assets/images/logo_white.PNG
+    - lib/assets/images/notification_icon.PNG
+
 
 

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:intl/intl.dart';
+
 // تبويب سجل الحجوزات
 class BookingHistoryTab extends StatelessWidget {
   const BookingHistoryTab({super.key});
@@ -21,13 +22,13 @@ class BookingHistoryTab extends StatelessWidget {
     }
 
     // Firestore query for booking history
-    final Stream<QuerySnapshot> bookingHistoryStream = FirebaseFirestore
-        .instance
-        .collection('users')
-        .doc(loggedInUserId)
-        .collection('bookingHistory')
-        .orderBy('confirmedTime', descending: true)
-        .snapshots();
+    final Stream<QuerySnapshot> bookingHistoryStream =
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(loggedInUserId)
+            .collection('completedOrders') // ✅ تم التعديل هنا
+            .orderBy('confirmedTime', descending: true)
+            .snapshots();
 
     return StreamBuilder<QuerySnapshot>(
       stream: bookingHistoryStream,

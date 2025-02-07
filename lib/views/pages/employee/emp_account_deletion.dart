@@ -1,20 +1,19 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:hire_harmony/services/firestore_services.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
-import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:hire_harmony/services/emp_delete_account_services.dart';
 
 class EmpAccountDeletionScreen extends StatefulWidget {
   const EmpAccountDeletionScreen({super.key});
 
   @override
-  _EmpAccountDeletionScreenState createState() => _EmpAccountDeletionScreenState();
+  State<EmpAccountDeletionScreen> createState() =>
+      _EmpAccountDeletionScreenState();
 }
 
 class _EmpAccountDeletionScreenState extends State<EmpAccountDeletionScreen> {
-  final EmpDeleteAccountService _deleteAccountService = EmpDeleteAccountService();
+  final EmpDeleteAccountService _deleteAccountService =
+      EmpDeleteAccountService();
   String? selectedReason;
   String? userImage;
 
@@ -33,9 +32,11 @@ class _EmpAccountDeletionScreenState extends State<EmpAccountDeletionScreen> {
 
   void _handleDeleteAccount(BuildContext context) {
     if (selectedReason == null) {
-      _showErrorDialog(context, 'Please select a reason for deleting your account.');
+      _showErrorDialog(
+          context, 'Please select a reason for deleting your account.');
     } else {
-      _deleteAccountService.deleteAccount(context, FirebaseAuth.instance.currentUser!.uid, selectedReason);
+      _deleteAccountService.deleteAccount(
+          context, FirebaseAuth.instance.currentUser!.uid, selectedReason);
     }
   }
 
@@ -65,7 +66,8 @@ class _EmpAccountDeletionScreenState extends State<EmpAccountDeletionScreen> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Theme.of(context).colorScheme.primary),
+          icon: Icon(Icons.arrow_back_ios,
+              color: Theme.of(context).colorScheme.primary),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
@@ -84,7 +86,8 @@ class _EmpAccountDeletionScreenState extends State<EmpAccountDeletionScreen> {
           const SizedBox(height: 20),
           CircleAvatar(
             radius: 50,
-            backgroundImage: NetworkImage(userImage ?? 'https://via.placeholder.com/150'),
+            backgroundImage:
+                NetworkImage(userImage ?? 'https://via.placeholder.com/150'),
           ),
           const SizedBox(height: 20),
           Padding(
@@ -111,7 +114,10 @@ class _EmpAccountDeletionScreenState extends State<EmpAccountDeletionScreen> {
               onPressed: () => _handleDeleteAccount(context),
               child: Text(
                 'Delete Account',
-                style: TextStyle(fontSize: 18, color: AppColors().white, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 18,
+                    color: AppColors().white,
+                    fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -151,7 +157,8 @@ class _EmpAccountDeletionScreenState extends State<EmpAccountDeletionScreen> {
       groupValue: selectedReason,
       title: Text(
         reason,
-        style: TextStyle(fontSize: 16, color: AppColors().navy, fontWeight: FontWeight.w500),
+        style: TextStyle(
+            fontSize: 16, color: AppColors().navy, fontWeight: FontWeight.w500),
       ),
       onChanged: (value) {
         setState(() {

@@ -37,7 +37,7 @@ class _EmpProfileInfoPageState extends State<EmpProfileInfoPage>
     super.dispose();
   }
 void _showAddServiceDialog(BuildContext context) {
-  final TextEditingController _serviceController = TextEditingController();
+  final TextEditingController serviceController = TextEditingController();
 
   showDialog(
     context: context,
@@ -51,7 +51,7 @@ void _showAddServiceDialog(BuildContext context) {
               color: Theme.of(context).colorScheme.primary,
             )),
         content: TextField(
-          controller: _serviceController,
+          controller: serviceController,
           decoration: InputDecoration(
             hintText: 'Enter service name',
             border: OutlineInputBorder(
@@ -68,8 +68,8 @@ void _showAddServiceDialog(BuildContext context) {
           ),
           TextButton(
             onPressed: () {
-              if (_serviceController.text.isNotEmpty) {
-                context.read<EmployeeCubit>().addService(_serviceController.text.trim());
+              if (serviceController.text.isNotEmpty) {
+                context.read<EmployeeCubit>().addService(serviceController.text.trim());
                 Navigator.of(context).pop();
               }
             },
@@ -280,7 +280,7 @@ SingleChildScrollView(
                     width: 20, 
                     height: 20,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.8), // ✅ خلفية شفافة بيضاء
+                      color: Colors.white.withValues(alpha: 0.8), // ✅ خلفية شفافة بيضاء
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -335,7 +335,7 @@ SingleChildScrollView(
               ),
             );
           } else {
-            return Center(child: Text('Error loading data'));
+            return const Center(child: Text('Error loading data'));
           }
         },
       ),

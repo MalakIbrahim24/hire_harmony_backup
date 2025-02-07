@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,6 +19,15 @@ class _OrderPageState extends State<OrderPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final CustomerServices _customerServices = CustomerServices();
+  int _parseRating(dynamic rating) {
+    if (rating is int) {
+      return rating;
+    } else if (rating is String) {
+      return int.tryParse(rating) ?? 0;
+    } else {
+      return 0;
+    }
+  }
 
   @override
   void initState() {
@@ -234,7 +244,6 @@ class _OrderPageState extends State<OrderPage>
           itemBuilder: (context, index) {
             final order = orders[index];
 
-            // ✅ التعامل مع القيم النصية التي قد تحتوي على null
             final String orderId = order['id']?.toString() ?? 'Unknown ID';
             final String orderName = order['name']?.toString() ?? 'No Title';
             final String employeeId =
@@ -243,7 +252,16 @@ class _OrderPageState extends State<OrderPage>
             final String description =
                 order['description']?.toString() ?? 'No description';
 
-            // ✅ التأكد من أن `confirmedTime` ليس null قبل تحويله إلى Timestamp
+            final employeeName =
+                order['employeeName']?.toString() ?? 'No description';
+
+            final bool isReviewed =
+                order.containsKey('reviewed') && order['reviewed'] == true;
+            final double rating =
+                double.tryParse(order['rating']?.toString() ?? "0.0") ?? 0.0;
+            final String reviewText =
+                order['reviewText'] ?? "No review provided";
+
             final Timestamp? sentTime = order['confirmedTime'] as Timestamp?;
             final String formattedTime = sentTime != null
                 ? DateFormat.jm().format(sentTime.toDate())
@@ -252,156 +270,32 @@ class _OrderPageState extends State<OrderPage>
                 ? DateFormat.yMMMMd().format(sentTime.toDate())
                 : 'Unknown date';
 
-            final bool isReviewed = order['reviewed'] == true;
-
-            // ✅ اختيار لون البطاقة بناءً على حالة المراجعة
             final Color cardColor = isReviewed
-                ? Colors.grey[200]! // رمادي فاتح للطلبات التي تمت مراجعتها
-                : AppColors()
-                    .orangelight; // برتقالي فاتح للطلبات التي لم تتم مراجعتها
+                ? Colors.grey[200]! // رمادي للطلبات المكتملة والمراجعَة
+                : AppColors().orangelight; // برتقالي للطلبات غير المراجعَة
 
-            // ✅ تصميم خاص للطلبات المكتملة
             if (isCompleted) {
-              return Card(
-                color: cardColor, // تحديد لون البطاقة
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                margin:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // ✅ اسم الطلب مع دائرة الحالة
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              orderName,
-                              maxLines: 5,
-                              softWrap: true, // السماح بالتفاف النص
-                              overflow: TextOverflow.visible,
-                              style: GoogleFonts.montserratAlternates(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors().navy,
-                              ),
-                            ),
-                          ),
-                          Icon(
-                            Icons.circle,
-                            color: isReviewed
-                                ? Colors
-                                    .grey // رمادي للطلبات المكتملة والمراجعة
-                                : AppColors()
-                                    .orange, // برتقالي للطلبات غير المراجعة
-                            size: 14,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 5),
-
-                      // ✅ اسم الموظف
-                      FutureBuilder<String>(
-                        future:
-                            _customerServices.getEmployeeNameById(employeeId),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Text(
-                              'Loading employee name...',
-                              style: GoogleFonts.montserratAlternates(
-                                  fontSize: 14, color: Colors.grey),
-                            );
-                          } else if (snapshot.hasError) {
-                            return Text(
-                              'Error fetching name',
-                              style: GoogleFonts.montserratAlternates(
-                                  fontSize: 14, color: Colors.red),
-                            );
-                          } else {
-                            return Text(
-                              'Employee: ${snapshot.data!}',
-                              style: GoogleFonts.montserratAlternates(
-                                  fontSize: 15, color: Colors.black87),
-                            );
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 8),
-
-                      // ✅ عرض الوصف
-                      Text(
-                        'Description:',
-                        style: GoogleFonts.montserratAlternates(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        description,
-                        style: GoogleFonts.montserratAlternates(
-                            fontSize: 14, color: Colors.black87),
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      // ✅ عرض وقت التأكيد
-                      Text(
-                        'Confirmed at: $formattedDate - $formattedTime',
-                        style: GoogleFonts.montserratAlternates(
-                            fontSize: 14, color: Colors.grey[600]),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      // ✅ زر "Tap to Review" فقط إذا لم تتم المراجعة
-                      if (!isReviewed)
-                        Center(
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ReviewPage(
-                                      orderId: orderId,
-                                      employeeId: employeeId,
-                                      employeeName: orderName,
-                                    ),
-                                  ),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    AppColors().orange, // برتقالي غامق للزر
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 12),
-                              ),
-                              child: Text(
-                                'Tap to Review',
-                                style: GoogleFonts.montserratAlternates(
-                                    fontSize: 16,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              );
-            }
-
-            // ❌ الطلبات غير المكتملة تبقى كما هي (تصميم بسيط بدون بطاقات)
-            else {
+              // ✅ الطلبات المكتملة تبقى بنفس التصميم
+              if (isReviewed) {
+                return FlipCard(
+                  direction: FlipDirection.HORIZONTAL,
+                  front: _buildFrontCard(context, orderName, employeeName,
+                      description, formattedDate, formattedTime, isReviewed),
+                  back: _buildBackCard(context, rating, reviewText),
+                );
+              } else {
+                return _buildFrontCard(
+                    context,
+                    orderName,
+                    employeeName,
+                    description,
+                    formattedDate,
+                    formattedTime,
+                    isReviewed,
+                    orderId,
+                    employeeId);
+              }
+            } else {
               return ListTile(
                 title: Text(
                   orderName,
@@ -496,4 +390,186 @@ class _OrderPageState extends State<OrderPage>
         return Colors.grey;
     }
   }
+}
+
+Widget _buildFrontCard(
+    BuildContext context,
+    String orderName,
+    String employeeName,
+    String description,
+    String formattedDate,
+    String formattedTime,
+    bool isReviewed,
+    [String? orderId,
+    String? employeeId]) {
+  return Card(
+    color: isReviewed ? Colors.grey[200]! : AppColors().orangelight,
+    elevation: 4,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+    margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+    child: Padding(
+      padding: const EdgeInsets.all(15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ✅ عنوان الطلب مع دائرة الحالة
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  orderName,
+                  maxLines: 5,
+                  softWrap: true,
+                  overflow: TextOverflow.visible,
+                  style: GoogleFonts.montserratAlternates(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors().navy,
+                  ),
+                ),
+              ),
+              // ✅ نقطة الحالة (Status Indicator)
+              Icon(
+                Icons.circle,
+                color: isReviewed
+                    ? Colors.grey
+                    : AppColors()
+                        .orange, // رمادي إذا تمت المراجعة، برتقالي إذا لم تتم
+                size: 14,
+              ),
+            ],
+          ),
+          const SizedBox(height: 5),
+          RichText(
+            text: TextSpan(
+              style: GoogleFonts.montserratAlternates(
+                fontSize: 15,
+                color: AppColors().navy, // Default color
+              ),
+              children: [
+                TextSpan(
+                  text: 'Employee:  ',
+                  style: GoogleFonts.montserratAlternates(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors().navy),
+                ),
+                TextSpan(
+                  text: employeeName,
+                  style: GoogleFonts.montserratAlternates(
+                      color: AppColors().grey2,
+                      fontWeight:
+                          FontWeight.w500 // White color for 'Control Panel'
+                      ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 8),
+          Text(
+            'Description:',
+            style: GoogleFonts.montserratAlternates(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: AppColors().navy),
+          ),
+          Text(
+            description,
+            style: GoogleFonts.montserratAlternates(
+              fontSize: 15,
+              color: AppColors().grey,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Confirmed at: $formattedDate - $formattedTime',
+            style: GoogleFonts.montserratAlternates(
+                fontSize: 14, color: Colors.grey[600]),
+          ),
+          const SizedBox(height: 12),
+
+          // ✅ زر "Tap to Review" فقط إذا لم تتم المراجعة
+          if (!isReviewed)
+            Center(
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ReviewPage(
+                          orderId: orderId!,
+                          employeeId: employeeId!,
+                          employeeName: employeeName,
+                        ),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors().orange,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 12),
+                  ),
+                  child: Text(
+                    'Tap to Review',
+                    style: GoogleFonts.montserratAlternates(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget _buildBackCard(BuildContext context, double rating, String reviewText) {
+  return Card(
+    elevation: 4,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+    margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+    color: Colors.white,
+    child: Padding(
+      padding: const EdgeInsets.all(15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Review",
+            style: GoogleFonts.montserratAlternates(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors().navy,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: List.generate(
+              5,
+              (index) => Icon(
+                index < rating.toInt() ? Icons.star : Icons.star_border,
+                color: AppColors().orange,
+                size: 24,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            reviewText,
+            style: GoogleFonts.montserratAlternates(
+                fontSize: 14, color: Colors.black87),
+          ),
+        ],
+      ),
+    ),
+  );
 }

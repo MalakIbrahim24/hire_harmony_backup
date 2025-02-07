@@ -72,13 +72,19 @@ class EmpDeleteAccountService {
     }
   }
 
-  Future<void> deleteAccount(BuildContext context, String userId, String? selectedReason) async {
+  Future<void> deleteAccount(
+      BuildContext context, String userId, String? selectedReason) async {
+        
     try {
+      
       final User? user = _auth.currentUser;
       if (user != null) {
         final password = await _getPasswordFromUser(context);
+
         if (password == null || password.isEmpty) {
-          _showErrorDialog(context, 'Password is required to delete your account.');
+          _showErrorDialog(
+              // ignore: use_build_context_synchronously
+              context, 'Password is required to delete your account.');
           return;
         }
 
@@ -165,5 +171,4 @@ class EmpDeleteAccountService {
       },
     );
   }
-  
 }

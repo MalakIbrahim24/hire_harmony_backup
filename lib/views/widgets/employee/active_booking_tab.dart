@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:intl/intl.dart';
+
 class ActiveBookingsTab extends StatelessWidget {
   const ActiveBookingsTab({super.key});
 
@@ -22,7 +23,7 @@ class ActiveBookingsTab extends StatelessWidget {
         'name': data['name'] ?? 'Unknown',
         'orderId': activeRequest.id, // Same as request document ID
         'senderId': senderId,
-        'reciverId': loggedInUserId,
+        'employeeId': loggedInUserId,
         'img': data['senderImg'] ?? 'https://via.placeholder.com/150',
         'description': data['description'] ?? 'No description provided',
         'confirmedTime': FieldValue.serverTimestamp(),
@@ -296,23 +297,26 @@ class ActiveBookingsTab extends StatelessWidget {
                             children: [
                               Text(
                                 name,
-                                style:  GoogleFonts.montserratAlternates(
-                                  color:  Theme.of(context).colorScheme.primary,
+                                style: GoogleFonts.montserratAlternates(
+                                  color: Theme.of(context).colorScheme.primary,
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              Text(description,
-                               style:  GoogleFonts.montserratAlternates(
-                                  color:  Theme.of(context).colorScheme.primary,
+                              Text(
+                                description,
+                                style: GoogleFonts.montserratAlternates(
+                                  color: Theme.of(context).colorScheme.primary,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
-                                ),),
+                                ),
+                              ),
                               const SizedBox(height: 4),
                               Text(
                                 'Accepted on $formattedAcceptedDate at $formattedAcceptedTime',
-                                style:  GoogleFonts.montserratAlternates(color: Colors.grey),
+                                style: GoogleFonts.montserratAlternates(
+                                    color: Colors.grey),
                               ),
                             ],
                           ),

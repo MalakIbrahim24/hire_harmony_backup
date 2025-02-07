@@ -124,7 +124,7 @@ class _PopulerServiceState extends State<PopulerService> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: AppColors().lightblue.withOpacity(0.2),
+                            color: AppColors().lightblue.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(

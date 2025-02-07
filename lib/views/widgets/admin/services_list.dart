@@ -59,7 +59,7 @@ class ServicesList extends StatelessWidget {
               margin: const EdgeInsets.symmetric(vertical: 8),
               shape: RoundedRectangleBorder(
                 side: BorderSide(
-                  color: AppColors().navy.withOpacity(0.2),
+                  color: AppColors().navy.withValues(alpha: 0.2),
                   width: 1,
                 ),
                 borderRadius: BorderRadius.circular(10),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/services/customer_services.dart';
 import 'package:hire_harmony/views/pages/salt/add_salt.dart';
 import 'package:hire_harmony/views/widgets/main_button.dart';

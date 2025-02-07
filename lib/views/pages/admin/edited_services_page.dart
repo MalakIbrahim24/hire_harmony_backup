@@ -37,7 +37,7 @@ class _EditedServicesPageState extends State<EditedServicesPage> {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
             child: Container(
-              color: AppColors().navy.withOpacity(0.3),
+              color: AppColors().navy.withValues(alpha: 0.3),
             ),
           ),
         ),

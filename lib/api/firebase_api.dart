@@ -37,7 +37,7 @@ class FirebaseApi {
   Future<void> initLocalNotifications() async {
     const DarwinInitializationSettings iOS = DarwinInitializationSettings();
     const AndroidInitializationSettings android =
-        AndroidInitializationSettings('@drawable/ic_launcher');
+        AndroidInitializationSettings('@drawable/notification_icon');
     const InitializationSettings settings =
         InitializationSettings(android: android, iOS: iOS);
 
@@ -84,7 +84,7 @@ class FirebaseApi {
               channelDescription: androidChannel.description,
               importance: Importance.max,
               priority: Priority.high,
-              icon: '@drawable/ic_launcher',
+              icon: '@drawable/notification_icon',
             ),
           ),
           payload: jsonEncode(message.data),
@@ -120,7 +120,8 @@ class FirebaseApi {
     await initPushNotifications();
     await initLocalNotifications();
   }
-    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   /// حفظ إحداثيات الموقع الخاصة بالمستخدم في Firestore
   Future<void> saveUserLocation(

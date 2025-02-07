@@ -140,7 +140,7 @@ class WorkPhotoCard extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             child: Container(
               width: double.infinity,
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withValues(alpha: 0.6),
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Text(
                 title,

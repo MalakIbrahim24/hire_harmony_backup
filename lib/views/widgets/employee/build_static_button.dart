@@ -6,7 +6,7 @@ Widget buildStaticButton(String service) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
     decoration: BoxDecoration(
-      color: AppColors().orange.withOpacity(0.1),
+      color: AppColors().orange.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(10),
       border: Border.all(color: AppColors().orange, width: 1),
     ),

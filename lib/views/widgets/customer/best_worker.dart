@@ -22,6 +22,7 @@ class _BestWorkerState extends State<BestWorker> {
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
+        // ignore: unnecessary_cast
         final data = doc.data() as Map<String, dynamic>;
 
         return {

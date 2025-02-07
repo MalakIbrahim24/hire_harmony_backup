@@ -205,7 +205,9 @@ class _LoginFormState extends State<LoginForm> {
                       action: "Customer logged in",
                       device: device,
                     );
+
                     Navigator.pushReplacementNamed(
+                        // ignore: use_build_context_synchronously
                         context, AppRoutes.customButtomNavbarPage);
                   } else if (state is AuthEmpSuccess) {
                     final user = await authServices.currentUser();
@@ -216,6 +218,7 @@ class _LoginFormState extends State<LoginForm> {
                       device: device,
                     );
                     Navigator.pushReplacementNamed(
+                        // ignore: use_build_context_synchronously
                         context, AppRoutes.empNavbar);
                   } else if (state is AuthFailure) {
                     ScaffoldMessenger.of(context).showSnackBar(

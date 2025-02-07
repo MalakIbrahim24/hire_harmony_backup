@@ -8,10 +8,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class MapScreen extends StatefulWidget {
   final String employeeId;
 
-  const MapScreen({Key? key, required this.employeeId}) : super(key: key);
+  const MapScreen({super.key, required this.employeeId});
 
   @override
-  _MapScreenState createState() => _MapScreenState();
+  State<MapScreen> createState() => _MapScreenState();
 }
 
 class _MapScreenState extends State<MapScreen> {
@@ -133,7 +133,7 @@ class _MapScreenState extends State<MapScreen> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        "🌍country ${countryName}",
+                        "🌍country $countryName",
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
