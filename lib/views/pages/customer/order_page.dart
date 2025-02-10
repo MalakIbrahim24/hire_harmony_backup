@@ -18,16 +18,17 @@ class OrderPage extends StatefulWidget {
 class _OrderPageState extends State<OrderPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final CustomerServices _customerServices = CustomerServices();
-  int _parseRating(dynamic rating) {
-    if (rating is int) {
-      return rating;
-    } else if (rating is String) {
-      return int.tryParse(rating) ?? 0;
-    } else {
-      return 0;
-    }
-  }
+  // final CustomerServices _customerServices = CustomerServices();
+
+  // int _parseRating(dynamic rating) {
+  //   if (rating is int) {
+  //     return rating;
+  //   } else if (rating is String) {
+  //     return int.tryParse(rating) ?? 0;
+  //   } else {
+  //     return 0;
+  //   }
+  // }
 
   @override
   void initState() {
@@ -270,10 +271,6 @@ class _OrderPageState extends State<OrderPage>
                 ? DateFormat.yMMMMd().format(sentTime.toDate())
                 : 'Unknown date';
 
-            final Color cardColor = isReviewed
-                ? Colors.grey[200]! // رمادي للطلبات المكتملة والمراجعَة
-                : AppColors().orangelight; // برتقالي للطلبات غير المراجعَة
-
             if (isCompleted) {
               // ✅ الطلبات المكتملة تبقى بنفس التصميم
               if (isReviewed) {
@@ -305,7 +302,8 @@ class _OrderPageState extends State<OrderPage>
                   ),
                 ),
                 subtitle: FutureBuilder<String>(
-                  future: _customerServices.getEmployeeNameById(employeeId),
+                  future:
+                      CustomerServices.instance.getEmployeeNameById(employeeId),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Text(

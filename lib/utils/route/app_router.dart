@@ -104,7 +104,7 @@ class AppRouter {
         );
       case AppRoutes.viewAllPopularServicesPage:
         return MaterialPageRoute(
-          builder: (_) => ViewAllPopularServicesPage(),
+          builder: (_) => const ViewAllPopularServicesPage(),
           settings: settings,
         );
       

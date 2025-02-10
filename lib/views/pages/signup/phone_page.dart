@@ -1,14 +1,12 @@
-import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
+import 'package:hire_harmony/views/pages/potions/potion_maker.dart';
 import 'package:hire_harmony/views/widgets/back_icon_button.dart';
 import 'package:hire_harmony/views/widgets/main_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -23,6 +21,7 @@ class PhonePage extends StatefulWidget {
 
 class _PhonePageState extends State<PhonePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final potionMaker = PotionMaker();
 
   final TextEditingController _otpController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -93,21 +92,6 @@ class _PhonePageState extends State<PhonePage> {
     final phoneRegex =
         RegExp(r'^\+\d{12,15}$'); // Matches + followed by 10-15 digits
     return phoneRegex.hasMatch(phoneNumber);
-  }
-
-  // Generate a random salt
-  String _generateSalt() {
-    final Random random = Random.secure();
-    final List<int> saltBytes =
-        List.generate(16, (_) => random.nextInt(256)); // 16-byte salt
-    return base64Encode(saltBytes);
-  }
-
-// Hash password with a salt
-  String _hashPassword(String password, String salt) {
-    var bytes = utf8.encode(salt + password); // Append salt before hashing
-    var digest = sha256.convert(bytes);
-    return digest.toString();
   }
 
   // Send OTP
@@ -215,7 +199,6 @@ class _PhonePageState extends State<PhonePage> {
     }
   }
 
-  // Verify OTP and register the user
   Future<void> verifyOtpAndRegister(
       Map<String, dynamic> formData, List<String> categories) async {
     const availability = 'true';
@@ -229,7 +212,6 @@ class _PhonePageState extends State<PhonePage> {
         verificationId: verificationId,
         smsCode: _otpController.text,
       );
-
       final UserCredential userCredential =
           await _auth.signInWithCredential(credential);
 
@@ -246,12 +228,14 @@ class _PhonePageState extends State<PhonePage> {
       );
       await user.linkWithCredential(emailCredential);
 
-      // Hash the password
-      // Generate a new salt
-      String salt = _generateSalt();
+      // 🔑 Generate salt and hash the password
+      String salt = potionMaker.generateSalt();
+      String hashedPassword =
+          potionMaker.hashPassword(formData['password']!, salt);
 
-// Hash the password with the salt
-      String hashedPassword = _hashPassword(formData['password']!, salt);
+      // 🔑 Generate a unique secret key and HMAC for the hashed password
+      String secretKey = potionMaker.generateSecretKey();
+      String hmac = potionMaker.generateHmac(hashedPassword, secretKey);
 
       // Upload images to Supabase
       final idImage = formData['idImage'] as File;
@@ -262,15 +246,15 @@ class _PhonePageState extends State<PhonePage> {
       final selfieImageUrl = await _uploadToSupabase(
           selfieImage, 'selfie_${DateTime.now().millisecondsSinceEpoch}.jpg');
 
-      // Reference to Firestore
+      // Store user details in Firestore
       FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-      // Store user details
       await firestore.collection('users').doc(user.uid).set({
         'name': formData['name'],
         'email': formData['email'],
         'passwordHash': hashedPassword,
         'salt': salt,
+        'hmac': hmac,
+        'encryptedSecretKey': secretKey,
         'phone': '+970${_phoneController.text.trim()}',
         'role': 'employee',
         'idImageUrl': idImageUrl,
@@ -287,13 +271,14 @@ class _PhonePageState extends State<PhonePage> {
           .collection('users')
           .doc(user.uid)
           .collection('empcategories')
-          .doc() // Auto-generated ID
+          .doc()
           .set({
-        'categories': categories, // Store categories as an array
+        'categories': categories,
       });
+
       await incrementEmpNumForCategories(categories, user.uid);
 
-      // Navigate to success page
+      // Navigate to the success page
       if (!mounted) return;
       Navigator.pushNamed(context, AppRoutes.empVerificationSuccessPage);
     } catch (e) {
@@ -324,7 +309,6 @@ class _PhonePageState extends State<PhonePage> {
         verificationId: verificationId,
         smsCode: _otpController.text,
       );
-
       final UserCredential userCredential =
           await _auth.signInWithCredential(credential);
 
@@ -339,24 +323,26 @@ class _PhonePageState extends State<PhonePage> {
         email: formData['email']!,
         password: formData['password']!,
       );
-
       await user.linkWithCredential(emailCredential);
 
+      // 🔑 Generate salt and hash the password
+      String salt = potionMaker.generateSalt();
+      String hashedPassword =
+          potionMaker.hashPassword(formData['password']!, salt);
+
+      // 🔑 Generate a unique secret key and HMAC for the hashed password
+      String secretKey = potionMaker.generateSecretKey();
+      String hmac = potionMaker.generateHmac(hashedPassword, secretKey);
+
       // Store user details in Firestore
-      // Generate a new salt
-      String salt = _generateSalt();
-
-// Hash the password with the salt
-      String hashedPassword = _hashPassword(formData['password']!, salt);
-
-      // Upload images to Supabase
-
-      // Save data in Firestore
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      await firestore.collection('users').doc(user.uid).set({
         'name': formData['name'],
         'email': formData['email'],
         'passwordHash': hashedPassword,
         'salt': salt,
+        'hmac': hmac,
+        'encryptedSecretKey': secretKey,
         'phone': '+970${_phoneController.text.trim()}',
         'role': 'customer',
         'uid': user.uid,

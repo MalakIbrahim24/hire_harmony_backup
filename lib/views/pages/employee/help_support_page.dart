@@ -14,7 +14,7 @@ class HelpSupportPage extends StatefulWidget {
 
 class _HelpSupportPageState extends State<HelpSupportPage> {
   final TextEditingController _messageController = TextEditingController();
-  final EmployeeService employeeService = EmployeeService(); // ✅ استدعاء `EmployeeService`
+  // final EmployeeService employeeService = EmployeeService(); // ✅ استدعاء `EmployeeService`
   bool _isLoading = false;
 
   @override
@@ -26,7 +26,7 @@ class _HelpSupportPageState extends State<HelpSupportPage> {
   Future<void> _submitMessage() async {
     setState(() => _isLoading = true);
 
-    await employeeService.submitComplaint(
+    await EmployeeService.instance.submitComplaint(
       context: context,
       messageController: _messageController,
       adminId: widget.adminId,
@@ -103,7 +103,7 @@ class _HelpSupportPageState extends State<HelpSupportPage> {
                 minLines: 1,
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 15.0, vertical: 10.0),
+                      horizontal: 15.0, vertical: 10.0),
                   border: InputBorder.none,
                   hintText: 'You can write your problem here...',
                   hintStyle: TextStyle(color: AppColors().grey3, fontSize: 14),

@@ -57,8 +57,12 @@ class _NearestUsersPageState extends State<NearestUsersPage> {
   /// 🔹 Fetch nearest 5 employees
   Future<List<Map<String, dynamic>>> getNearestUsers() async {
     String currentUserID = authService.getCurrentUser()!.uid;
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    const LocationSettings locationSettings = LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 100,
+    );
+    Position position =
+        await Geolocator.getCurrentPosition(locationSettings: locationSettings);
     double userLat = position.latitude;
     double userLon = position.longitude;
 

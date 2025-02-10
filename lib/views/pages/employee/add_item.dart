@@ -13,12 +13,12 @@ class AddItem extends StatefulWidget {
 class _AddItemState extends State<AddItem> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final EmployeeService _employeeService = EmployeeService();
+  // final EmployeeService _employeeService = EmployeeService();
   File? _selectedImage;
 
   // ✅ اختيار الصورة
   Future<void> _pickImage() async {
-    final pickedImage = await _employeeService.pickImage();
+    final pickedImage = await EmployeeService.instance.pickImage();
     if (pickedImage != null) {
       setState(() {
         _selectedImage = pickedImage;
@@ -28,7 +28,7 @@ class _AddItemState extends State<AddItem> {
 
   // ✅ رفع العنصر باستخدام EmployeeService
   Future<void> _uploadItem() async {
-    await _employeeService.uploadItem(
+    await EmployeeService.instance.uploadItem(
       context: context,
       selectedImage: _selectedImage,
       title: _titleController.text,

@@ -13,7 +13,7 @@ class EmpOrderPage extends StatefulWidget {
 }
 
 class _EmpOrderPageState extends State<EmpOrderPage> {
-  final EmployeeService _employeeService = EmployeeService();
+  // final EmployeeService _employeeService = EmployeeService();
   String? loggedInUserId; // ✅ تعديل المتغير ليصبح قابلًا لأن يكون `null`
 
   @override
@@ -102,7 +102,7 @@ class _EmpOrderPageState extends State<EmpOrderPage> {
 
   Widget _buildOrdersTab(String userId, String status) {
     return StreamBuilder<List<Map<String, dynamic>>>(
-      stream: _employeeService.fetchOrders(userId, status),
+      stream: EmployeeService.instance.fetchOrders(userId, status),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -173,7 +173,7 @@ class _EmpOrderPageState extends State<EmpOrderPage> {
                   size: 12,
                 ),
                 onTap: status == 'in progress'
-                    ? () => _employeeService.showOrderDialog(
+                    ? () => EmployeeService.instance.showOrderDialog(
                         context, orderId, customerId, loggedInUserId!, order)
                     : null, // ✅ Disable tap for completed orders
               ),

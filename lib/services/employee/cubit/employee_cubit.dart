@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:equatable/equatable.dart';
-
+import 'package:equatable/equatable.dart'; // For easier state comparisons in Bloc/Cubit.
+//ready
 part 'employee_state.dart';
 
 class EmployeeCubit extends Cubit<EmployeeState> {
@@ -94,9 +94,9 @@ class EmployeeCubit extends Cubit<EmployeeState> {
       }
     }
   }
+
   Future<void> addService(String service) async {
-  if (state is EmployeeLoaded) {
-    
+    if (state is EmployeeLoaded) {
       final User? user = _auth.currentUser;
       if (user == null) return;
 
@@ -104,21 +104,22 @@ class EmployeeCubit extends Cubit<EmployeeState> {
         'services': FieldValue.arrayUnion([service]),
       });
 
-      final updatedServices = List<String>.from((state as EmployeeLoaded).services)..add(service);
+      final updatedServices =
+          List<String>.from((state as EmployeeLoaded).services)..add(service);
 
       emit((state as EmployeeLoaded).copyWith(services: updatedServices));
 
       // تحديث عدد الخدمات في bestworker
-      await _firestore.collection('bestworker').doc(user.uid).update({
-        'servNum': updatedServices.length.toString(),
-      });
-
-   
+      // await _firestore.collection('bestworker').doc(user.uid).update({
+      //   'servNum': updatedServices.length.toString(),
+      // }
+      
+      // );
+    }
   }
-}
 
-Future<void> removeService(String service) async {
-  if (state is EmployeeLoaded) {
+  Future<void> removeService(String service) async {
+    if (state is EmployeeLoaded) {
       final User? user = _auth.currentUser;
       if (user == null) return;
 
@@ -126,16 +127,16 @@ Future<void> removeService(String service) async {
         'services': FieldValue.arrayRemove([service]),
       });
 
-      final updatedServices = List<String>.from((state as EmployeeLoaded).services)..remove(service);
+      final updatedServices =
+          List<String>.from((state as EmployeeLoaded).services)
+            ..remove(service);
 
       emit((state as EmployeeLoaded).copyWith(services: updatedServices));
 
       // تحديث عدد الخدمات في bestworker
-      await _firestore.collection('bestworker').doc(user.uid).update({
-        'servNum': updatedServices.length.toString(),
-      });
-
+     // await _firestore.collection('bestworker').doc(user.uid).update({
+      //  'servNum': updatedServices.length.toString(),
+     // });
+    }
   }
-}
-
 }

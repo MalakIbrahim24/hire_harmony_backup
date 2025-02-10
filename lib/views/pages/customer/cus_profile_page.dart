@@ -14,7 +14,7 @@ class CusProfilePage extends StatefulWidget {
 }
 
 class _CusProfilePageState extends State<CusProfilePage> {
-  final CustomerServices _customerServices = CustomerServices();
+  // final CustomerServices _customerServices = CustomerServices();
 
   Map<String, dynamic>? userData;
   int orderCount = 0;
@@ -29,10 +29,10 @@ class _CusProfilePageState extends State<CusProfilePage> {
   }
 
   Future<void> _loadUserData() async {
-    final user = await _customerServices.fetchUserData();
-    final orders = await _customerServices.fetchOrderCount();
-    final tickets = await _customerServices.fetchTicketCount();
-    final pendingRequests = await _customerServices.fetchPendingRequestCount();
+    final user = await CustomerServices.instance.fetchUserData();
+    final orders = await CustomerServices.instance.fetchOrderCount();
+    final tickets = await CustomerServices.instance.fetchTicketCount();
+    final pendingRequests = await CustomerServices.instance.fetchPendingRequestCount();
 
     setState(() {
       userData = user;

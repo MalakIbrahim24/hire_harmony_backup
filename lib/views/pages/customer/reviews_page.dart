@@ -20,7 +20,7 @@ class ReviewPage extends StatefulWidget {
 }
 
 class _ReviewPageState extends State<ReviewPage> {
-  final CustomerServices _customerServices = CustomerServices();
+  // final CustomerServices _customerServices = CustomerServices();
   final TextEditingController _reviewController = TextEditingController();
   double rating = 0.0;
   bool isSubmitting = false;
@@ -36,8 +36,8 @@ class _ReviewPageState extends State<ReviewPage> {
     setState(() => isSubmitting = true);
 
     try {
-      bool hasReviewed = await _customerServices.hasReviewedOrder(
-          widget.employeeId, widget.orderId);
+      bool hasReviewed = await CustomerServices.instance
+          .hasReviewedOrder(widget.employeeId, widget.orderId);
       if (!mounted) return;
       if (hasReviewed) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -45,7 +45,7 @@ class _ReviewPageState extends State<ReviewPage> {
               content: Text('You have already reviewed this order.')),
         );
       } else {
-        await _customerServices.submitReview(
+        await CustomerServices.instance.submitReview(
           employeeId: widget.employeeId,
           orderId: widget.orderId,
           reviewText: _reviewController.text,

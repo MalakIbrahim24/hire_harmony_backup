@@ -5,8 +5,8 @@ import 'package:hire_harmony/utils/app_colors.dart';
 import 'package:hire_harmony/views/pages/customer/employees_under_category_page.dart';
 
 class ViewAllPopularServicesPage extends StatelessWidget {
-  ViewAllPopularServicesPage({super.key});
-  final CustomerServices _customerServices = CustomerServices();
+  const ViewAllPopularServicesPage({super.key});
+  // final CustomerServices _customerServices = CustomerServices();
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,7 @@ class ViewAllPopularServicesPage extends StatelessWidget {
         ),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _customerServices.fetchTopCategories(),
+        future: CustomerServices.instance.fetchTopCategories(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

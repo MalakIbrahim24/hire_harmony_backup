@@ -24,7 +24,7 @@ class _EmployeesUnderCategoryPageState
   bool filterByDistance = false; // 🔹 متغير لتفعيل الفلترة
   Position? currentPosition; // 🔹 موقع المستخدم الحالي
   String selectedFilter = "None"; // 🔹 الفلتر الافتراضي
-  final CustomerServices _customerServices = CustomerServices();
+  // final CustomerServices _customerServices = CustomerServices();
   bool isLoading = true;
 
   @override
@@ -34,7 +34,7 @@ class _EmployeesUnderCategoryPageState
   }
 
   Future<void> _loadUserLocation() async {
-    Position? position = await _customerServices.getCurrentLocation();
+    Position? position = await CustomerServices.instance.getCurrentLocation();
     setState(() {
       currentPosition = position;
       isLoading = false;
@@ -86,7 +86,7 @@ class _EmployeesUnderCategoryPageState
       body: isLoading
           ? const ShimmerPage()
           : FutureBuilder<List<Map<String, dynamic>>>(
-              future: _customerServices.fetchEmployeesByCategory(
+              future: CustomerServices.instance.fetchEmployeesByCategory(
                   widget.categoryName, currentPosition, selectedFilter),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {

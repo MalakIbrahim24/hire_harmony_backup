@@ -12,7 +12,7 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class _FavoritesPageState extends State<FavoritesPage> {
-  final CustomerServices _customerServices = CustomerServices();
+  // final CustomerServices _customerServices = CustomerServices();
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
         iconTheme: IconThemeData(color: Theme.of(context).colorScheme.primary),
       ),
       body: StreamBuilder<List<Map<String, dynamic>>>(
-        stream: _customerServices.fetchFavorites(),
+        stream: CustomerServices.instance.fetchFavorites(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -138,7 +138,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     ),
                     onPressed: () {
                       if (favoriteId != null && favoriteId is String) {
-                        _customerServices.toggleFavorite(favoriteId);
+                        CustomerServices.instance.toggleFavorite(favoriteId);
                       }
                     },
                   ),

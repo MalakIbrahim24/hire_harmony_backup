@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hire_harmony/services/employee_services.dart';
+import 'package:hire_harmony/views/pages/salt/add_salt.dart';
+import 'package:hire_harmony/views/widgets/main_button.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:hire_harmony/utils/app_colors.dart';
@@ -23,10 +25,7 @@ class _EmpProfileEditPageState extends State<EmpProfileEditPage> {
   String? _imageUrl;
   String? _tempImageUrl;
 
-  bool _isPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
-
-  final EmployeeService _employeeService = EmployeeService();
+  // final EmployeeService _employeeService = EmployeeService();
 
   @override
   void initState() {
@@ -35,7 +34,7 @@ class _EmpProfileEditPageState extends State<EmpProfileEditPage> {
   }
 
   Future<void> _loadEmployeeData() async {
-    final data = await _employeeService.fetchEmployeeData();
+    final data = await EmployeeService.instance.fetchEmployeeData();
     setState(() {
       _nameController.text = data['name'] ?? '';
       _imageUrl = data['img'] ?? '';
@@ -44,25 +43,35 @@ class _EmpProfileEditPageState extends State<EmpProfileEditPage> {
 
   void _saveProfileUpdates() async {
     try {
-      await _employeeService.saveProfileUpdates(
+      final AddSalt addSalt = AddSalt();
+
+      // Check if the password fields are filled for updating the password
+      if (_passwordController.text.isNotEmpty ||
+          _confirmPasswordController.text.isNotEmpty) {
+        if (_passwordController.text == _confirmPasswordController.text) {
+          // Use AddSalt to update the password
+          await addSalt.updatePassword(context);
+        } else {
+          throw Exception("Passwords do not match");
+        }
+      }
+
+      // Call EmployeeService to update other profile information
+      await EmployeeService.instance.saveProfileUpdates(
         name: _nameController.text,
         imagePath: _tempImageUrl,
-        newPassword: _passwordController.text.isNotEmpty
-            ? _passwordController.text
-            : null,
-        confirmPassword: _confirmPasswordController.text.isNotEmpty
-            ? _confirmPasswordController.text
-            : null,
       );
 
       setState(() {
         _imageUrl = _tempImageUrl ?? _imageUrl;
       });
+
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text("Profile updated successfully!"),
-            backgroundColor: Colors.green),
+          content: Text("Profile updated successfully!"),
+          backgroundColor: Colors.green,
+        ),
       );
       Navigator.pop(context);
     } catch (e) {
@@ -140,53 +149,62 @@ class _EmpProfileEditPageState extends State<EmpProfileEditPage> {
               ),
             ),
             const SizedBox(height: 20),
-            TextFormField(
-              controller: _passwordController,
-              obscureText: !_isPasswordVisible,
-              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-              decoration: InputDecoration(
-                labelText: "New Password",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _isPasswordVisible
-                        ? Icons.visibility
-                        : Icons.visibility_off,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _isPasswordVisible = !_isPasswordVisible;
-                    });
-                  },
-                ),
-              ),
+            MainButton(
+              color: AppColors().white,
+              text: "Reset Password",
+              bgColor: AppColors().orange,
+              onPressed: () async {
+                print("🔥 Reset Password button pressed!");
+                await AddSalt().updatePassword(context);
+              },
             ),
+            // TextFormField(
+            //   controller: _passwordController,
+            //   obscureText: !_isPasswordVisible,
+            //   style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            //   decoration: InputDecoration(
+            //     labelText: "New Password",
+            //     border: OutlineInputBorder(
+            //       borderRadius: BorderRadius.circular(12),
+            //     ),
+            //     suffixIcon: IconButton(
+            //       icon: Icon(
+            //         _isPasswordVisible
+            //             ? Icons.visibility
+            //             : Icons.visibility_off,
+            //       ),
+            //       onPressed: () {
+            //         setState(() {
+            //           _isPasswordVisible = !_isPasswordVisible;
+            //         });
+            //       },
+            //     ),
+            //   ),
+            // ),
             const SizedBox(height: 20),
-            TextFormField(
-              controller: _confirmPasswordController,
-              obscureText: !_isConfirmPasswordVisible,
-              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-              decoration: InputDecoration(
-                labelText: "Confirm Password",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _isConfirmPasswordVisible
-                        ? Icons.visibility
-                        : Icons.visibility_off,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                    });
-                  },
-                ),
-              ),
-            ),
+            // TextFormField(
+            //   controller: _confirmPasswordController,
+            //   obscureText: !_isConfirmPasswordVisible,
+            //   style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            //   decoration: InputDecoration(
+            //     labelText: "Confirm Password",
+            //     border: OutlineInputBorder(
+            //       borderRadius: BorderRadius.circular(12),
+            //     ),
+            //     suffixIcon: IconButton(
+            //       icon: Icon(
+            //         _isConfirmPasswordVisible
+            //             ? Icons.visibility
+            //             : Icons.visibility_off,
+            //       ),
+            //       onPressed: () {
+            //         setState(() {
+            //           _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+            //         });
+            //       },
+            //     ),
+            //   ),
+            // ),
             const SizedBox(height: 30),
             ElevatedButton(
               onPressed: _saveProfileUpdates,

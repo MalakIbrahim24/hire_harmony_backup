@@ -19,18 +19,18 @@ class CusHomePage extends StatefulWidget {
 }
 
 class _CusHomePageState extends State<CusHomePage> {
-  final CustomerServices _customerServices = CustomerServices();
+  // final CustomerServices _customerServices = CustomerServices();
   String _userName = "User";
 
   @override
   void initState() {
     super.initState();
-    _customerServices.checkUserLocation(context);
+   CustomerServices.instance.checkUserLocation(context);
     _loadUserName();
   }
 
   void _loadUserName() async {
-    String name = await _customerServices.fetchUserName();
+    String name = await CustomerServices.instance.fetchUserName();
     setState(() {
       _userName = name;
     });
@@ -201,7 +201,7 @@ class _CusHomePageState extends State<CusHomePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ViewAllPopularServicesPage(),
+                            builder: (context) => const ViewAllPopularServicesPage(),
                           ),
                         );
                       },

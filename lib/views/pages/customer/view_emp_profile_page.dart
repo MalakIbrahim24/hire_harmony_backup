@@ -24,7 +24,7 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
   // final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<String> services = []; // تخزين قائمة الخدمات
   bool isAvailable = false; // افتراضيًا، الموظف غير متاح
-  final CustomerServices _customerServices = CustomerServices();
+  // final CustomerServices _customerServices = CustomerServices();
 
   Map<String, dynamic>? employeeData;
   bool isFavorite = false;
@@ -38,8 +38,9 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
   }
 
   Future<void> _loadData() async {
-    employeeData = await _customerServices.fetchEmployeeData(widget.employeeId);
-    isFavorite = await _customerServices.isFavorite(widget.employeeId);
+    employeeData =
+        await CustomerServices.instance.fetchEmployeeData(widget.employeeId);
+    isFavorite = await CustomerServices.instance.isFavorite(widget.employeeId);
 
     if (employeeData != null) {
       services = List<String>.from(employeeData!['services'] ?? []);
@@ -50,8 +51,8 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
   }
 
   Future<void> _toggleFavorite() async {
-    await _customerServices.toggleFavoriteEmp(
-        widget.employeeId, isFavorite, employeeData);
+    await CustomerServices.instance
+        .toggleFavoriteEmp(widget.employeeId, isFavorite, employeeData);
     setState(() => isFavorite = !isFavorite);
   }
 
@@ -90,7 +91,7 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
             TextButton(
               onPressed: () async {
                 if (!mounted) return;
-                bool success = await _customerServices.sendRequest(
+                bool success = await CustomerServices.instance.sendRequest(
                   widget.employeeId,
                   titleController.text.trim(),
                   descriptionController.text.trim(),

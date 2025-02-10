@@ -26,7 +26,7 @@ class _EmpHomePageState extends State<EmpHomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String userName = "User"; // Default user name
   final String? userId = FirebaseAuth.instance.currentUser?.uid;
-  final EmployeeService employeeService = EmployeeService(); // ✅ استدعاء `EmployeeService`
+  // final EmployeeService employeeService = EmployeeService(); // ✅ استدعاء `EmployeeService`
 
 
 @override
@@ -94,7 +94,7 @@ void initState() {
                         const SizedBox(width: 10),
                          // ✅ استخدام FutureBuilder لتحميل اسم المستخدم
                   FutureBuilder<String>(
-                    future: employeeService.fetchUserName(),
+                    future: EmployeeService.instance.fetchUserName(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Text(

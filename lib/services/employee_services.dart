@@ -1,7 +1,4 @@
-import 'dart:convert';
-import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,6 +10,9 @@ import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EmployeeService {
+  // singleton design pattern
+  EmployeeService._();
+  static final instance = EmployeeService._();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final ImagePicker _picker = ImagePicker();
@@ -84,7 +84,7 @@ class EmployeeService {
     }
   }
 
-   // ✅ دالة لحذف الإعلان
+  // ✅ دالة لحذف الإعلان
   Future<void> deleteAdvertisement(BuildContext context, String adId) async {
     try {
       final userId = _auth.currentUser?.uid;
@@ -123,25 +123,25 @@ class EmployeeService {
   void confirmDeleteAdvertisement(BuildContext context, String adId) {
     showDialog(
       context: context,
-      builder: (BuildContext dialogContext) { // استخدم dialogContext داخل showDialog
+      builder: (BuildContext dialogContext) {
+        // استخدم dialogContext داخل showDialog
         return AlertDialog(
-          title:  Text("Confirm Delete",
-           style: TextStyle(
-                color:  Theme.of(context).colorScheme.primary,
-
-              ),
+          title: Text(
+            "Confirm Delete",
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
-          content:  Text(
-              "Are you sure you want to delete this advertisement? This action cannot be undone."
-              , 
-              style: TextStyle(
-                color:  Theme.of(context).colorScheme.primary,
-
-              ),
-              ),
+          content: Text(
+            "Are you sure you want to delete this advertisement? This action cannot be undone.",
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(dialogContext), // إغلاق نافذة التأكيد
+              onPressed: () =>
+                  Navigator.pop(dialogContext), // إغلاق نافذة التأكيد
               child: const Text("Cancel"),
             ),
             TextButton(
@@ -157,7 +157,6 @@ class EmployeeService {
     );
   }
 
-
   // ✅ دالة لاختيار الصورة من المعرض
   Future<File?> pickImage() async {
     final image = await _picker.pickImage(source: ImageSource.gallery);
@@ -165,8 +164,8 @@ class EmployeeService {
   }
 
   // ✅ دالة لرفع الإعلان مع الصورة
-  Future<void> uploadAdvertisement(
-      BuildContext context, File? selectedImage, String title, String description) async {
+  Future<void> uploadAdvertisement(BuildContext context, File? selectedImage,
+      String title, String description) async {
     if (selectedImage == null || title.isEmpty || description.isEmpty) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -221,9 +220,8 @@ class EmployeeService {
       }
     }
   }
-   
 
-     Future<void> deleteItem(BuildContext context, String itemId) async {
+  Future<void> deleteItem(BuildContext context, String itemId) async {
     try {
       final userId = _auth.currentUser?.uid;
       if (userId == null) return;
@@ -284,26 +282,24 @@ class EmployeeService {
     );
   }
 
+  Future<String> fetchUserName() async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        DocumentSnapshot userDoc =
+            await _firestore.collection('users').doc(user.uid).get();
 
-Future<String> fetchUserName() async {
-  try {
-    User? user = _auth.currentUser;
-    if (user != null) {
-      DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(user.uid).get();
-
-      if (userDoc.exists) {
-        return userDoc['name'] ?? "User";
+        if (userDoc.exists) {
+          return userDoc['name'] ?? "User";
+        }
       }
+    } catch (e) {
+      debugPrint("❌ Error fetching user name: $e");
     }
-  } catch (e) {
-    debugPrint("❌ Error fetching user name: $e");
+    return "User"; // ✅ القيمة الافتراضية عند حدوث خطأ
   }
-  return "User"; // ✅ القيمة الافتراضية عند حدوث خطأ
-}
 
-
- /// ✅ **دالة لتحديث عدد الطلبات المكتملة فقط عند الحاجة**
+  /// ✅ **دالة لتحديث عدد الطلبات المكتملة فقط عند الحاجة**
   Future<void> updateCompletedOrdersCount(String workerId) async {
     final workerRef = _firestore.collection('users').doc(workerId);
     final prefs = await SharedPreferences.getInstance();
@@ -319,7 +315,8 @@ Future<String> fetchUserName() async {
     // ✅ تحديث Firestore فقط إذا كان العدد مختلفًا عن المخزن محليًا
     if (cachedCount == null || cachedCount != completedOrdersCount) {
       await workerRef.update({'completedOrdersCount': completedOrdersCount});
-      await prefs.setInt('completedOrdersCount_$workerId', completedOrdersCount);
+      await prefs.setInt(
+          'completedOrdersCount_$workerId', completedOrdersCount);
       debugPrint("✅ Updated completedOrdersCount to: $completedOrdersCount");
     } else {
       debugPrint("✅ Skipping update, no change in completedOrdersCount.");
@@ -327,233 +324,219 @@ Future<String> fetchUserName() async {
   }
 
   Future<void> markOrderAsCompleted(
-    BuildContext context,
-    String orderId,
-    String customerId,
-    String employeeId,
-    Map<String, dynamic> orderData) async {
-  try {
-    final batch = FirebaseFirestore.instance.batch();
+      BuildContext context,
+      String orderId,
+      String customerId,
+      String employeeId,
+      Map<String, dynamic> orderData) async {
+    try {
+      final batch = FirebaseFirestore.instance.batch();
 
-    // 🔹 جلب بيانات الموظف (العامل) من Firestore
-    final employeeDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(employeeId)
-        .get();
+      // 🔹 جلب بيانات الموظف (العامل) من Firestore
+      final employeeDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(employeeId)
+          .get();
 
-    final employeeName = employeeDoc.exists ? employeeDoc['name'] ?? 'Unknown' : 'Unknown';
+      final employeeName =
+          employeeDoc.exists ? employeeDoc['name'] ?? 'Unknown' : 'Unknown';
 
-   final orderDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(customerId)
-        .collection('orders')
-        .doc(orderId)
-        .get();
-    final employeeRef = FirebaseFirestore.instance.collection('users').doc(employeeId);
+      final orderDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(customerId)
+          .collection('orders')
+          .doc(orderId)
+          .get();
+      final employeeRef =
+          FirebaseFirestore.instance.collection('users').doc(employeeId);
 
-final description = orderDoc.exists ? orderDoc['description'] ?? 'No description provided' : 'No description provided';
+      final description = orderDoc.exists
+          ? orderDoc['description'] ?? 'No description provided'
+          : 'No description provided';
 // 🔹 جلب العدد الحالي
-    final empSnapshot = await employeeRef.get();
-    int completedOrdersCount = (empSnapshot['completedOrdersCount'] ?? 0) + 1;
+      final empSnapshot = await employeeRef.get();
+      int completedOrdersCount = (empSnapshot['completedOrdersCount'] ?? 0) + 1;
 
-final updatedOrderData = {
-  ...orderData,
-  'status': 'completed',
-  'reciverId': employeeId,
-  'employeeName': employeeName,
-  'description': description, // ✅ جلب الوصف الحقيقي من الطلب الأصلي
-};
+      final updatedOrderData = {
+        ...orderData,
+        'status': 'completed',
+        'reciverId': employeeId,
+        'employeeName': employeeName,
+        'description': description, // ✅ جلب الوصف الحقيقي من الطلب الأصلي
+      };
 
+      final customerOrderRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(customerId)
+          .collection('completedOrders')
+          .doc(orderId);
 
-    final customerOrderRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(customerId)
-        .collection('completedOrders')
-        .doc(orderId);
-
-    final employeeOrderRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(employeeId)
-        .collection('completedOrders')
-        .doc(orderId);
+      final employeeOrderRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(employeeId)
+          .collection('completedOrders')
+          .doc(orderId);
 // ✅ تحديث `completedOrdersCount` مباشرة عند إضافة الطلب
-    batch.set(
-      employeeRef,
-      {'completedOrdersCount': completedOrdersCount},
-      SetOptions(merge: true),
-    );
-
-    // ✅ تخزين الطلب المكتمل مع معلومات الموظف
-    batch.set(customerOrderRef, updatedOrderData);
-    batch.set(employeeOrderRef, updatedOrderData);
-
-    // ✅ حذف الطلب من `orders`
-    batch.delete(FirebaseFirestore.instance
-        .collection('users')
-        .doc(customerId)
-        .collection('orders')
-        .doc(orderId));
-
-    batch.delete(FirebaseFirestore.instance
-        .collection('users')
-        .doc(employeeId)
-        .collection('orders')
-        .doc(orderId));
-
-    // ✅ إغلاق الدردشة إذا كانت مفتوحة
-    final chatId = employeeId.compareTo(customerId) < 0
-        ? '${employeeId}_$customerId'
-        : '${customerId}_$employeeId';
-
-    final chatRef = FirebaseFirestore.instance.collection('chat_rooms').doc(chatId);
-    final chatSnapshot = await chatRef.get();
-    if (chatSnapshot.exists && chatSnapshot.data()?['chatController'] != 'closed') {
-      batch.update(chatRef, {'chatController': 'closed'});
-    }
-
-    await batch.commit();
-
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Order marked as completed.'),
-          backgroundColor: Colors.green,
-        ),
+      batch.set(
+        employeeRef,
+        {'completedOrdersCount': completedOrdersCount},
+        SetOptions(merge: true),
       );
+
+      // ✅ تخزين الطلب المكتمل مع معلومات الموظف
+      batch.set(customerOrderRef, updatedOrderData);
+      batch.set(employeeOrderRef, updatedOrderData);
+
+      // ✅ حذف الطلب من `orders`
+      batch.delete(FirebaseFirestore.instance
+          .collection('users')
+          .doc(customerId)
+          .collection('orders')
+          .doc(orderId));
+
+      batch.delete(FirebaseFirestore.instance
+          .collection('users')
+          .doc(employeeId)
+          .collection('orders')
+          .doc(orderId));
+
+      // ✅ إغلاق الدردشة إذا كانت مفتوحة
+      final chatId = employeeId.compareTo(customerId) < 0
+          ? '${employeeId}_$customerId'
+          : '${customerId}_$employeeId';
+
+      final chatRef =
+          FirebaseFirestore.instance.collection('chat_rooms').doc(chatId);
+      final chatSnapshot = await chatRef.get();
+      if (chatSnapshot.exists &&
+          chatSnapshot.data()?['chatController'] != 'closed') {
+        batch.update(chatRef, {'chatController': 'closed'});
+      }
+
+      await batch.commit();
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Order marked as completed.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+      debugPrint('✅ Order marked as completed and batch operation committed.');
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      debugPrint("❌ Error marking order as completed: $e");
     }
-    debugPrint('✅ Order marked as completed and batch operation committed.');
-  } catch (e) {
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-    debugPrint("❌ Error marking order as completed: $e");
   }
-}
 
   // ✅ Fetch orders based on status (in progress / completed)
-Stream<List<Map<String, dynamic>>> fetchOrders(String userId, String status) {
-  return _firestore
-      .collection('users')
-      .doc(userId)
-      .collection(status == 'completed' ? 'completedOrders' : 'orders')
-      .snapshots()
-      .asyncMap((querySnapshot) async {
-    List<Map<String, dynamic>> orders = [];
+  Stream<List<Map<String, dynamic>>> fetchOrders(String userId, String status) {
+    return _firestore
+        .collection('users')
+        .doc(userId)
+        .collection(status == 'completed' ? 'completedOrders' : 'orders')
+        .snapshots()
+        .asyncMap((querySnapshot) async {
+      List<Map<String, dynamic>> orders = [];
 
-    for (var doc in querySnapshot.docs) {
-      final orderData = doc.data();
-      final senderId = orderData['senderId'];
+      for (var doc in querySnapshot.docs) {
+        final orderData = doc.data();
+        final senderId = orderData['senderId'];
 
-      // 🔹 جلب بيانات العميل
-      final senderDoc =
-          await _firestore.collection('users').doc(senderId).get();
-      final senderData = senderDoc.data();
+        // 🔹 جلب بيانات العميل
+        final senderDoc =
+            await _firestore.collection('users').doc(senderId).get();
+        final senderData = senderDoc.data();
 
-      orders.add({
-        'id': doc.id,
-        'name': orderData['name'] ?? 'Unknown Order',
-        'orderId': orderData['orderId'] ?? '',
-        'status': orderData['status'] ?? 'unknown',
-        'confirmedTime': (orderData['confirmedTime'] as Timestamp?)?.toDate() ??
-            DateTime.now(),
-        'customerImage': senderData?['img'] ??
-            'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg',
-        'senderId': senderId,
-      });
-    }
-    return orders;
-  });
-}
+        orders.add({
+          'id': doc.id,
+          'name': orderData['name'] ?? 'Unknown Order',
+          'orderId': orderData['orderId'] ?? '',
+          'status': orderData['status'] ?? 'unknown',
+          'confirmedTime':
+              (orderData['confirmedTime'] as Timestamp?)?.toDate() ??
+                  DateTime.now(),
+          'customerImage': senderData?['img'] ??
+              'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg',
+          'senderId': senderId,
+        });
+      }
+      return orders;
+    });
+  }
 
 // ✅ Show order dialog for confirmation
-void showOrderDialog(BuildContext context, String orderId, String customerId,
-    String employeeId, Map<String, dynamic> orderData) {
-  showDialog(
-    context: context,
-    builder: (dialogContext) {
-      return AlertDialog(
-        title: const Text('Order Options'),
-        content: const Text(
-            'Would you like to mark this order as completed or cancel?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext); // Close dialog
-              confirmCompletion(
-                  context, orderId, customerId, employeeId, orderData);
-            },
-            child: const Text('Completed'),
-          ),
-        ],
-      );
-    },
-  );
-}
+  void showOrderDialog(BuildContext context, String orderId, String customerId,
+      String employeeId, Map<String, dynamic> orderData) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Order Options'),
+          content: const Text(
+              'Would you like to mark this order as completed or cancel?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext); // Close dialog
+                confirmCompletion(
+                    context, orderId, customerId, employeeId, orderData);
+              },
+              child: const Text('Completed'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
 // ✅ Confirm order completion
-void confirmCompletion(BuildContext context, String orderId, String customerId,
-    String employeeId, Map<String, dynamic> orderData) {
-  showDialog(
-    context: context,
-    builder: (confirmDialogContext) {
-      return AlertDialog(
-        title: const Text('Confirm Completion'),
-        content: const Text(
-            'Are you sure you want to mark this order as completed? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(confirmDialogContext),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(confirmDialogContext); // Close confirmation dialog
-              markOrderAsCompleted(context, orderId, customerId, employeeId,
-                  orderData); // ✅ Call markOrderAsCompleted
-            },
-            child: const Text('Confirm'),
-          ),
-        ],
-      );
-    },
-  );
-}
-
-
- Future<Map<String, dynamic>?> ProfilefetchEmployeeData() async {
-    try {
-      final User? user = _auth.currentUser;
-      if (user == null) return null;
-
-      final DocumentSnapshot doc =
-          await _firestore.collection('users').doc(user.uid).get();
-
-      if (doc.exists) {
-        return {
-          'name': doc['name'] ?? '',
-          'img': doc['img'] ?? '',
-        };
-      }
-    } catch (e) {
-      print('Error fetching employee data: $e');
-    }
-    return null;
+  void confirmCompletion(BuildContext context, String orderId,
+      String customerId, String employeeId, Map<String, dynamic> orderData) {
+    showDialog(
+      context: context,
+      builder: (confirmDialogContext) {
+        return AlertDialog(
+          title: const Text('Confirm Completion'),
+          content: const Text(
+              'Are you sure you want to mark this order as completed? This action cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(confirmDialogContext),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(
+                    confirmDialogContext); // Close confirmation dialog
+                markOrderAsCompleted(context, orderId, customerId, employeeId,
+                    orderData); // ✅ Call markOrderAsCompleted
+              },
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> saveProfileUpdates({
     required String name,
     String? imagePath,
-    String? newPassword,
-    String? confirmPassword,
+    // String? newPassword,
+    // String? confirmPassword,
   }) async {
     try {
       final User? user = _auth.currentUser;
@@ -563,20 +546,20 @@ void confirmCompletion(BuildContext context, String orderId, String customerId,
       if (name.isNotEmpty) updates['name'] = name;
 
       if (imagePath != null) {
-        final String? uploadedImageUrl = await _uploadImageToSupabase(imagePath);
+        final String? uploadedImageUrl =
+            await _uploadImageToSupabase(imagePath);
         if (uploadedImageUrl != null) {
           updates['img'] = uploadedImageUrl;
         }
       }
 
-      if (newPassword != null && confirmPassword != null) {
-        if (newPassword == confirmPassword) {
-          await _updatePassword(user.uid, newPassword);
-        } else {
-          throw Exception("Passwords do not match");
-        }
-      }
-
+      // if (newPassword != null && confirmPassword != null) {
+      //   if (newPassword == confirmPassword) {
+      //     await _updatePassword(user.uid, newPassword);
+      //   } else {
+      //     throw Exception("Passwords do not match");
+      //   }
+      // }
 
       if (updates.isNotEmpty) {
         await _firestore.collection('users').doc(user.uid).update(updates);
@@ -587,36 +570,36 @@ void confirmCompletion(BuildContext context, String orderId, String customerId,
     }
   }
 
-  Future<void> _updatePassword(String userId, String newPassword) async {
-    try {
-      final User? user = _auth.currentUser;
-      if (user == null) return;
+  // Future<void> _updatePassword(String userId, String newPassword) async {
+  //   try {
+  //     final User? user = _auth.currentUser;
+  //     if (user == null) return;
 
-      await user.updatePassword(newPassword);
-      final String salt = _generateSalt();
-      final String hashedPassword = _hashPassword(newPassword, salt);
+  //     await user.updatePassword(newPassword);
+  //     final String salt = _generateSalt();
+  //     final String hashedPassword = _hashPassword(newPassword, salt);
 
-      await _firestore.collection('users').doc(userId).update({
-        'passwordHash': hashedPassword,
-        'salt': salt,
-      });
-    } catch (e) {
-      print("Error updating password: $e");
-      throw Exception("Failed to update password");
-    }
-  }
+  //     await _firestore.collection('users').doc(userId).update({
+  //       'passwordHash': hashedPassword,
+  //       'salt': salt,
+  //     });
+  //   } catch (e) {
+  //     print("Error updating password: $e");
+  //     throw Exception("Failed to update password");
+  //   }
+  // }
 
-  String _generateSalt() {
-    final Random random = Random.secure();
-    final List<int> saltBytes = List.generate(16, (_) => random.nextInt(256));
-    return base64Encode(saltBytes);
-  }
+  // String _generateSalt() {
+  //   final Random random = Random.secure();
+  //   final List<int> saltBytes = List.generate(16, (_) => random.nextInt(256));
+  //   return base64Encode(saltBytes);
+  // }
 
-  String _hashPassword(String password, String salt) {
-    final List<int> bytes = utf8.encode(salt + password);
-    final Digest digest = sha256.convert(bytes);
-    return digest.toString();
-  }
+  // String _hashPassword(String password, String salt) {
+  //   final List<int> bytes = utf8.encode(salt + password);
+  //   final Digest digest = sha256.convert(bytes);
+  //   return digest.toString();
+  // }
 
   Future<String?> _uploadImageToSupabase(String imagePath) async {
     try {
@@ -636,7 +619,8 @@ void confirmCompletion(BuildContext context, String orderId, String customerId,
       return null;
     }
   }
-    Future<void> submitComplaint({
+
+  Future<void> submitComplaint({
     required BuildContext context,
     required TextEditingController messageController,
     required String? adminId,
@@ -659,13 +643,15 @@ void confirmCompletion(BuildContext context, String orderId, String customerId,
     }
 
     try {
-      final DocumentSnapshot userSnapshot = await _firestore
-          .collection('users')
-          .doc(currentUserId)
-          .get();
+      final DocumentSnapshot userSnapshot =
+          await _firestore.collection('users').doc(currentUserId).get();
       final String name = userSnapshot['name'];
 
-      await _firestore.collection('users').doc(adminId).collection('complaints').add({
+      await _firestore
+          .collection('users')
+          .doc(adminId)
+          .collection('complaints')
+          .add({
         'userId': currentUserId,
         'message': message,
         'timestamp': FieldValue.serverTimestamp(),
@@ -673,8 +659,10 @@ void confirmCompletion(BuildContext context, String orderId, String customerId,
       });
 
       messageController.clear();
+      // ignore: use_build_context_synchronously
       _showSnackbar(context, 'Complaint sent successfully!');
     } catch (e) {
+      // ignore: use_build_context_synchronously
       _showSnackbar(context, 'Error sending complaint: $e');
     }
   }
@@ -684,7 +672,7 @@ void confirmCompletion(BuildContext context, String orderId, String customerId,
       SnackBar(content: Text(message)),
     );
   }
-  
+
   Future<void> uploadItem({
     required BuildContext context,
     required File? selectedImage,
@@ -756,7 +744,3 @@ void confirmCompletion(BuildContext context, String orderId, String customerId,
     }
   }
 }
-
-
-
-

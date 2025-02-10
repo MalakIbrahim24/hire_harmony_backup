@@ -13,7 +13,7 @@ class AccountDeletionScreen extends StatefulWidget {
 class _AccountDeletionScreenState extends State<AccountDeletionScreen> {
   String? selectedReason;
   String? userImage;
-  final CustomerServices _customerServices = CustomerServices();
+  // final CustomerServices _customerServices = CustomerServices();
 
   @override
   void initState() {
@@ -22,7 +22,7 @@ class _AccountDeletionScreenState extends State<AccountDeletionScreen> {
   }
 
   Future<void> _loadUserImage() async {
-    String? imageUrl = await _customerServices.fetchUserImage();
+    String? imageUrl = await CustomerServices.instance.fetchUserImage();
     setState(() {
       userImage = imageUrl ??
           'https://thumbs.dreamstime.com/b/default-avatar-profile-icon-vector-social-media-user-image-182145777.jpg';
@@ -92,10 +92,10 @@ class _AccountDeletionScreenState extends State<AccountDeletionScreen> {
               ),
               onPressed: () {
                 if (selectedReason == null) {
-                  _customerServices.showErrorDialog(context,
+                  CustomerServices.instance.showErrorDialog(context,
                       "Please select a reason for deleting your account.");
                 } else {
-                  _customerServices.deleteAccount(context, selectedReason);
+                 CustomerServices.instance.deleteAccount(context, selectedReason);
                 }
               },
               child: Text(

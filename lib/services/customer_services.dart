@@ -14,6 +14,9 @@ import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CustomerServices {
+    // singleton design pattern
+  CustomerServices._();
+  static final instance = CustomerServices._();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 //account_deletion_screen

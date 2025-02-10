@@ -16,7 +16,7 @@ class AdvertisementScreen extends StatefulWidget {
 class _AdvertisementScreenState extends State<AdvertisementScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final EmployeeService employeeService = EmployeeService(); // استدعاء `EmployeeService`
+  // final EmployeeService employeeService = EmployeeService(); // استدعاء `EmployeeService`
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +71,7 @@ class _AdvertisementScreenState extends State<AdvertisementScreen> {
                     image: ad['image'] ?? '',
                     title: ad['name'] ?? '',
                     description: ad['description'] ?? '',
-                    onDelete: () => employeeService.confirmDeleteAdvertisement(context, adId), // ✅ استدعاء الدالة من EmployeeService
+                    onDelete: () => EmployeeService.instance.confirmDeleteAdvertisement(context, adId), // ✅ استدعاء الدالة من EmployeeService
                   ),
                 );
               },

@@ -17,7 +17,7 @@ class DisplayItems extends StatefulWidget {
 class _DisplayItemsState extends State<DisplayItems> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final EmployeeService employeeService = EmployeeService(); // ✅ استدعاء `EmployeeService`
+  // final EmployeeService employeeService = EmployeeService(); // ✅ استدعاء `EmployeeService`
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +82,7 @@ class _DisplayItemsState extends State<DisplayItems> {
                     title: itemData['name'] ?? '',
                     description: itemData['description'] ?? '',
                     onDelete: () =>
-                        employeeService.confirmDeleteItem(context, itemId), // ✅ استخدام `confirmDelete`
+                       EmployeeService.instance.confirmDeleteItem(context, itemId), // ✅ استخدام `confirmDelete`
                   ),
                 );
               },

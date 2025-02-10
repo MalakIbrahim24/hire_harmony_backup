@@ -14,7 +14,7 @@ class Community extends StatefulWidget {
 }
 
 class _CommunityState extends State<Community> {
-  final CustomerServices _customerServices = CustomerServices();
+  // final CustomerServices _customerServices = CustomerServices();
   final TextEditingController _searchController = TextEditingController();
 
   List<Map<String, dynamic>> _allItems = [];
@@ -32,7 +32,7 @@ class _CommunityState extends State<Community> {
     setState(() => _isLoading = true);
 
     List<Map<String, dynamic>> items =
-        await _customerServices.fetchAllEmployeeItems();
+        await CustomerServices.instance.fetchAllEmployeeItems();
 
     setState(() {
       _allItems = items;
@@ -43,7 +43,7 @@ class _CommunityState extends State<Community> {
 
   void _onSearchChanged(String query) {
     setState(() {
-      _filteredItems = _customerServices.filterItems(query, _allItems);
+      _filteredItems = CustomerServices.instance.filterItems(query, _allItems);
     });
   }
 

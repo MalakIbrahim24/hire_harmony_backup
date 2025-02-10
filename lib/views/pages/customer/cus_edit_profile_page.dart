@@ -12,7 +12,7 @@ class CusEditProfilePage extends StatefulWidget {
 }
 
 class _CusEditProfilePageState extends State<CusEditProfilePage> {
-  final CustomerServices _customerServices = CustomerServices();
+  // final CustomerServices _customerServices = CustomerServices();
 
   TextEditingController nameController = TextEditingController();
   TextEditingController mobileController = TextEditingController();
@@ -27,7 +27,7 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
   }
 
   Future<void> _loadUserData() async {
-    final userData = await _customerServices.fetchUserData();
+    final userData = await CustomerServices.instance.fetchUserData();
     if (userData != null) {
       setState(() {
         nameController.text = userData['name'] ?? '';
@@ -45,13 +45,13 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Edit Profile"),
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0), // Add padding to improve UI
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Edit Profile"),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0), // Add padding to improve UI
+        child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -60,7 +60,7 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
               // 🔹 Profile Image
               GestureDetector(
                 onTap: () async {
-                  String? newImageUrl = await _customerServices
+                  String? newImageUrl = await CustomerServices.instance
                       .pickAndUploadProfileImage(context);
                   if (newImageUrl != null) {
                     setState(() {
@@ -92,9 +92,16 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
                 text: "Reset Password",
                 bgColor: AppColors().orange,
                 onPressed: () async {
+                  print("🔥 Reset Password button pressed!");
                   await AddSalt().updatePassword(context);
                 },
               ),
+              // ElevatedButton(
+              //   onPressed: () async {
+              //     await UpdateAllUsers().updateAllUsers();
+              //   },
+              //   child: Text('Update All Users'),
+              // ),
 
               const SizedBox(height: 20),
             ],
@@ -120,7 +127,8 @@ class _CusEditProfilePageState extends State<CusEditProfilePage> {
           fillColor: Colors.grey[200], // Light background for input
         ),
         onEditingComplete: () {
-          _customerServices.updateField(context, field, controller.text);
+          CustomerServices.instance
+              .updateField(context, field, controller.text);
         },
       ),
     );

@@ -13,7 +13,7 @@ class CusProfileInfo extends StatefulWidget {
 }
 
 class _CusProfileInfoState extends State<CusProfileInfo> {
-  final CustomerServices _customerServices = CustomerServices();
+  // final CustomerServices _customerServices = CustomerServices();
 
   Map<String, dynamic>? userData;
   bool isLoading = true;
@@ -26,7 +26,7 @@ class _CusProfileInfoState extends State<CusProfileInfo> {
   }
 
   Future<void> _loadUserData() async {
-    final data = await _customerServices.fetchUserData();
+    final data = await CustomerServices.instance.fetchUserData();
     if (data != null) {
       if (data.containsKey('error')) {
         setState(() {

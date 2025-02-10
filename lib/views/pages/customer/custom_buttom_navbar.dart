@@ -16,14 +16,14 @@ class CustomButtomNavbar extends StatefulWidget {
 }
 
 class _CustomButtomNavbarState extends State<CustomButtomNavbar> {
-  final CustomerServices _customerServices = CustomerServices();
+  // final CustomerServices _customerServices = CustomerServices();
   int currentPageIndex = 2;
   int _pendingOrdersCount = 0;
 
   @override
   void initState() {
     super.initState();
-    _customerServices.listenForPendingOrders().listen((count) {
+    CustomerServices.instance.listenForPendingOrders().listen((count) {
       if (mounted) {
         setState(() {
           _pendingOrdersCount = count;

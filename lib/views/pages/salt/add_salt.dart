@@ -6,30 +6,55 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+class UpdateAllUsers {
+  /// 🔑 Generate a unique secret key for HMAC (32 bytes)
+  String generateSecretKey() {
+    final Random random = Random.secure();
+    final List<int> keyBytes = List.generate(32, (_) => random.nextInt(256));
+    return base64Encode(keyBytes);
+  }
+
+  /// 🔐 Generate HMAC using SHA-256 and a secret key
+  String generateHmac(String passwordHash, String secretKey) {
+    var key = utf8.encode(secretKey);
+    var bytes = utf8.encode(passwordHash);
+    var hmac = Hmac(sha256, key);
+    var digest = hmac.convert(bytes);
+    return digest.toString();
+  }
+
+}
+
 class AddSalt {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Generate a random salt
+  /// 🔑 Generate a random 16-byte salt
   String generateSalt() {
     final Random random = Random.secure();
-    final List<int> saltBytes =
-        List.generate(16, (_) => random.nextInt(256)); // 16-byte salt
+    final List<int> saltBytes = List.generate(16, (_) => random.nextInt(256));
     return base64Encode(saltBytes);
   }
 
-  // Hash password with salt
+  /// 🔐 Hash password using SHA-256 with a given salt
   String hashPassword(String password, String salt) {
-    var bytes = utf8.encode(salt + password); // Append salt before hashing
+    var bytes = utf8.encode(salt + password);
     var digest = sha256.convert(bytes);
     return digest.toString();
   }
 
+  /// 🛠 Validate the password (must be at least 8 characters with a mix of letters and numbers)
+  bool isValidPassword(String password) {
+    return password.length >= 8 &&
+        RegExp(r'^(?=.*[A-Za-z])(?=.*\d)').hasMatch(password);
+  }
+
+  /// 🔄 Update password securely
   Future<void> updatePassword(BuildContext context) async {
     final User? currentUser = _auth.currentUser;
     if (currentUser == null) {
       Fluttertoast.showToast(
-        msg: "User not logged in!",
+        msg: "⚠️ User not logged in!",
         textColor: Colors.white,
         backgroundColor: Colors.red,
       );
@@ -44,7 +69,7 @@ class AddSalt {
 
     if (!userSnapshot.exists) {
       Fluttertoast.showToast(
-        msg: "user not found!",
+        msg: "⚠️ User not found!",
         textColor: Colors.white,
         backgroundColor: Colors.red,
       );
@@ -54,39 +79,27 @@ class AddSalt {
     final Map<String, dynamic> userData =
         userSnapshot.data() as Map<String, dynamic>;
     final String storedPasswordHash = userData['passwordHash'] ?? '';
-    final String storedSalt = userData['salt'] ?? ''; // Retrieve salt
+    final String storedSalt = userData['salt'] ?? '';
     final String email = userData['email'] ?? '';
 
+    // UI for password update
     TextEditingController currentPasswordController = TextEditingController();
     TextEditingController newPasswordController = TextEditingController();
     TextEditingController confirmPasswordController = TextEditingController();
-
+    if (!context.mounted) return;
     bool? confirmed = await showDialog(
-      // ignore: use_build_context_synchronously
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Update Password"),
+          title: const Text("🔑 Update Password"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(
-                controller: currentPasswordController,
-                obscureText: true,
-                decoration:
-                    const InputDecoration(labelText: "Current Password"),
-              ),
-              TextField(
-                controller: newPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: "New Password"),
-              ),
-              TextField(
-                controller: confirmPasswordController,
-                obscureText: true,
-                decoration:
-                    const InputDecoration(labelText: "Confirm New Password"),
-              ),
+              _buildPasswordField(
+                  "Current Password", currentPasswordController),
+              _buildPasswordField("New Password", newPasswordController),
+              _buildPasswordField(
+                  "Confirm New Password", confirmPasswordController),
             ],
           ),
           actions: [
@@ -105,7 +118,7 @@ class AddSalt {
 
     if (confirmed == null || !confirmed) {
       Fluttertoast.showToast(
-        msg: "Password update canceled",
+        msg: "❌ Password update canceled",
         textColor: Colors.white,
         backgroundColor: Colors.orange,
       );
@@ -116,38 +129,43 @@ class AddSalt {
     String newPassword = newPasswordController.text.trim();
     String confirmPassword = confirmPasswordController.text.trim();
 
+    // Validations
     if (currentPassword.isEmpty ||
         newPassword.isEmpty ||
         confirmPassword.isEmpty) {
       Fluttertoast.showToast(
-        msg: "All fields are required!",
+        msg: "⚠️ All fields are required!",
         textColor: Colors.white,
         backgroundColor: Colors.red,
       );
       return;
     }
 
-    // Verify current password with stored salt
-    final String enteredPasswordHash =
-        hashPassword(currentPassword, storedSalt);
-    debugPrint("Salt being used: '$storedSalt'");
-    debugPrint(currentPassword);
-    debugPrint(enteredPasswordHash);
-    debugPrint(storedPasswordHash);
-
-    if (enteredPasswordHash != storedPasswordHash) {
+    if (!isValidPassword(newPassword)) {
       Fluttertoast.showToast(
-        msg: "Incorrect current password!",
+        msg:
+            "⚠️ New password must be at least 8 characters long and contain letters and numbers.",
         textColor: Colors.white,
         backgroundColor: Colors.red,
       );
       return;
     }
 
-    // Check if new passwords match
     if (newPassword != confirmPassword) {
       Fluttertoast.showToast(
-        msg: "New passwords do not match!",
+        msg: "⚠️ New passwords do not match!",
+        textColor: Colors.white,
+        backgroundColor: Colors.red,
+      );
+      return;
+    }
+
+    // Verify current password
+    final String enteredPasswordHash =
+        hashPassword(currentPassword, storedSalt);
+    if (enteredPasswordHash != storedPasswordHash) {
+      Fluttertoast.showToast(
+        msg: "❌ Incorrect current password!",
         textColor: Colors.white,
         backgroundColor: Colors.red,
       );
@@ -156,10 +174,8 @@ class AddSalt {
 
     try {
       // Step 1: Reauthenticate user
-      AuthCredential credential = EmailAuthProvider.credential(
-        email: email,
-        password: currentPassword,
-      );
+      AuthCredential credential =
+          EmailAuthProvider.credential(email: email, password: currentPassword);
       await currentUser.reauthenticateWithCredential(credential);
 
       // Step 2: Update password in Firebase Authentication
@@ -172,20 +188,39 @@ class AddSalt {
       // Step 4: Store new salt and hashed password in Firestore
       await _firestore.collection('users').doc(userUid).update({
         'passwordHash': hashedNewPassword,
-        'salt': newSalt, // Store the new salt
+        'salt': newSalt,
       });
 
       Fluttertoast.showToast(
-        msg: "Password updated successfully!",
+        msg: "✅ Password updated successfully!",
         textColor: Colors.white,
         backgroundColor: Colors.green,
       );
     } catch (e) {
       Fluttertoast.showToast(
-        msg: "Error updating password: $e",
+        msg: "⚠️ Error updating password: $e",
         textColor: Colors.white,
         backgroundColor: Colors.red,
       );
     }
+  }
+
+  /// 📌 Custom Password Field Builder
+  Widget _buildPasswordField(String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextField(
+        controller: controller,
+        obscureText: true,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          filled: true,
+          fillColor: Colors.grey[200],
+        ),
+      ),
+    );
   }
 }

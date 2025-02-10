@@ -11,7 +11,7 @@ class AddAdvertisementPage extends StatefulWidget {
 }
 
 class _AddAdvertisementPageState extends State<AddAdvertisementPage> {
-  final EmployeeService employeeService = EmployeeService(); // ✅ استدعاء الخدمة
+  // final EmployeeService employeeService = EmployeeService(); // ✅ استدعاء الخدمة
 
   File? _selectedImage;
   final TextEditingController _titleController = TextEditingController();
@@ -19,7 +19,7 @@ class _AddAdvertisementPageState extends State<AddAdvertisementPage> {
 
   // ✅ استخدام `pickImage()` لاختيار الصورة
   Future<void> _pickImage() async {
-    final image = await employeeService.pickImage();
+    final image = await EmployeeService.instance.pickImage();
     if (image != null) {
       setState(() {
         _selectedImage = image;
@@ -29,7 +29,7 @@ class _AddAdvertisementPageState extends State<AddAdvertisementPage> {
 
   // ✅ استخدام `uploadAdvertisement()` لرفع الإعلان
   Future<void> _uploadAdvertisement() async {
-    await employeeService.uploadAdvertisement(
+    await EmployeeService.instance.uploadAdvertisement(
       context,
       _selectedImage,
       _titleController.text,
