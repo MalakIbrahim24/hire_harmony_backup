@@ -14,13 +14,12 @@ import 'package:hire_harmony/utils/route/app_routes.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CustomerServices {
-    // singleton design pattern
+  // singleton design pattern
   CustomerServices._();
   static final instance = CustomerServices._();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-//account_deletion_screen
-  /// Fetch User Profile Image
+
   Future<String?> fetchUserImage() async {
     final User? user = _auth.currentUser;
     if (user == null) return null;
@@ -35,7 +34,6 @@ class CustomerServices {
     }
   }
 
-  /// Show Error Dialog
   void showErrorDialog(BuildContext context, String message) {
     showDialog(
       context: context,
@@ -56,7 +54,6 @@ class CustomerServices {
     );
   }
 
-  /// Request Password from User
   Future<String?> requestUserPassword(BuildContext context) async {
     String? password;
     await showDialog(
@@ -96,34 +93,35 @@ class CustomerServices {
     }
 
     try {
-      // 🔹 Step 1: Ask the user for their password
+      //Ask the user for their password
       final password = await requestUserPassword(context);
       if (password == null || password.isEmpty) {
-        showErrorDialog(
-            // ignore: use_build_context_synchronously
-            context,
-            'Password is required to delete your account.');
+        if (context.mounted) {
+          showErrorDialog(
+              context, 'Password is required to delete your account.');
+        }
+
         return;
       }
 
-      // 🔹 Step 2: Re-authenticate the user
+      //Re-authenticate the user
       final credential = EmailAuthProvider.credential(
         email: user.email!,
         password: password,
       );
       await user.reauthenticateWithCredential(credential);
 
-      // 🔹 Step 3: Reference to user's document
+      //Reference to user's document
       final DocumentReference userDoc =
           _firestore.collection('users').doc(user.uid);
 
-      // 🔹 Step 4: Delete all subcollections (e.g., `activityLogs`)
+      //Delete all subcollections (e.g., `activityLogs`)
       await _deleteUserSubcollections(user.uid);
 
-      // 🔹 Step 5: Retrieve user data before deletion
+      //Retrieve user data before deletion
       final DocumentSnapshot userData = await userDoc.get();
 
-      // 🔹 Step 6: Move user data to `deleted_users`
+      //Move user data to `deleted_users`
       if (userData.exists) {
         await _firestore.collection('deleted_users').doc(user.uid).set({
           'selectedReason': selectedReason,
@@ -131,13 +129,10 @@ class CustomerServices {
         });
       }
 
-      // 🔹 Step 7: Delete the user document from Firestore
       await userDoc.delete();
 
-      // 🔹 Step 8: Delete user from Firebase Authentication
       await user.delete();
 
-      // 🔹 Step 9: Navigate to the login screen
       if (!context.mounted) return;
       Navigator.pushNamedAndRemoveUntil(
         context,
@@ -252,7 +247,6 @@ class CustomerServices {
   // }
 
 //cus_edit_profile_page
-  /// Update a Field in Firestore
   Future<void> updateField(
       BuildContext context, String field, String value) async {
     final User? currentUser = _auth.currentUser;
@@ -267,11 +261,13 @@ class CustomerServices {
         field: value,
       });
 
-      // ignore: use_build_context_synchronously
-      showSuccessMessage(context, "Profile updated successfully.");
+      if (context.mounted) {
+        showSuccessMessage(context, "Profile updated successfully.");
+      }
     } catch (e) {
-      // ignore: use_build_context_synchronously
-      showErrorMessage(context, "Error updating profile: $e");
+      if (context.mounted) {
+        showErrorMessage(context, "Error updating profile: $e");
+      }
     }
   }
 
@@ -283,11 +279,11 @@ class CustomerServices {
 
       if (image != null) {
         File imageFile = File(image.path);
-
+        if (context.mounted) {
+          final bool confirmed = await showConfirmationDialog(context);
+          if (!confirmed) return null;
+        }
         // Ask for confirmation
-        // ignore: use_build_context_synchronously
-        final bool confirmed = await showConfirmationDialog(context);
-        if (!confirmed) return null;
 
         // Generate a unique file name
         String fileName =
@@ -541,7 +537,7 @@ class CustomerServices {
   }
 
   //employees_under_category_page.dart
-  /// 🔹 Fetch user location from Firestore
+  //Fetch user location from Firestore
   Future<Position?> getCurrentLocation() async {
     try {
       final User? user = _auth.currentUser;
@@ -587,7 +583,7 @@ class CustomerServices {
     }
   }
 
-  /// 🔹 Calculate distance using Haversine formula
+  //Calculate distance using Haversine formula
   double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     const R = 6371;
     double dLat = (lat2 - lat1) * pi / 180.0;
@@ -603,7 +599,7 @@ class CustomerServices {
     return R * c;
   }
 
-  /// 🔹 Fetch employees under a category and sort them based on distance or rating
+  //Fetch employees under a category and sort them based on distance or rating
   Future<List<Map<String, dynamic>>> fetchEmployeesByCategory(
       String categoryName,
       Position? currentPosition,
@@ -682,7 +678,7 @@ class CustomerServices {
     return _auth.currentUser?.uid;
   }
 
-  /// 🔹 Stream to fetch favorite employees
+  //Stream to fetch favorite employees
   Stream<List<Map<String, dynamic>>> fetchFavorites() {
     final String? userId = getCurrentUserId();
     if (userId == null) {
@@ -697,7 +693,7 @@ class CustomerServices {
         .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
   }
 
-  /// 🔹 Toggle favorite employee (Add/Remove)
+  //Toggle favorite employee (Add/Remove)
   Future<void> toggleFavorite(String favoriteId) async {
     final String? userId = getCurrentUserId();
     if (userId == null) return;
@@ -719,7 +715,7 @@ class CustomerServices {
   }
 
 //order_page.dart
-  /// 🔹 Fetch name of an employee by their ID
+  //Fetch name of an employee by their ID
   Future<String> getEmployeeNameById(String userId) async {
     try {
       debugPrint("🔍 Checking Firestore for user ID: $userId"); // ✅ تحقق من ID
@@ -741,7 +737,7 @@ class CustomerServices {
     }
   }
 
-  /// 🔹 Stream to fetch pending requests
+  //Stream to fetch pending requests
   Stream<List<Map<String, dynamic>>> fetchPendingRequests() {
     final String? userId = getCurrentUserId();
     if (userId == null) {
@@ -757,7 +753,7 @@ class CustomerServices {
             snapshot.docs.map((doc) => {...doc.data(), 'id': doc.id}).toList());
   }
 
-  /// 🔹 Stream to fetch orders by status
+  //Stream to fetch orders by status
   Stream<List<Map<String, dynamic>>> fetchOrders(String status) {
     final String? userId = getCurrentUserId();
     if (userId == null) {
@@ -774,7 +770,7 @@ class CustomerServices {
             snapshot.docs.map((doc) => {...doc.data(), 'id': doc.id}).toList());
   }
 
-  /// 🔹 Stream to fetch completed orders
+  //Stream to fetch completed orders
   Stream<List<Map<String, dynamic>>> fetchCompletedOrders() {
     final String? userId = getCurrentUserId();
     if (userId == null) {
@@ -790,14 +786,14 @@ class CustomerServices {
             snapshot.docs.map((doc) => {...doc.data(), 'id': doc.id}).toList());
   }
 
-  /// 🔹 Delete a request from Firestore
+  //Delete a request from Firestore
   Future<void> deleteRequest({
     required String customerId,
     required String requestId,
     required String employeeId,
   }) async {
     try {
-      // Delete from customer's collection
+      //Delete from customer's collection
       await _firestore
           .collection('users')
           .doc(customerId)
@@ -805,7 +801,7 @@ class CustomerServices {
           .doc(requestId)
           .delete();
 
-      // Delete from employee's collection
+      //Delete from employee's collection
       await _firestore
           .collection('users')
           .doc(employeeId)
@@ -821,7 +817,7 @@ class CustomerServices {
   }
 
 //reviews_page.dart
-  /// 🔹 Check if the user has already reviewed an order
+  //Check if the user has already reviewed an order
   Future<bool> hasReviewedOrder(String employeeId, String orderId) async {
     final String? userId = getCurrentUserId();
     if (userId == null) return false;
@@ -837,7 +833,7 @@ class CustomerServices {
     return existingReview.docs.isNotEmpty;
   }
 
-  /// 🔹 Fetch the employee's current rating and review count
+  //Fetch the employee's current rating and review count
   Future<Map<String, dynamic>?> getEmployeeData(String employeeId) async {
     DocumentSnapshot empDoc =
         await _firestore.collection('users').doc(employeeId).get();
@@ -851,7 +847,7 @@ class CustomerServices {
     };
   }
 
-  /// 🔹 Submit a new review and update employee's rating
+  //Submit a new review and update employee's rating
   Future<void> submitReview({
     required String employeeId,
     required String orderId,
@@ -895,7 +891,6 @@ class CustomerServices {
       'date': FieldValue.serverTimestamp(),
     });
 
-    // ✅ تحديث الطلب في `completedOrders` لكل من العميل والعامل
     final Map<String, dynamic> reviewData = {
       'reviewed': true,
       'reviewText': reviewText.trim(),
@@ -916,7 +911,6 @@ class CustomerServices {
         .doc(orderId)
         .update(reviewData);
 
-    // Update employee's rating and review count
     await _firestore.collection('users').doc(employeeId).set(
       {
         'reviewsNum': totalReviews.toString(),
@@ -927,7 +921,6 @@ class CustomerServices {
   }
 
   //view_all_popular_categories.dart
-  /// 🔹 Fetches top 5 categories with the most employees
   Future<List<Map<String, dynamic>>> fetchTopCategories() async {
     final categoriesSnapshot = await _firestore
         .collection('categories')
@@ -946,7 +939,6 @@ class CustomerServices {
 
   //view_emp_profile_page.dart
 
-  /// 🔹 Fetch employee data
   Future<Map<String, dynamic>?> fetchEmployeeData(String employeeId) async {
     try {
       final doc = await _firestore.collection('users').doc(employeeId).get();
@@ -961,7 +953,6 @@ class CustomerServices {
 
   final String? loggedInUserId = FirebaseAuth.instance.currentUser?.uid;
 
-  /// 🔹 Check if employee is favorited
   Future<bool> isFavorite(String employeeId) async {
     try {
       if (loggedInUserId == null) return false;
@@ -978,7 +969,6 @@ class CustomerServices {
     }
   }
 
-  /// 🔹 Toggle favorite status
   Future<void> toggleFavoriteEmp(String employeeId, bool isFavorite,
       Map<String, dynamic>? employeeData) async {
     try {
@@ -1005,7 +995,6 @@ class CustomerServices {
     }
   }
 
-  /// 🔹 Send a request to an employee
   Future<bool> sendRequest(
       String employeeId, String name, String description) async {
     try {

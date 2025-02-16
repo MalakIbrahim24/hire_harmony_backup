@@ -65,10 +65,7 @@ class _PhoneFormState extends State<EmpPhoneForm> {
               bgColor: AppColors().orange,
               text: 'Next',
               onPressed: () async {
-                Navigator.pushNamed(
-                    // ignore: use_build_context_synchronously
-                    context,
-                    AppRoutes.empidverificationPage);
+                Navigator.pushNamed(context, AppRoutes.empidverificationPage);
               }),
         ],
       ),

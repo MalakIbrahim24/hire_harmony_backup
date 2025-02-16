@@ -38,9 +38,8 @@ class InviteLinkDialog extends StatelessWidget {
               // نسخ الرابط إلى الحافظة
               Clipboard.setData(ClipboardData(text: link)).then((_) {
                 // إغلاق الواجهة
-                // ignore: use_build_context_synchronously
+                if (!context.mounted) return;
                 Navigator.of(context).pop();
-                // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text("Link copied to clipboard!"),

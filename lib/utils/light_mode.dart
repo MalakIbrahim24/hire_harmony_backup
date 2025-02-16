@@ -4,50 +4,18 @@ import 'package:google_fonts/google_fonts.dart';
 
 ThemeData lightMode = ThemeData(
   colorScheme: ColorScheme.light(
-    primary: AppColors().navy, // اللون الأساسي
-    secondary: AppColors().orange, // اللون الثانوي
-    surface: AppColors().white, // لون السطح
-    error: AppColors().red, // لون الأخطاء
-    onPrimary: AppColors().greylight, // لون النص على العناصر الأساسية
+    primary: AppColors().navy,
+    secondary: AppColors().orange,
+    surface: AppColors().white,
+    error: AppColors().red,
+    onPrimary: AppColors().greylight,
     onSecondary: AppColors().white,
     inversePrimary: AppColors().white,
-    tertiary: AppColors().grey, // لون النص على العناصر الثانوية
+    tertiary: AppColors().grey,
   ),
-  textTheme: GoogleFonts.montserratAlternatesTextTheme(), // ✅ ضبط الخط
-
-  /* textTheme: TextTheme(
-    
-    displayLarge: TextStyle(
-      color: AppColors().navy,
-      fontSize: 32,
-      fontWeight: FontWeight.bold,
-    ),
-    displayMedium: TextStyle(
-      color: AppColors().navy2,
-      fontSize: 28,
-      fontWeight: FontWeight.bold,
-    ),
-    bodyLarge: TextStyle(
-      color: AppColors().black,
-      fontSize: 16,
-    ),
-    bodyMedium: TextStyle(
-      color: AppColors().grey,
-      fontSize: 14,
-    ),
-    titleMedium: TextStyle(
-      color: AppColors().teal,
-      fontSize: 18,
-      fontWeight: FontWeight.bold,
-    ),
-    titleSmall: TextStyle(
-      color: AppColors().pearl,
-      fontSize: 16,
-    ),
-  ),
-  */
+  textTheme: GoogleFonts.montserratAlternatesTextTheme(),
   appBarTheme: AppBarTheme(
-    backgroundColor: AppColors().white, // لون الخلفية للتطبيق
+    backgroundColor: AppColors().white,
     titleTextStyle: TextStyle(
       color: AppColors().navy,
       fontSize: 20,
@@ -58,17 +26,17 @@ ThemeData lightMode = ThemeData(
     ),
   ),
   navigationBarTheme: NavigationBarThemeData(
-    backgroundColor: AppColors().white, // ✅ تأكد من الخلفية
-    indicatorColor: AppColors().orange, // ✅ لون المؤشر عند التحديد
+    backgroundColor: AppColors().white,
+    indicatorColor: AppColors().orange,
     labelTextStyle: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
         return GoogleFonts.montserratAlternates(
-          color: Colors.white, // ✅ اللون عند التحديد
+          color: Colors.white,
           fontWeight: FontWeight.bold,
         );
       }
       return GoogleFonts.montserratAlternates(
-        color: AppColors().navy, // ✅ اللون عند عدم التحديد
+        color: AppColors().navy,
       );
     }),
   ),

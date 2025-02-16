@@ -71,8 +71,6 @@ class _DeletedAcountsState extends State<DeletedAcounts> {
                       color: AppColors().white,
                     ),
                     prefixIcon: Icon(Icons.search, color: AppColors().white),
-
-                    // Default border
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
@@ -80,8 +78,6 @@ class _DeletedAcountsState extends State<DeletedAcounts> {
                             alpha: 0.5), // Navy border when not focused
                       ),
                     ),
-
-                    // Focused border
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
@@ -89,16 +85,12 @@ class _DeletedAcountsState extends State<DeletedAcounts> {
                         width: 2, // Thicker border for emphasis
                       ),
                     ),
-
-                    // Error border (optional)
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(
                         color: AppColors().red, // Red border when error occurs
                       ),
                     ),
-
-                    // Focused error border (optional)
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide(

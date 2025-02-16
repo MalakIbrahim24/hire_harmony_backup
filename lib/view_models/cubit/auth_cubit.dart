@@ -92,53 +92,21 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  // Future<void> cusSignInWithEmailAndPassword(
-  //     String email, String password) async {
-  //   emit(AuthLoading());
-  //   try {
-  //     final result =
-  //         await authServices.cusSignInWithEmailAndPassword(email, password);
-  //     if (result) {
-  //       emit(AuthCusSuccess());
-  //     } else {
-  //       emit(AuthFailure('Failed to  sign in'));
-  //     }
-  //   } catch (e) {
-  //     emit(AuthFailure(e.toString()));
-  //   }
-  // }
-
-  // Future<void> empSignInWithEmailAndPassword(
-  //     String email, String password) async {
-  //   emit(AuthLoading());
-  //   try {
-  //     final result =
-  //         await authServices.empSignInWithEmailAndPassword(email, password);
-  //     if (result) {
-  //       emit(AuthEmpSuccess());
-  //     } else {
-  //       emit(AuthFailure('Failed to  sign in'));
-  //     }
-  //   } catch (e) {
-  //     emit(AuthFailure(e.toString()));
-  //   }
-  // }
   Future<void> signOut(BuildContext context) async {
-  emit(AuthLoading());
-  try {
-    await authServices.signOut();
+    emit(AuthLoading());
+    try {
+      await authServices.signOut();
 
-    // التأكد من أن السياق لا يزال متاحًا قبل إعادة تعيين الثيم
-    if (context.mounted) {
-      Provider.of<ThemeProvider>(context, listen: false).resetTheme();
+      // التأكد من أن السياق لا يزال متاحًا قبل إعادة تعيين الثيم
+      if (context.mounted) {
+        Provider.of<ThemeProvider>(context, listen: false).resetTheme();
+      }
+
+      emit(AuthInitial());
+    } catch (e) {
+      emit(AuthFailure(e.toString()));
     }
-
-    emit(AuthInitial());
-  } catch (e) {
-    emit(AuthFailure(e.toString()));
   }
-}
-
 
   Future<void> getCurrentUser() async {
     emit(AuthLoading());
@@ -153,30 +121,4 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthFailure(e.toString()));
     }
   }
-
-  // Future<void> getCurrentUser() async {
-  //   emit(AuthLoading());
-  //   try {
-  //     final user = await authServices.currentUser();
-  //     final signIn = await authServices.isSignIn();
-  //     //log('$user');
-  //     if (signIn) {
-  //       String role = await _fireS.getUserRoleByUid(user!.uid);
-  //     //  log(role);
-  //       if (role == 'admin') {
-  //         emit(AuthSuccess());
-  //       } else if (role == 'customer') {
-  //         emit(AuthCusSuccess());
-  //       } else if (role == 'employee') {
-  //         emit(AuthEmpSuccess());
-  //       }
-  //     } else {
-  //       emit(AuthInitial());
-  //     }
-  //   } catch (e) {
-  //     emit(AuthFailure(e.toString()));
-  //   }
-  // }
-
-  // Fetch the role of the user
 }

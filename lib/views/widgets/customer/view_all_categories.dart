@@ -8,8 +8,7 @@ class ViewAllCategoriesPage extends StatefulWidget {
   const ViewAllCategoriesPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _ViewAllCategoriesPageState createState() => _ViewAllCategoriesPageState();
+  State<ViewAllCategoriesPage> createState() => _ViewAllCategoriesPageState();
 }
 
 class _ViewAllCategoriesPageState extends State<ViewAllCategoriesPage> {
@@ -116,8 +115,7 @@ class _ViewAllCategoriesPageState extends State<ViewAllCategoriesPage> {
                         decoration: BoxDecoration(
                           color: AppColors().white,
                           border: Border.all(
-                            // ignore: deprecated_member_use
-                            color: AppColors().grey.withOpacity(0.6),
+                            color: AppColors().grey.withValues(alpha: 0.6),
                           ),
                           borderRadius: BorderRadius.circular(8),
                         ),

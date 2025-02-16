@@ -50,7 +50,7 @@ void main() async {
   );
 
   await FirebaseApi().initNotifications();
-  Get.put(LocationController()); 
+  Get.put(LocationController());
 // ✅ **تفعيل التخزين المؤقت Firestore لتقليل استهلاك القراءات**
   FirebaseFirestore.instance.settings = const Settings(
     persistenceEnabled: true, // ✅ حفظ البيانات محليًا
@@ -72,9 +72,8 @@ class MyApp extends StatelessWidget {
         BlocProvider<AuthCubit>(
           // create: (context) => AuthCubit(),
           create: (context) => AuthCubit()..getCurrentUser(),
-          
         ),
-         BlocProvider<EmployeeCubit>(
+        BlocProvider<EmployeeCubit>(
           create: (context) => EmployeeCubit(), // ✅ إضافة EmployeeCubit
         ),
       ],

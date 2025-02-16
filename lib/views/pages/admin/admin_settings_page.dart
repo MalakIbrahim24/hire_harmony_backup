@@ -120,14 +120,6 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                 Navigator.pushNamed(context, AppRoutes.deletedAccounts);
               },
             ),
-            // const SizedBox(
-            //   height: 20,
-            // ),
-            // AdnProfileContainer(
-            //   icon: Icons.timer_off_outlined,
-            //   title: 'Deactivated Accounts',
-            //   onTap: () {},
-            // ),
             const SizedBox(
               height: 40,
             ),

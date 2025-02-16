@@ -9,8 +9,7 @@ class SearchAndFilter extends StatefulWidget {
   const SearchAndFilter({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _SearchAndFilterState createState() => _SearchAndFilterState();
+  State<SearchAndFilter> createState() => _SearchAndFilterState();
 }
 
 class _SearchAndFilterState extends State<SearchAndFilter> {

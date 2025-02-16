@@ -35,23 +35,15 @@ class FirestoreService {
     await firestore.doc(documentPath).update(data);
   }
 
-// Delete
-/*
   Future<void> deleteData({required String documentPath}) async {
-    final reference = firestore.doc(documentPath);
-    debugPrint('delete: $documentPath');
-    await reference.delete();
-  }
-*/
- Future<void> deleteData({required String documentPath}) async {
     final DocumentReference docRef = firestore.doc(documentPath);
     debugPrint('🗑 Deleting: $documentPath');
 
     try {
-      // 🔹 استخراج معرف المستخدم من المسار (إذا كان المستند داخل `users`)
+      // استخراج معرف المستخدم من المسار (إذا كان المستند داخل `users`)
       String userId = documentPath.split('/').last;
 
-      // 🔹 التأكد أنه مستند مستخدم قبل حذف كل بياناته
+      // التأكد أنه مستند مستخدم قبل حذف كل بياناته
       if (documentPath.startsWith('users/')) {
         await _deleteUserWithAllData(userId);
       } else {
@@ -63,12 +55,11 @@ class FirestoreService {
     }
   }
 
-  /// 🗑 **حذف المستخدم مع جميع الـ subcollections الخاصة به**
   Future<void> _deleteUserWithAllData(String userId) async {
-    final DocumentReference userDocRef = firestore.collection('users').doc(userId);
+    final DocumentReference userDocRef =
+        firestore.collection('users').doc(userId);
 
     try {
-      // 🔹 قائمة جميع الـ subcollections المحتملة للمستخدم
       List<String> subcollectionNames = [
         'serviceImages',
         'reviews',
@@ -80,22 +71,22 @@ class FirestoreService {
         'advertisements'
       ];
 
-      // 🔹 حذف جميع المستندات داخل كل subcollection إذا كان موجودًا
       for (var subcollection in subcollectionNames) {
         var subDocs = await userDocRef.collection(subcollection).get();
         if (subDocs.docs.isNotEmpty) {
           for (var doc in subDocs.docs) {
             await doc.reference.delete();
-            debugPrint("🗑 Deleted document: ${doc.id} from subcollection: $subcollection");
+            debugPrint(
+                "🗑 Deleted document: ${doc.id} from subcollection: $subcollection");
           }
-          debugPrint("✅ Deleted subcollection: $subcollection for user: $userId");
+          debugPrint(
+              "✅ Deleted subcollection: $subcollection for user: $userId");
         }
       }
 
-      // 🔹 حذف المستخدم نفسه بعد حذف كل البيانات الخاصة به
       await userDocRef.delete();
-      debugPrint("✅ Successfully deleted user and all subcollections: users/$userId");
-
+      debugPrint(
+          "✅ Successfully deleted user and all subcollections: users/$userId");
     } catch (e) {
       debugPrint("❌ Error deleting user with subcollections: $e");
     }
@@ -113,9 +104,9 @@ class FirestoreService {
 
       // Log deletion
       await AdminService.instance.logDeletedService(
-        adminId: FirebaseAuth.instance.currentUser!.uid, // Admin UID
+        adminId: FirebaseAuth.instance.currentUser!.uid,
         serviceName: serviceName,
-        employeeName: employeeName, // Employee's name for reference
+        employeeName: employeeName,
       );
 
       debugPrint("Service deleted and logged successfully.");
@@ -158,7 +149,7 @@ class FirestoreService {
       }
     } catch (e) {
       print("Error fetching user role: $e");
-      return "unknown"; // Handle any issues by returning an "unknown" role
+      return "unknown";
     }
   }
 
@@ -285,7 +276,7 @@ class FirestoreService {
     });
   }
 
-   Future<void> removeFromArray({
+  Future<void> removeFromArray({
     required String documentPath,
     required String fieldName,
     required dynamic value,
@@ -299,73 +290,6 @@ class FirestoreService {
       rethrow;
     }
   }
-
-  // // Log Added Service
-  // Future<void> logAddedService(String serviceName) async {
-  //   try {
-  //     await _firestore.collection('added_services').add({
-  //       'service_name': serviceName,
-  //       'added_at': DateTime.now().toIso8601String(),
-  //     });
-  //     debugPrint("Logged added service: $serviceName");
-  //   } catch (e) {
-  //     debugPrint("Failed to log added service: $e");
-  //   }
-  // }
-
-  // // Log Deleted Service
-  // Future<void> logDeletedService(String serviceName) async {
-  //   try {
-  //     await _firestore.collection('deleted_services').add({
-  //       'service_name': serviceName,
-  //       'deleted_at': DateTime.now().toIso8601String(),
-  //     });
-  //     debugPrint("Logged deleted service: $serviceName");
-  //   } catch (e) {
-  //     debugPrint("Failed to log deleted service: $e");
-  //   }
-  // }
-
-  // // Method to get activity logs
-  // Stream<List<Map<String, dynamic>>> getActivityLogs(String uid) {
-  //   return _firestore
-  //       .collection('users')
-  //       .doc(uid)
-  //       .collection('activityLogs')
-  //       .orderBy('timestamp', descending: true)
-  //       .snapshots()
-  //       .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
-  // }
-
-  // Stream<List<Map<String, dynamic>>> getDeletedAccounts(String uid) {
-  //   return FirebaseFirestore.instance
-  //       .collection('users') // Main 'users' collection
-  //       .doc(uid) // Specific user document
-  //       .collection('deletedAccounts') // Subcollection 'deletedAccounts'
-  //       .snapshots()
-  //       .map((snapshot) => snapshot.docs.map((doc) {
-  //             final data = doc.data();
-  //             return {
-  //               'id': doc.id,
-  //               'name':
-  //                   data['name'] ?? 'Unnamed User', // Default to 'Unnamed User'
-  //               'email': data['email'] ?? 'No Email', // Default to 'No Email'
-  //             };
-  //           }).toList());
-  // }
-
-  // Future<String> getDeviceInfo() async {
-  //   final deviceInfo = DeviceInfoPlugin();
-  //   if (Platform.isAndroid) {
-  //     final androidInfo = await deviceInfo.androidInfo;
-  //     return 'Android - ${androidInfo.model}';
-  //   } else if (Platform.isIOS) {
-  //     final iosInfo = await deviceInfo.iosInfo;
-  //     return 'iOS - ${iosInfo.utsname.machine}';
-  //   } else {
-  //     return 'Unknown Device';
-  //   }
-  // }
 
   Future<bool> reauthenticateUser(String currentPassword) async {
     User? user = _auth.currentUser;
@@ -449,17 +373,5 @@ class FirestoreService {
     return false;
   }
 
-  // Method to get and update notification settings
-  // Future<Map<String, dynamic>> getNotificationSettings(String uid) async {
-  //   DocumentSnapshot doc = await _firestore.collection('users').doc(uid).get();
-  //   return doc.data()?['notifications'] ?? {};
-  // }
 
-  // Future<void> updateNotificationSettings(
-  //     String uid, Map<String, dynamic> settings) async {
-  //   await _firestore
-  //       .collection('users')
-  //       .doc(uid)
-  //       .update({'notifications': settings});
-  // }
 }

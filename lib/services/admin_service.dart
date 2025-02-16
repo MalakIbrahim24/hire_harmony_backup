@@ -16,20 +16,20 @@ class AdminService {
 
   // Log Deleted Service
   Future<void> logDeletedService({
-    required String adminId, // Admin's UID
+    required String adminId,
     required String serviceName,
-    required String employeeName, // For reference
+    required String employeeName,
   }) async {
     try {
       // Log the deleted service under the admin's document
       await _firestore
-          .collection('users') // Root collection
-          .doc(adminId) // Admin's user document
-          .collection('deletedServices') // Sub-collection under admin
+          .collection('users')
+          .doc(adminId)
+          .collection('deletedServices')
           .add({
         'service_name': serviceName,
-        'employee_name': employeeName, // Optional: name of the employee
-        'deleted_at': Timestamp.now(), // Deletion timestamp
+        'employee_name': employeeName,
+        'deleted_at': Timestamp.now(),
       });
 
       debugPrint("Logged deleted service under admin $adminId: $serviceName");
@@ -52,17 +52,16 @@ class AdminService {
 
   Stream<List<Map<String, dynamic>>> getDeletedAccounts(String uid) {
     return FirebaseFirestore.instance
-        .collection('users') // Main 'users' collection
-        .doc(uid) // Specific user document
-        .collection('deletedAccounts') // Subcollection 'deletedAccounts'
+        .collection('users')
+        .doc(uid)
+        .collection('deletedAccounts')
         .snapshots()
         .map((snapshot) => snapshot.docs.map((doc) {
               final data = doc.data();
               return {
                 'id': doc.id,
-                'name':
-                    data['name'] ?? 'Unnamed User', // Default to 'Unnamed User'
-                'email': data['email'] ?? 'No Email', // Default to 'No Email'
+                'name': data['name'] ?? 'Unnamed User',
+                'email': data['email'] ?? 'No Email',
               };
             }).toList());
   }

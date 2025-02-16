@@ -288,47 +288,49 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
                                 if (confirm1 == true) {
                                   // Second Confirmation Dialog
-                                  final confirm2 =
-                                      await _showConfirmationDialog(
-                                    // ignore: use_build_context_synchronously
-                                    context,
-                                    title: 'Final Confirmation',
-                                    content:
-                                        'This action cannot be undone. Delete this user?',
-                                  );
-
-                                  // Update delete logic in UserManagementPage
-                                  if (confirm2 == true) {
-                                    final deletionTime = DateTime.now();
-
-                                    await getUserCategories(user['id']);
-
-                                    // Capture the deletion timestamp
-
-                                    // Add deleted user to Firestore "deleted_users" collection
-                                    await FirestoreService.instance.addData(
-                                      collectionPath: 'deleted_users',
-                                      data: {
-                                        'name': user['name'],
-                                        'email': user['email'],
-                                        'deleted_at':
-                                            deletionTime.toIso8601String(),
-                                      },
+                                  if (context.mounted) {
+                                    final confirm2 =
+                                        await _showConfirmationDialog(
+                                      context,
+                                      title: 'Final Confirmation',
+                                      content:
+                                          'This action cannot be undone. Delete this user?',
                                     );
 
-                                    // Delete the user from "users" collection
-                                    await FirestoreService.instance.deleteData(
-                                      documentPath: 'users/${user['id']}',
-                                    );
+                                    // Update delete logic in UserManagementPage
+                                    if (confirm2 == true) {
+                                      final deletionTime = DateTime.now();
 
-                                    // Show success toast notification
-                                    Fluttertoast.showToast(
-                                      msg: "User deleted successfully",
-                                      textColor: AppColors().white,
-                                      backgroundColor: AppColors()
-                                          .orange
-                                          .withValues(alpha: 0.8),
-                                    );
+                                      await getUserCategories(user['id']);
+
+                                      // Capture the deletion timestamp
+
+                                      // Add deleted user to Firestore "deleted_users" collection
+                                      await FirestoreService.instance.addData(
+                                        collectionPath: 'deleted_users',
+                                        data: {
+                                          'name': user['name'],
+                                          'email': user['email'],
+                                          'deleted_at':
+                                              deletionTime.toIso8601String(),
+                                        },
+                                      );
+
+                                      // Delete the user from "users" collection
+                                      await FirestoreService.instance
+                                          .deleteData(
+                                        documentPath: 'users/${user['id']}',
+                                      );
+
+                                      // Show success toast notification
+                                      Fluttertoast.showToast(
+                                        msg: "User deleted successfully",
+                                        textColor: AppColors().white,
+                                        backgroundColor: AppColors()
+                                            .orange
+                                            .withValues(alpha: 0.8),
+                                      );
+                                    }
                                   }
                                 }
                               },

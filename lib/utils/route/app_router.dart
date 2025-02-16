@@ -2,14 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hire_harmony/utils/route/app_routes.dart';
-import 'package:hire_harmony/view_models/cubit/adnhome_cubit.dart';
 import 'package:hire_harmony/view_models/cubit/auth_cubit.dart';
 import 'package:hire_harmony/views/pages/admin/ad_management_page.dart';
 import 'package:hire_harmony/views/pages/admin/admin_activity_page.dart';
 import 'package:hire_harmony/views/pages/admin/admin_settings_page.dart';
 import 'package:hire_harmony/views/pages/admin/adn_home_page.dart' as admin;
 import 'package:hire_harmony/views/pages/admin/adn_navbar.dart';
-import 'package:hire_harmony/views/pages/admin/adn_notifications_page.dart';
 import 'package:hire_harmony/views/pages/admin/adn_personal_info_page.dart';
 import 'package:hire_harmony/views/pages/admin/category_management_page.dart';
 import 'package:hire_harmony/views/pages/admin/complaints_page.dart';
@@ -24,20 +22,17 @@ import 'package:hire_harmony/views/pages/customer/view_all_popular_services.dart
 import 'package:hire_harmony/views/pages/customer/view_emp_profile_page.dart';
 import 'package:hire_harmony/views/pages/employee/contact_us_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_account_deletion.dart';
+import 'package:hire_harmony/views/pages/employee/emp_id_verification_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_navbar.dart';
 import 'package:hire_harmony/views/pages/employee/emp_profile_info_page.dart';
-//import 'package:hire_harmony/views/pages/forms/emp_sign_up_form.dart';
 import 'package:hire_harmony/views/pages/signup/sign_up_page.dart';
 import 'package:hire_harmony/views/pages/customer/cus_verification_success_page.dart';
-// import 'package:hire_harmony/views/pages/customer/cus_messages_page.dart';
-// import 'package:hire_harmony/views/pages/customer/cus_notifications_page.dart';
 import 'package:hire_harmony/views/pages/customer/custom_buttom_navbar.dart';
 import 'package:hire_harmony/views/pages/customer/cus_home_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_verification_success_page.dart';
 import 'package:hire_harmony/views/pages/employee/emp_home_page.dart';
 import 'package:hire_harmony/views/pages/signup/forgot_password_page.dart';
 import 'package:hire_harmony/views/pages/login/login_page.dart';
-//import 'package:hire_harmony/views/pages/employee/emp_phone_page.dart';
 import 'package:hire_harmony/views/pages/signup/phone_page.dart';
 import 'package:hire_harmony/views/pages/signup/sign_up_choice.dart';
 import 'package:hire_harmony/views/pages/welcome_page.dart';
@@ -67,11 +62,7 @@ class AppRouter {
           builder: (_) => const SignUpPage(),
           settings: settings,
         );
-      // case AppRoutes.empSignupForm:
-      //   return MaterialPageRoute(
-      //     builder: (_) => const EmpSignupForm(),
-      //     settings: settings,
-      //   );
+
       case AppRoutes.empNavbar:
         return MaterialPageRoute(
           builder: (_) => const EmpNavbar(),
@@ -82,16 +73,7 @@ class AppRouter {
           builder: (_) => const CusHomePage(),
           settings: settings,
         );
-      // case AppRoutes.cusMessagesPage:
-      //   return MaterialPageRoute(
-      //     builder: (_) => const CusMessagesPage(),
-      //     settings: settings,
-      //   );
-      // case AppRoutes.cusNotificationsPage:
-      //   return MaterialPageRoute(
-      //     builder: (_) => const CusNotificationsPage(),
-      //     settings: settings,
-      //   );
+
       case AppRoutes.customButtomNavbarPage:
         return MaterialPageRoute(
           builder: (_) => const CustomButtomNavbar(),
@@ -107,7 +89,7 @@ class AppRouter {
           builder: (_) => const ViewAllPopularServicesPage(),
           settings: settings,
         );
-      
+
       case AppRoutes.viewEmpProfilePage:
         return MaterialPageRoute(
           builder: (_) => ViewEmpProfilePage(
@@ -119,12 +101,7 @@ class AppRouter {
           builder: (_) => const EmpHomePage(),
           settings: settings,
         );
-     
-      // case AppRoutes.empphonePage:
-      //   return MaterialPageRoute(
-      //     builder: (_) => const EmpPhonePage(),
-      //     settings: settings,
-      //   );
+
       case AppRoutes.empVerificationSuccessPage:
         return MaterialPageRoute(
           builder: (_) => const EmpVerificationSuccessPage(
@@ -134,12 +111,12 @@ class AppRouter {
           settings: settings,
         );
 
-     /* case AppRoutes.empidverificationPage:
+      case AppRoutes.empidverificationPage:
         return MaterialPageRoute(
           builder: (_) => const EmpIdVerificationPage(),
           settings: settings,
         );
-*/
+
       case AppRoutes.empProfileInfoPage:
         return MaterialPageRoute(
           builder: (_) => EmpProfileInfoPage(
@@ -217,17 +194,7 @@ class AppRouter {
           builder: (_) => const AdminSettingsPage(),
           settings: settings,
         );
-      case AppRoutes.adnnotificationsPage:
-        return MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (context) {
-              final cubit = AdnHomeCubit();
-              return cubit;
-            },
-            child: const AdnNotificationsPage(),
-          ),
-          settings: settings,
-        );
+  
       case AppRoutes.deletedAccounts:
         return MaterialPageRoute(
           builder: (_) =>

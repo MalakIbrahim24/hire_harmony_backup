@@ -15,20 +15,19 @@ ThemeData darkMode = ThemeData(
     onSecondary: AppColors().orange,
     // لون النص على العناصر الثانوية
   ),
-
-  textTheme: GoogleFonts.montserratAlternatesTextTheme(), // ✅ ضبط الخط
+  textTheme: GoogleFonts.montserratAlternatesTextTheme(),
   navigationBarTheme: NavigationBarThemeData(
-    backgroundColor: AppColors().navy, // ✅ الخلفية الداكنة
-    indicatorColor: AppColors().orange, // ✅ لون المؤشر عند التحديد
+    backgroundColor: AppColors().navy,
+    indicatorColor: AppColors().orange,
     labelTextStyle: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
         return GoogleFonts.montserratAlternates(
-          color: Colors.white, // ✅ اللون عند التحديد
+          color: Colors.white,
           fontWeight: FontWeight.bold,
         );
       }
       return GoogleFonts.montserratAlternates(
-        color: AppColors().greylight, // ✅ اللون عند عدم التحديد
+        color: AppColors().greylight,
       );
     }),
   ),

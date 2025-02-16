@@ -78,8 +78,7 @@ class EmployeeAdsPage extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(vertical: 8),
                 shape: RoundedRectangleBorder(
                   side: BorderSide(
-                    color:
-                        AppColors().navy.withValues(alpha:0.2), // Light navy border
+                    color: AppColors().navy.withValues(alpha: 0.2),
                     width: 1,
                   ),
                   borderRadius: BorderRadius.circular(10),
@@ -92,8 +91,7 @@ class EmployeeAdsPage extends StatelessWidget {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Image.network(
-                          service
-                              .image, // Dynamically load the image from Firestore
+                          service.image,
                           fit: BoxFit.cover,
                           height: 150,
                           width: double.infinity,
@@ -130,7 +128,7 @@ class EmployeeAdsPage extends StatelessWidget {
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
-                                AppColors().orange.withValues(alpha:0.8),
+                                AppColors().orange.withValues(alpha: 0.8),
                             foregroundColor: AppColors().white,
                           ),
                           onPressed: () async {
@@ -181,12 +179,11 @@ class EmployeeAdsPage extends StatelessWidget {
                                     'users/$employeeId/services/${service.id}',
                               );
 
-                              // Show success notification after deletion
                               Fluttertoast.showToast(
                                 msg: "AD deleted successfully",
                                 textColor: AppColors().white,
                                 backgroundColor:
-                                    AppColors().orange.withValues(alpha:0.8),
+                                    AppColors().orange.withValues(alpha: 0.8),
                               );
                             }
                           },

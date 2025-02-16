@@ -28,6 +28,5 @@ class AppColors {
   final Color orangelight = const Color.fromARGB(255, 254, 229, 215);
   final Color orange2 = const Color.fromARGB(255, 164, 63, 0);
   final Color brown = const Color.fromARGB(253, 81, 37, 9);
-
   final Color peach = const Color.fromRGBO(248, 76, 68, 1);
 }

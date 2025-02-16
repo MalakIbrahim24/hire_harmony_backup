@@ -45,8 +45,7 @@ class AddTicket extends StatelessWidget {
         descriptionController.clear();
 
         // Navigate back to the previous page
-
-        // ignore: use_build_context_synchronously
+        if (!context.mounted) return;
         Navigator.pop(context);
 
         print('Ticket saved successfully!');

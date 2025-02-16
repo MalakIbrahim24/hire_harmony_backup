@@ -139,8 +139,7 @@ class _EditServicesPageState extends State<EditServicesPage> {
                     final employees = snapshot.data!
                         .where((employee) => employee['name']
                             .toLowerCase()
-                            .contains(
-                                searchQuery)) // Check if name matches query
+                            .contains(searchQuery))
                         .toList();
 
                     if (employees.isEmpty) {

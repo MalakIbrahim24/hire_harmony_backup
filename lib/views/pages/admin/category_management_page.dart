@@ -290,8 +290,9 @@ class _CategoryManagementPageState extends State<CategoryManagementPage> {
                 backgroundColor: AppColors().orange.withValues(alpha: 0.8),
               );
 
-              // ignore: use_build_context_synchronously
-              Navigator.pop(context);
+              if (context.mounted) {
+                Navigator.pop(context);
+              }
             },
             child: Text(
               'Add',

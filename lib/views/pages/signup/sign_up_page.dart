@@ -98,7 +98,7 @@ class _SignUpPageState extends State<SignUpPage> {
     if (regExp.hasMatch(value)) {
       return null;
     } else {
-      return 'Password must be at least 8 characters long\nand contain at least one uppercase letter, one number,\nand one special character.';
+      return 'Password must be at least 8 characters long\nand contain at least one uppercase letter,\none number,\nand one special character.';
     }
   }
 

@@ -21,7 +21,7 @@ class _EditedServicesPageState extends State<EditedServicesPage> {
       appBar: AppBar(
         backgroundColor: AppColors().transparent,
         iconTheme: IconThemeData(
-          color: AppColors().white, // White Back Arrow
+          color: AppColors().white,
         ),
       ),
       body: Stack(children: [
@@ -54,9 +54,9 @@ class _EditedServicesPageState extends State<EditedServicesPage> {
               ),
               Expanded(
                 child: ServicesList(
-                  userId: widget.uid, // Pass correct userId
-                  subCollection: 'deletedServices', // Sub-collection path
-                  action: 'deleted_at', // Firestore timestamp field
+                  userId: widget.uid,
+                  subCollection: 'deletedServices',
+                  action: 'deleted_at',
                 ),
               ),
             ],

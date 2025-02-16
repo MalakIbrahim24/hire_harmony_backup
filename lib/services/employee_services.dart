@@ -553,14 +553,6 @@ class EmployeeService {
         }
       }
 
-      // if (newPassword != null && confirmPassword != null) {
-      //   if (newPassword == confirmPassword) {
-      //     await _updatePassword(user.uid, newPassword);
-      //   } else {
-      //     throw Exception("Passwords do not match");
-      //   }
-      // }
-
       if (updates.isNotEmpty) {
         await _firestore.collection('users').doc(user.uid).update(updates);
       }
@@ -569,37 +561,6 @@ class EmployeeService {
       throw Exception("Failed to update profile");
     }
   }
-
-  // Future<void> _updatePassword(String userId, String newPassword) async {
-  //   try {
-  //     final User? user = _auth.currentUser;
-  //     if (user == null) return;
-
-  //     await user.updatePassword(newPassword);
-  //     final String salt = _generateSalt();
-  //     final String hashedPassword = _hashPassword(newPassword, salt);
-
-  //     await _firestore.collection('users').doc(userId).update({
-  //       'passwordHash': hashedPassword,
-  //       'salt': salt,
-  //     });
-  //   } catch (e) {
-  //     print("Error updating password: $e");
-  //     throw Exception("Failed to update password");
-  //   }
-  // }
-
-  // String _generateSalt() {
-  //   final Random random = Random.secure();
-  //   final List<int> saltBytes = List.generate(16, (_) => random.nextInt(256));
-  //   return base64Encode(saltBytes);
-  // }
-
-  // String _hashPassword(String password, String salt) {
-  //   final List<int> bytes = utf8.encode(salt + password);
-  //   final Digest digest = sha256.convert(bytes);
-  //   return digest.toString();
-  // }
 
   Future<String?> _uploadImageToSupabase(String imagePath) async {
     try {
@@ -659,11 +620,13 @@ class EmployeeService {
       });
 
       messageController.clear();
-      // ignore: use_build_context_synchronously
-      _showSnackbar(context, 'Complaint sent successfully!');
+      if (context.mounted) {
+        _showSnackbar(context, 'Complaint sent successfully!');
+      }
     } catch (e) {
-      // ignore: use_build_context_synchronously
-      _showSnackbar(context, 'Error sending complaint: $e');
+      if (context.mounted) {
+        _showSnackbar(context, 'Error sending complaint: $e');
+      }
     }
   }
 
@@ -699,17 +662,17 @@ class EmployeeService {
       final fileName =
           '${DateTime.now().millisecondsSinceEpoch}_${selectedImage.path.split('/').last}';
 
-      // ✅ رفع الصورة إلى Supabase
+      // رفع الصورة إلى Supabase
       final String filePath = await supabase.Supabase.instance.client.storage
           .from('serviceImages')
           .upload('items/$fileName', selectedImage);
 
-      // ✅ جلب رابط الصورة
+      // جلب رابط الصورة
       final String imageUrl = supabase.Supabase.instance.client.storage
           .from('serviceImages')
           .getPublicUrl(filePath.replaceFirst('serviceImages/', ''));
 
-      // ✅ إنشاء Batch للكتابة إلى Firestore
+      // إنشاء Batch للكتابة إلى Firestore
       WriteBatch batch = _firestore.batch();
 
       final itemRef = _firestore
@@ -725,7 +688,6 @@ class EmployeeService {
         'timestamp': FieldValue.serverTimestamp(),
       });
 
-      // ✅ تنفيذ جميع العمليات دفعة واحدة
       await batch.commit();
 
       if (context.mounted) {

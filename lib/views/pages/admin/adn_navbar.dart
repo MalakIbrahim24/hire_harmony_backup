@@ -25,8 +25,6 @@ class _AdnNavbarState extends State<AdnNavbar> {
 
   @override
   Widget build(BuildContext context) {
-    // final user = AuthCubit();
-    // final myuser = user.getCurrentUser();
     return BlocProvider(
         create: (context) {
           final cubit = AdnHomeCubit();
@@ -58,12 +56,9 @@ class _AdnNavbarState extends State<AdnNavbar> {
               ),
               FluidNavBarIcon(
                 icon: Icons.card_membership_outlined,
-                backgroundColor:
-                    AppColors().transparent, // Transparent when not selected
-                selectedForegroundColor:
-                    AppColors().white, // Set to teal when selected
-                unselectedForegroundColor:
-                    AppColors().white, // White when not selected
+                backgroundColor: AppColors().transparent,
+                selectedForegroundColor: AppColors().white,
+                unselectedForegroundColor: AppColors().white,
                 extras: {"label": "Tickets"},
               ),
               FluidNavBarIcon(
@@ -76,11 +71,8 @@ class _AdnNavbarState extends State<AdnNavbar> {
             ],
             onChange: _handleNavigationChange,
             style: FluidNavBarStyle(
-              barBackgroundColor: AppColors()
-                  .navy
-                  .withValues(alpha: 0.5), // Main background color of the bar
-              iconBackgroundColor:
-                  AppColors().navy, // Set selected icon background to teal
+              barBackgroundColor: AppColors().navy.withValues(alpha: 0.5),
+              iconBackgroundColor: AppColors().navy,
             ),
             scaleFactor: 1.5,
             defaultIndex: 1,
@@ -109,8 +101,6 @@ class _AdnNavbarState extends State<AdnNavbar> {
           break;
       }
       _child = AnimatedSwitcher(
-        // switchInCurve: Curves.easeInCirc,
-        // switchOutCurve: Curves.elasticOut,
         duration: const Duration(milliseconds: 200),
         child: _child,
       );

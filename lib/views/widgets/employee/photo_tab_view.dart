@@ -100,11 +100,10 @@ class _PhotoTabViewState extends State<PhotoTabView> {
                       .doc(widget.employeeId)
                       .collection('serviceImages')
                       .add({'url': imageUrl, 'title': title});
-
-                  // ignore: use_build_context_synchronously
+                  if (!context.mounted) return;
                   Navigator.pop(context);
                 } else {
-                  // ignore: use_build_context_synchronously
+                  if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text("Failed to upload image.")),
                   );

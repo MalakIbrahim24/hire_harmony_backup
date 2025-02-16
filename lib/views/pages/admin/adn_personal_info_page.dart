@@ -72,16 +72,14 @@ class _AdnPersonalInfoPageState extends State<AdnPersonalInfoPage> {
       final supabase.SupabaseClient supabaseClient =
           supabase.Supabase.instance.client;
       final storageResponse = await supabaseClient.storage
-          .from('serviceImages') // Replace with your Supabase bucket name
+          .from('serviceImages')
           .upload(fileName, File(filePath),
               fileOptions: const supabase.FileOptions(
                   cacheControl: '3600', upsert: true));
 
       if (storageResponse.isNotEmpty) {
-        // Get the public URL of the uploaded image
-        final String publicUrl = supabaseClient.storage
-            .from('serviceImages') // Replace with your Supabase bucket name
-            .getPublicUrl(fileName);
+        final String publicUrl =
+            supabaseClient.storage.from('serviceImages').getPublicUrl(fileName);
 
         // Update Firebase with the new image URL
         final String adminUid = authServices.getCurrentUser()?.uid ?? '';
@@ -131,7 +129,6 @@ class _AdnPersonalInfoPageState extends State<AdnPersonalInfoPage> {
       ),
       body: Stack(
         children: [
-          // Background Image with Gradient Overlay
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -170,10 +167,9 @@ class _AdnPersonalInfoPageState extends State<AdnPersonalInfoPage> {
           SafeArea(
             child: Column(
               children: [
-                // Profile Header with Circle Avatar
                 const SizedBox(height: 20),
                 GestureDetector(
-                  onTap: _changeProfileImage, // Trigger image change on tap
+                  onTap: _changeProfileImage,
                   child: CircleAvatar(
                     radius: 100,
                     backgroundImage:
@@ -276,125 +272,125 @@ class PasswordUpdateService {
     TextEditingController currentPasswordController = TextEditingController();
     TextEditingController newPasswordController = TextEditingController();
     TextEditingController confirmPasswordController = TextEditingController();
-
-    bool? confirmed = await showDialog(
-      // ignore: use_build_context_synchronously
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Update Password"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: currentPasswordController,
-                obscureText: true,
-                decoration:
-                    const InputDecoration(labelText: "Current Password"),
+    if (context.mounted) {
+      bool? confirmed = await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Update Password"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: currentPasswordController,
+                  obscureText: true,
+                  decoration:
+                      const InputDecoration(labelText: "Current Password"),
+                ),
+                TextField(
+                  controller: newPasswordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(labelText: "New Password"),
+                ),
+                TextField(
+                  controller: confirmPasswordController,
+                  obscureText: true,
+                  decoration:
+                      const InputDecoration(labelText: "Confirm New Password"),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Cancel"),
               ),
-              TextField(
-                controller: newPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: "New Password"),
-              ),
-              TextField(
-                controller: confirmPasswordController,
-                obscureText: true,
-                decoration:
-                    const InputDecoration(labelText: "Confirm New Password"),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text("Update"),
               ),
             ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text("Update"),
-            ),
-          ],
+          );
+        },
+      );
+
+      if (confirmed == null || !confirmed) {
+        Fluttertoast.showToast(
+          msg: "Password update canceled",
+          textColor: Colors.white,
+          backgroundColor: Colors.orange,
         );
-      },
-    );
+        return;
+      }
 
-    if (confirmed == null || !confirmed) {
-      Fluttertoast.showToast(
-        msg: "Password update canceled",
-        textColor: Colors.white,
-        backgroundColor: Colors.orange,
-      );
-      return;
-    }
+      String currentPassword = currentPasswordController.text.trim();
+      String newPassword = newPasswordController.text.trim();
+      String confirmPassword = confirmPasswordController.text.trim();
 
-    String currentPassword = currentPasswordController.text.trim();
-    String newPassword = newPasswordController.text.trim();
-    String confirmPassword = confirmPasswordController.text.trim();
+      if (currentPassword.isEmpty ||
+          newPassword.isEmpty ||
+          confirmPassword.isEmpty) {
+        Fluttertoast.showToast(
+          msg: "All fields are required!",
+          textColor: Colors.white,
+          backgroundColor: Colors.red,
+        );
+        return;
+      }
 
-    if (currentPassword.isEmpty ||
-        newPassword.isEmpty ||
-        confirmPassword.isEmpty) {
-      Fluttertoast.showToast(
-        msg: "All fields are required!",
-        textColor: Colors.white,
-        backgroundColor: Colors.red,
-      );
-      return;
-    }
+      // Hash the entered current password
+      final String enteredPasswordHash = hashPassword(currentPassword);
 
-    // Hash the entered current password
-    final String enteredPasswordHash = hashPassword(currentPassword);
+      if (enteredPasswordHash != storedPasswordHash) {
+        Fluttertoast.showToast(
+          msg: "Incorrect current password!",
+          textColor: Colors.white,
+          backgroundColor: Colors.red,
+        );
+        return;
+      }
 
-    if (enteredPasswordHash != storedPasswordHash) {
-      Fluttertoast.showToast(
-        msg: "Incorrect current password!",
-        textColor: Colors.white,
-        backgroundColor: Colors.red,
-      );
-      return;
-    }
+      // Check if new passwords match
+      if (newPassword != confirmPassword) {
+        Fluttertoast.showToast(
+          msg: "New passwords do not match!",
+          textColor: Colors.white,
+          backgroundColor: Colors.red,
+        );
+        return;
+      }
 
-    // Check if new passwords match
-    if (newPassword != confirmPassword) {
-      Fluttertoast.showToast(
-        msg: "New passwords do not match!",
-        textColor: Colors.white,
-        backgroundColor: Colors.red,
-      );
-      return;
-    }
+      try {
+        // Reauthenticate user
+        AuthCredential credential = EmailAuthProvider.credential(
+          email: email,
+          password: currentPassword,
+        );
+        await currentUser.reauthenticateWithCredential(credential);
 
-    try {
-      // Step 1: Reauthenticate user
-      AuthCredential credential = EmailAuthProvider.credential(
-        email: email,
-        password: currentPassword,
-      );
-      await currentUser.reauthenticateWithCredential(credential);
+        // Update password in Firebase Authentication
+        await currentUser.updatePassword(newPassword);
 
-      // Step 2: Update password in Firebase Authentication
-      await currentUser.updatePassword(newPassword);
+        // Hash the new password before storing in Firestore
+        final String hashedNewPassword = hashPassword(newPassword);
 
-      // Step 3: Hash the new password before storing in Firestore
-      final String hashedNewPassword = hashPassword(newPassword);
+        // Update Firestore with hashed password
+        await _firestore.collection('users').doc(adminUid).update({
+          'passwordHash': hashedNewPassword,
+        });
 
-      // Step 4: Update Firestore with hashed password
-      await _firestore.collection('users').doc(adminUid).update({
-        'passwordHash': hashedNewPassword,
-      });
-
-      Fluttertoast.showToast(
-        msg: "Password updated successfully!",
-        textColor: Colors.white,
-        backgroundColor: Colors.green,
-      );
-    } catch (e) {
-      Fluttertoast.showToast(
-        msg: "Error updating password: $e",
-        textColor: Colors.white,
-        backgroundColor: Colors.red,
-      );
+        Fluttertoast.showToast(
+          msg: "Password updated successfully!",
+          textColor: Colors.white,
+          backgroundColor: Colors.green,
+        );
+      } catch (e) {
+        Fluttertoast.showToast(
+          msg: "Error updating password: $e",
+          textColor: Colors.white,
+          backgroundColor: Colors.red,
+        );
+      }
     }
   }
 }

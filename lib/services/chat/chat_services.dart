@@ -4,7 +4,7 @@ import 'package:hire_harmony/models/message.dart';
 import 'package:hire_harmony/models/message_model.dart';
 import 'package:hire_harmony/services/firestore_services.dart';
 import 'package:hire_harmony/utils/route/api_paths.dart';
-// ready 
+
 class ChatServices {
   final _firestoreServices = FirestoreService.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;

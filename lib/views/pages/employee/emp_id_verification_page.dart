@@ -1,4 +1,4 @@
-/*import 'dart:io';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -23,13 +23,16 @@ class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
     var license = await rootBundle.load('assets/regula.license');
     var config = InitConfig(license.buffer.asUint8List() as ByteData);
     var (success, error) = await faceSdk.initialize(config: config);
-    if (!success) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('Face SDK initialization failed: ${error?.message}')),
-      );
+    if (mounted) {
+      if (!success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text('Face SDK initialization failed: ${error?.message}')),
+        );
+      }
     }
+
     return success;
   }
 
@@ -312,4 +315,3 @@ class _EmpIdVerificationPageState extends State<EmpIdVerificationPage> {
     );
   }
 }
-*/

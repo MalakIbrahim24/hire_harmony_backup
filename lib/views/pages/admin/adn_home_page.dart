@@ -17,7 +17,7 @@ class AdnHomePage extends StatefulWidget {
 }
 
 class _AdnHomePageState extends State<AdnHomePage> {
-  String _userName = "User"; // Default name if not fetched
+  String _userName = "User";
 
   @override
   void initState() {
@@ -30,13 +30,13 @@ class _AdnHomePageState extends State<AdnHomePage> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final userDoc = await FirebaseFirestore.instance
-          .collection('users') // Change this to your Firestore collection name
+          .collection('users')
           .doc(user.uid)
           .get();
 
       if (userDoc.exists) {
         setState(() {
-          _userName = userDoc.data()?['name'] ?? "User"; // Fetch name field
+          _userName = userDoc.data()?['name'] ?? "User";
         });
       }
     }
@@ -121,65 +121,6 @@ class _AdnHomePageState extends State<AdnHomePage> {
                                 ),
                               ],
                             ),
-                            // BlocBuilder<AdnHomeCubit, AdnHomeState>(
-                            //   builder: (context, state) {
-                            //     int unreadCount = 0;
-                            //     if (state is AdnHomeLoaded) {
-                            //       unreadCount = state.unreadNotificationsCount;
-                            //     }
-
-                            // return InkWell(
-                            //   onTap: () async {
-                            //     await Navigator.pushNamed(context,
-                            //         AppRoutes.adnnotificationsPage);
-
-                            //     // Reset unread count when returning
-                            //     final cubit =
-                            //         // ignore: use_build_context_synchronously
-                            //         BlocProvider.of<AdnHomeCubit>(context);
-                            //     cubit.resetUnreadNotifications();
-                            //   },
-                            //   child: Stack(
-                            //     children: [
-                            //       CircleAvatar(
-                            //         backgroundColor: AppColors().navy,
-                            //         child: const Icon(
-                            //           Icons.notifications_active,
-                            //           color: Colors.white,
-                            //         ),
-                            //       ),
-                            //       if (unreadCount >
-                            //           0) // Show badge only if unread count > 0
-                            //         Positioned(
-                            //           right: 0,
-                            //           top: 0,
-                            //           child: Container(
-                            //             padding: const EdgeInsets.all(6),
-                            //             decoration: BoxDecoration(
-                            //               color: Colors.red,
-                            //               borderRadius:
-                            //                   BorderRadius.circular(12),
-                            //             ),
-                            //             constraints: const BoxConstraints(
-                            //               minWidth: 20,
-                            //               minHeight: 20,
-                            //             ),
-                            //             child: Text(
-                            //               '$unreadCount',
-                            //               style: const TextStyle(
-                            //                 color: Colors.white,
-                            //                 fontSize: 12,
-                            //                 fontWeight: FontWeight.bold,
-                            //               ),
-                            //               textAlign: TextAlign.center,
-                            //             ),
-                            //           ),
-                            //         ),
-                            //     ],
-                            //   ),
-                            // );
-                            //},
-                            // ),
                           ],
                         ),
                         const SizedBox(height: 20),
@@ -264,8 +205,4 @@ class _AdnHomePageState extends State<AdnHomePage> {
       },
     );
   }
-}
-
-class ComplaintsPage {
-  const ComplaintsPage();
 }

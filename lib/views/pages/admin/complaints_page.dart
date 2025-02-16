@@ -26,14 +26,12 @@ class _ComplaintsPageState extends State<ComplaintsPage> {
         .snapshots();
   }
 
-  /// Function to move the complaint to `resolvedComplaints` and delete it from `complaints`
   Future<void> _resolveComplaint(DocumentSnapshot complaint) async {
     if (loggedInUserId == null) return;
 
     try {
       final complaintData = complaint.data() as Map<String, dynamic>;
 
-      // Move the complaint to "resolvedComplaints" collection
       await FirebaseFirestore.instance
           .collection('users')
           .doc(loggedInUserId)
@@ -41,7 +39,6 @@ class _ComplaintsPageState extends State<ComplaintsPage> {
           .doc(complaint.id)
           .set(complaintData);
 
-      // Delete the complaint from "complaints" collection
       await FirebaseFirestore.instance
           .collection('users')
           .doc(loggedInUserId)
@@ -59,13 +56,13 @@ class _ComplaintsPageState extends State<ComplaintsPage> {
       await firestore.collection('chat_rooms').doc(chatRoomID).update({
         'chatController': 'closed',
       });
-      // ignore: use_build_context_synchronously
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Complaint marked as resolved!')),
       );
     } catch (e) {
       debugPrint("Error resolving complaint: $e");
-      // ignore: use_build_context_synchronously
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to resolve complaint: $e')),
       );
@@ -136,7 +133,7 @@ class _ComplaintsPageState extends State<ComplaintsPage> {
     final userDoc =
         await FirebaseFirestore.instance.collection('users').doc(userId).get();
     if (!userDoc.exists) {
-      // ignore: use_build_context_synchronously
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('User not found!')),
       );

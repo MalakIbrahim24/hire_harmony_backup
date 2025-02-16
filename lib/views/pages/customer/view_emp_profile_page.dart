@@ -97,14 +97,12 @@ class _ViewEmpProfilePageState extends State<ViewEmpProfilePage>
                   descriptionController.text.trim(),
                 );
 
-                // ignore: use_build_context_synchronously
+                if (!context.mounted) return;
                 Navigator.pop(context);
                 if (success) {
-                  // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                       content: Text('Request sent successfully!')));
                 } else {
-                  // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Failed to send request.')));
                 }

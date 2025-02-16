@@ -13,7 +13,6 @@ class EmployeesMaintenance extends StatefulWidget {
 class _NewAccountsRequestsPageState extends State<EmployeesMaintenance> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Stream to fetch users with role "employee" and state "accepted"
   Stream<QuerySnapshot> _fetchPendingEmployees() {
     return _firestore
         .collection('users')
@@ -55,18 +54,14 @@ class _NewAccountsRequestsPageState extends State<EmployeesMaintenance> {
             );
           }
 
-          // Extract documents from the snapshot
           final docs = snapshot.data!.docs;
 
           return ListView.builder(
             itemCount: docs.length,
             itemBuilder: (context, index) {
-              final user = docs[
-                  index]; // Move this line to be the FIRST thing inside itemBuilder
-              final userData = user.data()
-                  as Map<String, dynamic>?; // Now this has access to user
-
-              if (userData == null) return const SizedBox(); // Prevent crashes
+              final user = docs[index];
+              final userData = user.data() as Map<String, dynamic>?;
+              if (userData == null) return const SizedBox();
 
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -85,8 +80,6 @@ class _NewAccountsRequestsPageState extends State<EmployeesMaintenance> {
                       Text(userData.containsKey('email')
                           ? userData['email']
                           : 'No email'),
-
-                      // Check "similarity" safely before using it
                       if (userData.containsKey('similarity') &&
                           userData['similarity'] != null)
                         Text(
@@ -143,7 +136,6 @@ class _NewAccountsRequestsPageState extends State<EmployeesMaintenance> {
   }
 }
 
-// EndorseEmployeePage for detailed view
 class EndorseEmployeePage extends StatefulWidget {
   final DocumentSnapshot user;
 
@@ -175,21 +167,23 @@ class _EndorseEmployeePageState extends State<EndorseEmployeePage> {
         currentState = newState; // Update the local state
       });
       if (!mounted) return;
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            currentState == 'pending'
-                ? "Employee suspended for now!"
-                : "Employee reinstated successfully!",
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              currentState == 'pending'
+                  ? "Employee suspended for now!"
+                  : "Employee reinstated successfully!",
+            ),
           ),
-        ),
-      );
+        );
+      }
     } catch (e) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error updating employee state: $e")),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error updating employee state: $e")),
+        );
+      }
     }
   }
 

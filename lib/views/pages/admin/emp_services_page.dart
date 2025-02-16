@@ -64,17 +64,15 @@ class EmployeeServicesPage extends StatelessWidget {
             );
           }
 
-          // Extract services list safely
           final userData = snapshot.data!;
           final List<dynamic> servicesRaw =
               userData.containsKey('services') ? userData['services'] : [];
 
-          // Convert to List<Service>
           final List<Service> services = servicesRaw
               .map((service) => Service(
-                    id: service, // Using name as ID for simplicity
+                    id: service,
                     name: service.toString(),
-                    description: '', // No description field in Firestore
+                    description: '',
                     image: '',
                   ))
               .toList();
@@ -164,8 +162,7 @@ class EmployeeServicesPage extends StatelessWidget {
                               await FirestoreService.instance.removeFromArray(
                                 documentPath: 'users/$employeeId',
                                 fieldName: 'services',
-                                value: service
-                                    .name, // Removes service from Firestore array
+                                value: service.name,
                               );
 
                               Fluttertoast.showToast(
